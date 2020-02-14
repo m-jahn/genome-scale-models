@@ -36,10 +36,10 @@ import re
 
 # set the path to the model's directory
 data_dir = '/home/michael/Documents/SciLifeLab/Resources/Models/genome-scale-models/Ralstonia_eutropha/'
-model = cobra.io.read_sbml_model(join(data_dir, "RehMBEL1391_sbml_L2V1.xml"))
+model = cobra.io.read_sbml_model(join(data_dir, "sbml/RehMBEL1391_sbml_L2V1.xml"))
 # alternatively load test model for comparison
 #ecoli = cobra.test.create_test_model("textbook")
-salmonella = cobra.test.create_test_model()
+#salmonella = cobra.test.create_test_model()
 
 # summary of the imported model
 print('%i reactions' % len(model.reactions))
@@ -125,12 +125,11 @@ min_medium = cobra.medium.minimal_medium(
 print(min_medium)
 
 
-# export fluxes as csv
+# print top 10 forward and backward flux
 fluxes = solution.fluxes.sort_values()
-# print top 20 forward and backward flux
-print(fluxes[0:20])
-print(fluxes[len(fluxes)-20:len(fluxes)])
-#fluxes.to_csv(join(data_dir, "fluxes.csv"))
+print(fluxes[0:10])
+print(fluxes[len(fluxes)-10:len(fluxes)])
+
 
 # quick summary of FBA analysis
 print(model.summary())
@@ -154,16 +153,17 @@ print(solution.shadow_prices.sort_values())
 cobra.flux_analysis.flux_variability_analysis(
     model, model.reactions.query("[A-Z]+t"),
     loopless = True,
-    fraction_of_optimum=0.95
+    fraction_of_optimum = 0.95
     )
 
 
 # RUN pFBA -------------------------------------------------------------
 #
-# pFBA is parsimonious FBA and tries to eliminate through loops of 
+# pFBA is parsimonious FBA and tries to eliminate flux through loops of 
 # reactions. A fast and pragmatic approach is to post-process flux 
 # distributions to simply set fluxes to zero wherever they can be 
 # zero without changing the fluxes of any exchange reactions in the 
-# model ('CycleFreeFlux')
+# model (algorithm 'CycleFreeFlux')
 
-solution = cobra.flux_analysis.loopless_solution(model)
+loopless = cobra.flux_analysis.loopless_solution(model)
+print(loopless.fluxes)
