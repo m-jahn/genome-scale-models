@@ -2,6 +2,22 @@
 
 Genome scale metabolic models in SBML format
 
+### Repository contents
+
+#### Models
+
+- **Model of _Ralstonia eutropha_** a.k.a. _Cupriavidus necator_ H16. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
+
+
+#### Repository structure
+
+- `sbml/` -- folder containing the SBML model files (`*.xml` or `*.json`)
+- `simulations/` -- folder with simulation results tables (`*.csv`)
+- `escher/` -- folder with map layouts for [escher](https://escher.github.io/) visualization (`*.json`)
+- `test_model.py` -- FBA test run for the model using COBRApy
+- `simulations.py` -- functions for many simulations using COBRApy
+
+
 ### Getting started
 
 The genome scale metabolic models in this repository are encoded according to [SBML standard](sbml.org) and saved as human-readable `*.xml` or `*.json` files.
@@ -15,8 +31,7 @@ sudo apt install python3-pip
 pip install cobra
 ```
 
-To work with the model using `COBRApy`, we can import it in a python session. We can look at the number of reaction, metabolites and genes associated with the 
-model reactions.
+To work with a model using COBRApy, we can import it in a python session. We can look at the number of reactions, metabolites and genes associated with the model's reactions.
 
 ```{python}
 # load libraries
@@ -46,7 +61,7 @@ The `*.xml` files containing the model definition have three (four) major slots:
 - reaction definitions that link metabolites to each other. Those define the topology of
   the metabolic network (for example `PYK`: `adp_c + pep_c --> atp_c + pyr_c`)
 - groups of reactions that constitute a subsystem, such as all reactions for Citrate cycle
-- meta information such as gene-name reaction associations
+- meta data such as gene-name-reaction associations
 
 
 ### Parameters and constraints
@@ -55,7 +70,7 @@ Genome scale models are constrained primarily by two things:
 - network topology defined by the set of reactions. Models usually include only the reaction network for low molecular weight metabolites.
 - reaction bounds, e.g. ranging from `-Inf` to `+Inf` for reversible reactions. Irreversible reactions would be bounded by `0 < f < +Inf`, so that the reaction is only allowed to proceed in one direction.
 
-In python, we can look at the bounds of all exchange reactions (the ones supplying metabolites from the environment).
+In COBRApy, we can look at the bounds of e.g. all exchange reactions (the ones supplying metabolites from the environment), and set them to a different value.
 
 ```{python}
 # inspect exchange reactions

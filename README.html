@@ -368,6 +368,25 @@ summary {
 <div id="genome-scale-models" class="section level1">
 <h1>genome-scale-models</h1>
 <p>Genome scale metabolic models in SBML format</p>
+<div id="repository-contents" class="section level3">
+<h3>Repository contents</h3>
+<div id="models" class="section level4">
+<h4>Models</h4>
+<ul>
+<li><strong>Model of <em>Ralstonia eutropha</em></strong> a.k.a. <em>Cupriavidus necator</em> H16. The model was previously published in: Park, J. M., Kim, T. Y., &amp; Lee, S. Y. (2011). <em>Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production</em>. BMC Systems Biology, 5(1), 101. (<a href="https://doi.org/10.1186/1752-0509-5-101">link</a>)</li>
+</ul>
+</div>
+<div id="repository-structure" class="section level4">
+<h4>Repository structure</h4>
+<ul>
+<li><code>sbml/</code> – folder containing the SBML model files (<code>*.xml</code> or <code>*.json</code>)</li>
+<li><code>simulations/</code> – folder with simulation results tables (<code>*.csv</code>)</li>
+<li><code>escher/</code> – folder with map layouts for <a href="https://escher.github.io/">escher</a> visualization (<code>*.json</code>)</li>
+<li><code>test_model.py</code> – FBA test run for the model using COBRApy</li>
+<li><code>simulations.py</code> – functions for many simulations using COBRApy</li>
+</ul>
+</div>
+</div>
 <div id="getting-started" class="section level3">
 <h3>Getting started</h3>
 <p>The genome scale metabolic models in this repository are encoded according to <a href="sbml.org">SBML standard</a> and saved as human-readable <code>*.xml</code> or <code>*.json</code> files.</p>
@@ -375,7 +394,7 @@ summary {
 <pre class="{b}"><code># for linux, run the following line in terminal
 sudo apt install python3-pip
 pip install cobra</code></pre>
-<p>To work with the model using <code>COBRApy</code>, we can import it in a python session. We can look at the number of reaction, metabolites and genes associated with the model reactions.</p>
+<p>To work with a model using COBRApy, we can import it in a python session. We can look at the number of reactions, metabolites and genes associated with the model’s reactions.</p>
 <pre class="{python}"><code># load libraries
 import numpy as np
 import pandas as pd
@@ -400,13 +419,13 @@ print('%i genes' % len(model.genes))</code></pre>
 <li>metabolite definitions, such as <code>nadh_c</code> for NADH or <code>fru_c</code> for fructose.</li>
 <li>reaction definitions that link metabolites to each other. Those define the topology of the metabolic network (for example <code>PYK</code>: <code>adp_c + pep_c --&gt; atp_c + pyr_c</code>)</li>
 <li>groups of reactions that constitute a subsystem, such as all reactions for Citrate cycle</li>
-<li>meta information such as gene-name reaction associations</li>
+<li>meta data such as gene-name-reaction associations</li>
 </ul>
 </div>
 <div id="parameters-and-constraints" class="section level3">
 <h3>Parameters and constraints</h3>
 <p>Genome scale models are constrained primarily by two things: - network topology defined by the set of reactions. Models usually include only the reaction network for low molecular weight metabolites. - reaction bounds, e.g. ranging from <code>-Inf</code> to <code>+Inf</code> for reversible reactions. Irreversible reactions would be bounded by <code>0 &lt; f &lt; +Inf</code>, so that the reaction is only allowed to proceed in one direction.</p>
-<p>In python, we can look at the bounds of all exchange reactions (the ones supplying metabolites from the environment).</p>
+<p>In COBRApy, we can look at the bounds of e.g. all exchange reactions (the ones supplying metabolites from the environment), and set them to a different value.</p>
 <pre class="{python}"><code># inspect exchange reactions
 model.exchanges.list_attr(&quot;bounds&quot;)
 
