@@ -12,15 +12,14 @@ import tabulate
 import cobra
 import cobra.test
 import os
-from os.path import join
 import csv
 
 
 # IMPORT SBML MODEL ----------------------------------------------------
 
 # set the path to the model's directory
-data_dir = '/home/michael/Documents/SciLifeLab/Resources/Models/genome-scale-models/Ralstonia_eutropha/'
-model = cobra.io.read_sbml_model(join(data_dir, "RehMBEL1391_sbml_L3V1.xml"))
+wd = '/home/michael/Documents/SciLifeLab/Resources/Models/genome-scale-models/Ralstonia_eutropha/'
+model = cobra.io.read_sbml_model(wd + "sbml/RehMBEL1391_sbml_L3V1.xml")
 
 
 # DEFINE ENVIRONMENT ---------------------------------------------------
@@ -174,15 +173,15 @@ for index, row in qS_substrate.iterrows():
     result = run_FBA(model = model.copy(), medium = mm)
     
     # save result from pandas data frame to hdd
-    result.to_csv(data_dir + 'simulations/sim_' + str(index) + '.csv')
+    result.to_csv(wd + 'simulations/sim_' + str(index) + '.csv')
 
 
 # ANALYZE ONE SPECIFIC SOLUTION ----------------------------------------
 #
 # run FBA analysis on a copy of the model
 mm = minimal_medium.copy()
-mm['EX_fru_e'] = qS_FRC(0.1)
-mm['EX_nh4_e'] = 10
+mm['EX_fru_e'] = 10
+mm['EX_nh4_e'] = qS_NH4(0.1)
 
 model_test = model.copy()
 model_test.medium = mm
@@ -211,8 +210,8 @@ print(model_test.metabolites.get_by_id("d6pgc_c").summary())
 #    all CO2 is recycled by CBB or PPC reaction which is unrealistic:
 #    there's only 1 NADH per CO2 produced but at least 3 required per CO2
 #    for Calvin cycle to work.
-print("Yield [g / g_S] = " + 
-    str(model_formate.objective.value / qS_FOR(0.1, mmol = False)))
+print("Yield [g_bm / g_S] = " + 
+    str(model_test.objective.value / qS_FRC(0.1, mmol = False)))
 
 # Other notes to the current model implementation:
 #   - Rubisco and R15BP are missing: Calvin cycle is implemented as a 
