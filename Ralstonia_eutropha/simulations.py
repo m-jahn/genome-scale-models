@@ -115,11 +115,9 @@ def run_FBA(
     # run FBA analysis
     solution = model.optimize()
     loopless = cobra.flux_analysis.loopless_solution(model)
-    fluxes = pd.DataFrame(dict(
-        nominal = solution.fluxes,
-        loopless = loopless.fluxes,
-        difference = solution.fluxes-loopless.fluxes
-    ))
+    fluxes = pd.DataFrame(
+        dict(loopless = loopless.fluxes)
+    )
     
     if print_summary:
         print("SOLUTION: OBJECTIVE =" + str(solution.objective_value))
@@ -172,16 +170,24 @@ for index, row in qS_substrate.iterrows():
     # run FBA analysis on a copy of the model
     result = run_FBA(model = model.copy(), medium = mm)
     
+    # construct filename
+    filename = (
+        row['carbon_source'] + '_' + 
+        str(round(row['qS_carbon'], 2)) + '_' +
+        row['nitrogen_source'] + '_' +
+        str(round(row['qS_nitrogen']))
+    )
+    
     # save result from pandas data frame to hdd
-    result.to_csv(wd + 'simulations/sim_' + str(index) + '.csv')
+    result.to_csv(wd + 'simulations/' + filename + '.csv')
 
 
 # ANALYZE ONE SPECIFIC SOLUTION ----------------------------------------
 #
 # run FBA analysis on a copy of the model
 mm = minimal_medium.copy()
-mm['EX_fru_e'] = 10
-mm['EX_nh4_e'] = qS_NH4(0.1)
+mm['EX_fru_e'] = qS_FRC(0.25)#10
+mm['EX_nh4_e'] = 10#qS_NH4(0.1)
 
 model_test = model.copy()
 model_test.medium = mm
@@ -214,7 +220,12 @@ print("Yield [g_bm / g_S] = " +
     str(model_test.objective.value / qS_FRC(0.1, mmol = False)))
 
 # Other notes to the current model implementation:
-#   - Rubisco and R15BP are missing: Calvin cycle is implemented as a 
-#     lumped reaction CBBCYCLE
-#     
-
+# - Rubisco and R15BP are missing: Calvin cycle is implemented as a 
+#   lumped reaction CBBCYCLE
+# - TCA cycle running incomplete although was reported to be functional (Alegasan paper)
+# - main reasons for that is fumarate and succ-coa being replenished from amino acids 
+#   (anaplerotic reactions running reverse). How realistic is that?
+# - formate dehydrogenase (FDH) is making formic acid with NADH under heterotrophic conditions
+#   (fructose or succinate as substrate). 
+# - CO2 is never emitted but always recaptured by the CBB cycle in the model simulations.
+#   some CO2 should theoretically be emitted though.  
