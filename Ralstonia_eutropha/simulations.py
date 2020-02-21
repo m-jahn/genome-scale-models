@@ -21,6 +21,45 @@ import csv
 wd = '/home/michael/Documents/SciLifeLab/Resources/Models/genome-scale-models/Ralstonia_eutropha/'
 model = cobra.io.read_sbml_model(wd + "sbml/RehMBEL1391_sbml_L3V1.xml")
 
+# --- correct factual errors ---
+#
+# there's an artificial NADH generating cycle around the metabolite
+# 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
+# P5CD4 --> PROD4 --> PTO4H --> P5CD4
+# The cycle generates 2 NADH and 2 H+ per turn and carries high flux
+model.reactions.P5CD4.bounds = (0.0, 0.0)
+
+# another reaction that seems to contain an error is NADHDH
+# a NADH dehydrogenase that converts UQ spontaneously to UQH2,
+# a reaction that requires NADH canonically
+model.reactions.NADHDH.bounds = (0.0, 0.0)
+
+# this TCA cycle reaction is importantly not set to 'reversible'
+# as it's supposed to be, but constrained to wrong direction
+model.reactions.SUCOAS.bounds = (-1000.0, 1000.0)
+
+# this reaction is the last step of the methyl-citrate cycle, an
+# alternative route through TCA from oaa + prop-coa to succ + pyr.
+# It carries artificially high flux, so we constrain the last reaction
+model.reactions.MICITL.bounds = (0.0, 0.0)
+
+# two different metabolites, asp_c and aspsa_c, are labelled with the 
+# name of aspartate in the model and take part in different reactions.
+# However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG)
+# this needs to be re-named in the model. The reactions are correct.
+
+# --- set additional constraints ---
+#
+# Some reations are not incorrect, but lead to unusual results because
+# e.g. thermodynamic or kinetic constraints are not accounted for
+# Here, the activity of nitric oxide dioxygenase (NODOX) forms a 
+# futile cycle with nitrate and nitrite reductases even in absence of NO3 
+model.reactions.NODOX1.bounds = (0.0, 0.0)
+model.reactions.NODOX2.bounds = (0.0, 0.0)
+
+# glyoxylate shunt, isocitrate lyase
+model.reactions.ICL.bounds = (0.0, 0.0)
+
 
 # DEFINE ENVIRONMENT ---------------------------------------------------
 
@@ -175,7 +214,7 @@ for index, row in qS_substrate.iterrows():
         row['carbon_source'] + '_' + 
         str(round(row['qS_carbon'], 2)) + '_' +
         row['nitrogen_source'] + '_' +
-        str(round(row['qS_nitrogen']))
+        str(round(row['qS_nitrogen'], 2))
     )
     
     # save result from pandas data frame to hdd
@@ -186,18 +225,20 @@ for index, row in qS_substrate.iterrows():
 #
 # run FBA analysis on a copy of the model
 mm = minimal_medium.copy()
-mm['EX_fru_e'] = qS_FRC(0.25)#10
+mm['EX_formate_e'] = qS_FOR(0.25)#10
 mm['EX_nh4_e'] = 10#qS_NH4(0.1)
 
 model_test = model.copy()
 model_test.medium = mm
-model_test.optimize()
+solution = model_test.optimize()
+pfba_solution = cobra.flux_analysis.pfba(model_test)
+(pfba_solution.fluxes - solution.fluxes).sort_values()
+pfba_solution
 
 print(model_test.metabolites.fru_e.summary())
 print(model_test.metabolites.co2_c.summary())
 print(model_test.metabolites.atp_c.summary())
 print(model_test.metabolites.nadh_c.summary())
-print(model_test.metabolites.get_by_id("d6pgc_c").summary())
 
 
 # Results / Interpretation:
@@ -217,15 +258,8 @@ print(model_test.metabolites.get_by_id("d6pgc_c").summary())
 #    there's only 1 NADH per CO2 produced but at least 3 required per CO2
 #    for Calvin cycle to work.
 print("Yield [g_bm / g_S] = " + 
-    str(model_test.objective.value / qS_FRC(0.1, mmol = False)))
+    str(model_test.objective.value / qS_FRC(0.25, mmol = False)))
 
 # Other notes to the current model implementation:
 # - Rubisco and R15BP are missing: Calvin cycle is implemented as a 
 #   lumped reaction CBBCYCLE
-# - TCA cycle running incomplete although was reported to be functional (Alegasan paper)
-# - main reasons for that is fumarate and succ-coa being replenished from amino acids 
-#   (anaplerotic reactions running reverse). How realistic is that?
-# - formate dehydrogenase (FDH) is making formic acid with NADH under heterotrophic conditions
-#   (fructose or succinate as substrate). 
-# - CO2 is never emitted but always recaptured by the CBB cycle in the model simulations.
-#   some CO2 should theoretically be emitted though.  
