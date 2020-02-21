@@ -145,6 +145,20 @@ print(model.metabolites.nadh_c.summary())
 ```
 
 
-### Visualization of results
+### Visualization of results using Escher
 
-Coming soon.
+To visualize simulation results such as those from FBA, it is extremely informative to overlay reaction (flux) data on top of a familiar metabolic map. The open source tool [Escher](https://escher.github.io) can be used for this purpose. It can be used in a python session but just as well as an online tool. Three files are required that can be obtained from a standard SBML model. 
+
+#### Escher workflow
+
+- The model must be exported as a `.json` file. Simply use the COBRAPy command
+`cobra.io.save_json_model(my_model, 'my_path/my_model.json')`
+- The next step is to draw a metabolic map. One can start with the _E. coli_ default at
+[Escher](https://escher.github.io) and successively add/remove/change reactions
+- The final step is to load reaction data. The preferred format is a 2- or 3-column `.csv` table with the first column being reaction IDs corresponding to the map, and the second (optionally third) column being flux values.
+- Escher also has the possibility to overlay gene/protein expression data or metabolite data.
+
+#### Example
+
+<img src="example.png" width="1000px" style="display: block; margin: auto;" />
+
