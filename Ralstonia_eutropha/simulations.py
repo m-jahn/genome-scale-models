@@ -1,8 +1,13 @@
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# +                  GENOME SCALE MODEL SIMULATIONS                    +
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-# GENOME SCALE MODEL SIMULATIONS
-# for Ralstonia eutropha (aka Cupriavidus necator), a soil bacterium
-# and model organism for PHB synthesis and lithoautotrophic growth
-# (CO/CO2 as carbon source, hydrogen H2 as energy source) 
+#
+# Simulations with FBA, pFBA, FVA and so on, for Ralstonia eutropha 
+# (aka Cupriavidus necator), a soil bacterium and model organism 
+# for PHB synthesis and lithoautotrophic growth
+# (CO/CO2 as carbon source, hydrogen H2 as energy source)
+#
 #
 # LIBRARIES ------------------------------------------------------------
 
@@ -11,7 +16,6 @@ import pandas as pd
 import tabulate
 import cobra
 import cobra.test
-import os
 import csv
 
 
@@ -21,42 +25,9 @@ import csv
 wd = '/home/michael/Documents/SciLifeLab/Resources/Models/genome-scale-models/Ralstonia_eutropha/'
 model = cobra.io.read_sbml_model(wd + "sbml/RehMBEL1391_sbml_L3V1.xml")
 
-# --- correct factual errors ---
-#
-# there's an artificial NADH generating cycle around the metabolite
-# 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
-# P5CD4 --> PROD4 --> PTO4H --> P5CD4
-# The cycle generates 2 NADH and 2 H+ per turn and carries high flux
-model.reactions.P5CD4.bounds = (0.0, 0.0)
-
-# another reaction that seems to contain an error is NADHDH
-# a NADH dehydrogenase that converts UQ spontaneously to UQH2,
-# a reaction that requires NADH canonically
-model.reactions.NADHDH.bounds = (0.0, 0.0)
-
-# this TCA cycle reaction is importantly not set to 'reversible'
-# as it's supposed to be, but constrained to wrong direction
-model.reactions.SUCOAS.bounds = (-1000.0, 1000.0)
-
-# this reaction is the last step of the methyl-citrate cycle, an
-# alternative route through TCA from oaa + prop-coa to succ + pyr.
-# It carries artificially high flux, so we constrain the last reaction
-model.reactions.MICITL.bounds = (0.0, 0.0)
-
-# two different metabolites, asp_c and aspsa_c, are labelled with the 
-# name of aspartate in the model and take part in different reactions.
-# However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG)
-# this needs to be re-named in the model. The reactions are correct.
 
 # --- set additional constraints ---
 #
-# Some reations are not incorrect, but lead to unusual results because
-# e.g. thermodynamic or kinetic constraints are not accounted for
-# Here, the activity of nitric oxide dioxygenase (NODOX) forms a 
-# futile cycle with nitrate and nitrite reductases even in absence of NO3 
-model.reactions.NODOX1.bounds = (0.0, 0.0)
-model.reactions.NODOX2.bounds = (0.0, 0.0)
-
 # glyoxylate shunt, isocitrate lyase
 model.reactions.ICL.bounds = (0.0, 0.0)
 
@@ -221,45 +192,14 @@ for index, row in qS_substrate.iterrows():
     result.to_csv(wd + 'simulations/' + filename + '.csv')
 
 
-# ANALYZE ONE SPECIFIC SOLUTION ----------------------------------------
+# RUN FVA --------------------------------------------------------------
 #
-# run FBA analysis on a copy of the model
-mm = minimal_medium.copy()
-mm['EX_formate_e'] = qS_FOR(0.25)#10
-mm['EX_nh4_e'] = 10#qS_NH4(0.1)
+# Flux Variability Analysis (FVA) displaying variability
+# of reactions for solutions of e.g. at least 95% of optimal solution,
+# and using loopless solving
 
-model_test = model.copy()
-model_test.medium = mm
-solution = model_test.optimize()
-pfba_solution = cobra.flux_analysis.pfba(model_test)
-(pfba_solution.fluxes - solution.fluxes).sort_values()
-pfba_solution
-
-print(model_test.metabolites.fru_e.summary())
-print(model_test.metabolites.co2_c.summary())
-print(model_test.metabolites.atp_c.summary())
-print(model_test.metabolites.nadh_c.summary())
-
-
-# Results / Interpretation:
-#  - on formate, flux through PPC (phosphoenolpyruvate carboxylase)
-#    is much higher than through CBB cycle (32.3/4.65 = 6.95)
-#  - we know from Alegasan et al., 2018, that ratio should be
-#    PPC/CBB = 0.97 / 2.79 = 0.35 (under mixotrophic growth with gly)
-#  - Next question is, what is the yield on formate in the model?
-#    Our own measurements reach 0.1 gDCW g-1, or 0.18 Cmol Cmol-1.
-#    This is in good agreement with Grunwald et al., who hit 0.16 
-#    Cmol Cmol-1
-#
-#    Yield on formate in model is Y = µ / qS = 
-#    g_bm * gDCW * h / g_subs * gDCW *h.
-#    Yield is much higher than expected. Also, no CO2 is released but
-#    all CO2 is recycled by CBB or PPC reaction which is unrealistic:
-#    there's only 1 NADH per CO2 produced but at least 3 required per CO2
-#    for Calvin cycle to work.
-print("Yield [g_bm / g_S] = " + 
-    str(model_test.objective.value / qS_FRC(0.25, mmol = False)))
-
-# Other notes to the current model implementation:
-# - Rubisco and R15BP are missing: Calvin cycle is implemented as a 
-#   lumped reaction CBBCYCLE
+# cobra.flux_analysis.flux_variability_analysis(
+    # model, model.reactions.query("[A-Z]+t"),
+    # loopless = True,
+    # fraction_of_optimum = 0.95
+    # )
