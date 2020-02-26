@@ -6,16 +6,36 @@ Genome scale metabolic models in SBML format
 
 #### Models
 
-- **Model of _Ralstonia eutropha_** a.k.a. _Cupriavidus necator_ H16. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
+- **Model of _Ralstonia eutropha_** a.k.a. **_Cupriavidus necator_** H16. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
+
+
+#### Changes from published models
+
+**_Ralstonia eutropha_** (Park *et al.*, 2011)
+
+- There's an artificial NADH generating cycle around the metabolite 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions, `P5CD4` --> `PROD4`/`P5CD5` --> `PTO4H` --> `P5CD4`. The cycle generates 2 NADH per turn. The NADH/NAD cofactor stoichiometry for reaction P5CD5/PROD4 was reversed and was corrected.
+- Related to the problem with this reaction is that it is duplicated as `PROD4` (also same gene). The reaction was removed.
+- A reaction that seems to contain an error is `NADHDH`, an NADH dehydrogenase that converts UQ spontaneously to UQH2, a reaction that requires NADH canonically (see BiGG reaction: NADHDH). Cofactors were added.
+- The TCA cycle reaction succinyl-CoA-synthetase `SUCOAS` is importantly not set to 'reversible' as it's supposed to be, and therefore constrained to wrong direction regarding canonical flow of TCA. Constraints were changed to allow reversible flux.
+- The reaction `MICITL` is the last step of the methyl-citrate cycle, an alternative route through TCA from oaa + prop-coa --> succ + pyr. It carries artificially high flux, so flux of the final reaction was constrained.
+- `PYK` is allowed in the model to go in reverse direction (pyr + atp --> pep + adp) but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). Standard _E. coli_ models also exclude the reverse reaction.
+- Several alternative reactions to `PYK` (`PYK1`, `PYK2`, `PYK3`) that caryy most likely very little or no flux in _R. eutropha_, were silenced.
+- Pyruvate carboxylase `PYC` should only run in direction from pyr --> oaa, but not reverse (see E. coli reference models in BiGG).
+- PEP carboxylase `PPC` has correct bounds but one H+ reactant too much. The reaction was corrected.
+- Two different metabolites, asp_c and aspsa_c, are labelled with the name of aspartate in the model and take part in different reactions. However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.
+- Some reactions (e.g. `CABPS`, carbamoylphosphate synthase) require hco3 instead of co2 as substrate for phophorylation. However, a co2 <=> hco3 equilibration reaction is missing (see BiGG reaction `HCO3E`). The reaction was added.
+- The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates fru --> f6p. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in _R. eutropha_. Therefore the PEP-PTS reaction
+was silenced (more details, see Kaddor & Steinbuechel, 2011).
 
 
 #### Repository structure
 
-- `sbml/` -- folder containing the SBML model files (`*.xml` or `*.json`)
+- `sbml/` -- folder containing the SBML model files (`*.xml`)
 - `simulations/` -- folder with simulation results tables (`*.csv`)
-- `escher/` -- folder with map layouts for [escher](https://escher.github.io/) visualization (`*.json`)
-- `test_model.py` -- FBA test run for the model using COBRApy
-- `simulations.py` -- functions for many simulations using COBRApy
+- `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
+- `upgrade_model.py` -- import original model and convert to most recent SBML standard. 
+   Add reactions and modify erroneous reactions. Test FBA with COBRApy.
+- `simulations.py` -- functions to run many simulations at once using COBRApy
 
 
 ### Getting started

@@ -373,17 +373,35 @@ summary {
 <div id="models" class="section level4">
 <h4>Models</h4>
 <ul>
-<li><strong>Model of <em>Ralstonia eutropha</em></strong> a.k.a. <em>Cupriavidus necator</em> H16. The model was previously published in: Park, J. M., Kim, T. Y., &amp; Lee, S. Y. (2011). <em>Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production</em>. BMC Systems Biology, 5(1), 101. (<a href="https://doi.org/10.1186/1752-0509-5-101">link</a>)</li>
+<li><strong>Model of <em>Ralstonia eutropha</em></strong> a.k.a. <strong><em>Cupriavidus necator</em></strong> H16. The model was previously published in: Park, J. M., Kim, T. Y., &amp; Lee, S. Y. (2011). <em>Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production</em>. BMC Systems Biology, 5(1), 101. (<a href="https://doi.org/10.1186/1752-0509-5-101">link</a>)</li>
+</ul>
+</div>
+<div id="changes-from-published-models" class="section level4">
+<h4>Changes from published models</h4>
+<p><strong><em>Ralstonia eutropha</em></strong> (Park <em>et al.</em>, 2011)</p>
+<ul>
+<li>There’s an artificial NADH generating cycle around the metabolite 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions, <code>P5CD4</code> –&gt; <code>PROD4</code>/<code>P5CD5</code> –&gt; <code>PTO4H</code> –&gt; <code>P5CD4</code>. The cycle generates 2 NADH per turn. The NADH/NAD cofactor stoichiometry for reaction P5CD5/PROD4 was reversed and was corrected.</li>
+<li>Related to the problem with this reaction is that it is duplicated as <code>PROD4</code> (also same gene). The reaction was removed.</li>
+<li>A reaction that seems to contain an error is <code>NADHDH</code>, an NADH dehydrogenase that converts UQ spontaneously to UQH2, a reaction that requires NADH canonically (see BiGG reaction: NADHDH). Cofactors were added.</li>
+<li>The TCA cycle reaction succinyl-CoA-synthetase <code>SUCOAS</code> is importantly not set to ‘reversible’ as it’s supposed to be, and therefore constrained to wrong direction regarding canonical flow of TCA. Constraints were changed to allow reversible flux.</li>
+<li>The reaction <code>MICITL</code> is the last step of the methyl-citrate cycle, an alternative route through TCA from oaa + prop-coa –&gt; succ + pyr. It carries artificially high flux, so flux of the final reaction was constrained.</li>
+<li><code>PYK</code> is allowed in the model to go in reverse direction (pyr + atp –&gt; pep + adp) but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). Standard <em>E. coli</em> models also exclude the reverse reaction.</li>
+<li>Several alternative reactions to <code>PYK</code> (<code>PYK1</code>, <code>PYK2</code>, <code>PYK3</code>) that caryy most likely very little or no flux in <em>R. eutropha</em>, were silenced.</li>
+<li>Pyruvate carboxylase <code>PYC</code> should only run in direction from pyr –&gt; oaa, but not reverse (see E. coli reference models in BiGG).</li>
+<li>PEP carboxylase <code>PPC</code> has correct bounds but one H+ reactant too much. The reaction was corrected.</li>
+<li>Two different metabolites, asp_c and aspsa_c, are labelled with the name of aspartate in the model and take part in different reactions. However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.</li>
+<li>Some reactions (e.g. <code>CABPS</code>, carbamoylphosphate synthase) require hco3 instead of co2 as substrate for phophorylation. However, a co2 &lt;=&gt; hco3 equilibration reaction is missing (see BiGG reaction <code>HCO3E</code>). The reaction was added.</li>
+<li>The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates fru –&gt; f6p. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in <em>R. eutropha</em>. Therefore the PEP-PTS reaction was silenced (more details, see Kaddor &amp; Steinbuechel, 2011).</li>
 </ul>
 </div>
 <div id="repository-structure" class="section level4">
 <h4>Repository structure</h4>
 <ul>
-<li><code>sbml/</code> – folder containing the SBML model files (<code>*.xml</code> or <code>*.json</code>)</li>
+<li><code>sbml/</code> – folder containing the SBML model files (<code>*.xml</code>)</li>
 <li><code>simulations/</code> – folder with simulation results tables (<code>*.csv</code>)</li>
-<li><code>escher/</code> – folder with map layouts for <a href="https://escher.github.io/">escher</a> visualization (<code>*.json</code>)</li>
-<li><code>test_model.py</code> – FBA test run for the model using COBRApy</li>
-<li><code>simulations.py</code> – functions for many simulations using COBRApy</li>
+<li><code>escher/</code> – folder with map layout and model for <a href="https://escher.github.io/">escher</a> visualization (<code>*.json</code>)</li>
+<li><code>upgrade_model.py</code> – import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Test FBA with COBRApy.</li>
+<li><code>simulations.py</code> – functions to run many simulations at once simulations using COBRApy</li>
 </ul>
 </div>
 </div>
