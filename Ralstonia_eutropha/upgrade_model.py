@@ -129,7 +129,7 @@ model.reactions.MICITL.bounds = (0.0, 0.0)
 # PYK is allowed in the model to go in reverse direction (pyr + atp --> pep + adp)
 # but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). 
 # Standard E. coli models also exclude the reverse reaction.
-model.reactions.PYK.bounds = (0, 1000.0)
+model.reactions.PYK.bounds = (0.0, 1000.0)
 # Several alternative reactions to PYK (PYK1, PYK2, PYK3) that caryy most likely very 
 # little or no flux in R. eutropha, were silenced.
 model.reactions.PYK1.bounds = (0.0, 0.0)
@@ -155,8 +155,8 @@ model.metabolites.aspsa_c.name = 'L-Aspartate 4-semialdehyde'
 # The reaction was added.
 HCO3E = cobra.Reaction('HCO3E')
 HCO3E.name = 'HCO3 equilibration reaction'
-HCO3E.lower_bound = -1000
-HCO3E.upper_bound = 1000
+HCO3E.lower_bound = -1000.0
+HCO3E.upper_bound = 1000.0
 model.add_reactions([HCO3E])
 model.reactions.HCO3E.build_reaction_from_string('co2_c + h2o_c <=> h_c + hco3_c')
 
@@ -170,10 +170,39 @@ model.reactions.FRUpts2.bounds = (0.0, 0.0)
 # add gene-reaction-rules for fruABC
 model.reactions.FRUabc.gene_reaction_rule = '( H16_B1498 and H16_B1499 and H16_B1500 )'
 
+# The original model only contains a lumped reaction for the CBB cycle.
+# In order to include a working CBB cycle, two reactions need to be added,
+# 1) Phosphoribulokinase (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing 
+# phosphorylation of Ribulose-5-phosphate: atp_c + rl5p_c --> adp_c + h_c + rb15bp_c
+# 2) Ribulose-1,5-bisphosphate carboxylase (cbbS2, H16_B1394; 
+# cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427)
+# catalyzing the addition of CO2: co2_c + h2o_c + rb15bp_c --> 2.0 h_c + 2.0 3pg_c
+# The metabolite Ribulose-1,5-bisphosphate needs to be added
+model.add_metabolites(
+    cobra.Metabolite(
+        id = 'rb15bp_c',
+        name = 'Ribulose-1,5-bisphosphate',
+        compartment = 'c'))
+
+# Reactions PRUK and RBPC (Rubisco enzyme) are added
+PRUK = cobra.Reaction('PRUK')
+PRUK.name = 'Phosphoribulokinase'
+RBPC = cobra.Reaction('RBPC')
+RBPC.name = 'Ribulose-bisphosphate carboxylase'
+model.add_reactions([PRUK, RBPC])
+model.reactions.PRUK.gene_reaction_rule = 'H16_B1389 or PHG421'
+model.reactions.RBPC.gene_reaction_rule = '( H16_B1394 and H16_B1395 ) or ( PHG426 and PHG427 )'
+
+# define reactions from string
+model.reactions.PRUK.build_reaction_from_string('atp_c + rl5p_c --> adp_c + h_c + rb15bp_c')
+model.reactions.RBPC.build_reaction_from_string('co2_c + h2o_c + rb15bp_c --> 2.0 3pg_c + 2.0 h_c')
+
+# silence original lumped reaction for CBB cycle
+model.reactions.CBBCYC.bounds = (0.0, 0.0)
+
 
 # TESTING WITH FBA -----------------------------------------------------
 #
-# run FBA
 # run FBA analysis
 solution = model.optimize()
 

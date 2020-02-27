@@ -2,6 +2,8 @@
 
 Genome scale metabolic models in SBML format
 
+<img src="map.png" width="1000px" style="display: block; margin: auto;" />
+
 ### Repository contents
 
 #### Models
@@ -9,7 +11,7 @@ Genome scale metabolic models in SBML format
 - **Model of _Ralstonia eutropha_** a.k.a. **_Cupriavidus necator_** H16. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
 
 
-#### Changes from published models
+#### Changes from original models
 
 **_Ralstonia eutropha_** (Park *et al.*, 2011)
 
@@ -19,13 +21,14 @@ Genome scale metabolic models in SBML format
 - The TCA cycle reaction succinyl-CoA-synthetase `SUCOAS` is importantly not set to 'reversible' as it's supposed to be, and therefore constrained to wrong direction regarding canonical flow of TCA. Constraints were changed to allow reversible flux.
 - The reaction `MICITL` is the last step of the methyl-citrate cycle, an alternative route through TCA from oaa + prop-coa --> succ + pyr. It carries artificially high flux, so flux of the final reaction was constrained.
 - `PYK` is allowed in the model to go in reverse direction (pyr + atp --> pep + adp) but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). Standard _E. coli_ models also exclude the reverse reaction.
-- Several alternative reactions to `PYK` (`PYK1`, `PYK2`, `PYK3`) that caryy most likely very little or no flux in _R. eutropha_, were silenced.
+- Several alternative reactions to `PYK` (`PYK1`, `PYK2`, `PYK3`) that carry most likely very little or no flux in _R. eutropha_, were silenced.
 - Pyruvate carboxylase `PYC` should only run in direction from pyr --> oaa, but not reverse (see E. coli reference models in BiGG).
 - PEP carboxylase `PPC` has correct bounds but one H+ reactant too much. The reaction was corrected.
 - Two different metabolites, asp_c and aspsa_c, are labelled with the name of aspartate in the model and take part in different reactions. However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.
 - Some reactions (e.g. `CABPS`, carbamoylphosphate synthase) require hco3 instead of co2 as substrate for phophorylation. However, a co2 <=> hco3 equilibration reaction is missing (see BiGG reaction `HCO3E`). The reaction was added.
 - The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates fru --> f6p. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in _R. eutropha_. Therefore the PEP-PTS reaction
 was silenced (more details, see Kaddor & Steinbuechel, 2011).
+- The original model only contains a lumped reaction for the CBB cycle. In order to include a working CBB cycle, two reactions need to be added, 1) Phosphoribulokinase `PRUK` (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing phosphorylation of Ribulose-5-phosphate: atp_c + rl5p_c --> adp_c + h_c + rb15bp_c. And 2) Ribulose-1,5-bisphosphate carboxylase `RBPC` (cbbS2, H16_B1394; cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427) catalyzing the addition of CO2: co2_c + h2o_c + rb15bp_c --> 2.0 h_c + 2.0 3pg_c. The metabolite Ribulose-1,5-bisphosphate was added and the orihinal reaction `CBBCYC` silenced.
 
 
 #### Repository structure
