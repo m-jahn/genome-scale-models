@@ -402,8 +402,10 @@ summary {
 <li><code>sbml/</code> – folder containing the SBML model files (<code>*.xml</code>)</li>
 <li><code>simulations/</code> – folder with simulation results tables (<code>*.csv</code>)</li>
 <li><code>escher/</code> – folder with map layout and model for <a href="https://escher.github.io/">escher</a> visualization (<code>*.json</code>)</li>
-<li><code>upgrade_model.py</code> – import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Test FBA with COBRApy.</li>
-<li><code>simulations.py</code> – functions to run many simulations at once using COBRApy</li>
+<li><code>upgrade_model.py</code> – import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Test FBA with COBRApy</li>
+<li><code>flux_analysis.py</code> – wrapper functions for FBA and FVA with COBRApy</li>
+<li><code>test_simulations.py</code> – script to run many simulations at once using COBRApy</li>
+<li><code>plot_simulations.R</code> – R script to plot results from FBA, FVA, or other simulations</li>
 </ul>
 </div>
 </div>

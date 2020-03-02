@@ -37,8 +37,10 @@ was silenced (more details, see Kaddor & Steinbuechel, 2011).
 - `simulations/` -- folder with simulation results tables (`*.csv`)
 - `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
 - `upgrade_model.py` -- import original model and convert to most recent SBML standard. 
-   Add reactions and modify erroneous reactions. Test FBA with COBRApy.
-- `simulations.py` -- functions to run many simulations at once using COBRApy
+   Add reactions and modify erroneous reactions. Test FBA with COBRApy
+- `flux_analysis.py` -- wrapper functions for FBA and FVA with COBRApy
+- `test_simulations.py` -- script to run many simulations at once using COBRApy
+- `plot_simulations.R` -- R script to plot results from FBA, FVA, or other simulations
 
 
 ### Getting started
