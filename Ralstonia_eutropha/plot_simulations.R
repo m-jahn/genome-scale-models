@@ -5,29 +5,37 @@ library(tidyverse)
 library(Rtools)
 
 
-# +++++++++++++ LOAD MODEL DATA ++++++++++++++++++++++++++++++++++++++++++++++++
+# +++++++++++++ LOAD MODEL SIMULATION DATA +++++++++++++++++++++++++++++++++++++
 
-# list of raw model result files to load
-files <- list.files("simulations", pattern = "*.csv$", full.names = TRUE)
-
-# Generalized function to load and combine data from multiple result tables
-df <- lapply(files, function(filename) {
-  read_csv(filename) %>%
-  mutate(simulation = gsub("simulations.|EX_|_e|.csv", "", filename))
+# generalized function to load and combine data from multiple result tables
+read_flux_results <- function(files) {
+  lapply(files, function(filename) {
+    read_csv(filename) %>%
+    mutate(simulation = gsub("simulations.|EX_|_e|_F[BV]A.csv", "", filename))
   }) %>% 
+  
+  # combine list of files
   dplyr::bind_rows() %>%
-  rename(metabolite = X1) %>%
+  
+  # rearrange result columns
+  rename(reaction = X1) %>%
   separate(simulation, 
     into = c("carbon_source", "qS_carbon", "nitrogen_source", "qS_nitrogen"), 
     sep = "_") %>%
   mutate(qS_carbon = as.numeric(qS_carbon), qS_nitrogen = as.numeric(qS_nitrogen))
+
+}
+
+# list of FBA simulation result files to load
+df_fba <- read_flux_results(list.files("simulations", pattern = "_FBA.csv$", full.names = TRUE))
+df_fva <- read_flux_results(list.files("simulations", pattern = "_FVA.csv$", full.names = TRUE))
 
 
 # +++++++++++++ YIELD AND UPTAKE RATES +++++++++++++++++++++++++++++++++++++++++
 
 # add uptake rates to determine yield (Y = µ / qS = 
 # g_bm * gDCW * h / g_subs * gDCW *h)
-df_yield <- df %>% filter(metabolite == "EX_BIOMASS_c") %>%
+df_yield <- df_fba %>% filter(reaction == "EX_BIOMASS_c") %>%
   
   # add molecular weights to re-calculate qS to g/g*L
   mutate(
@@ -43,7 +51,7 @@ df_yield <- df %>% filter(metabolite == "EX_BIOMASS_c") %>%
   )
   
   
-# +++++++++++++ PLOTTING +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# +++++++++++++ PLOTTING YEILD +++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Herbet-Pirt-plot function to create plots using different parameters
 HP_plot <- function(data, xvar, yvar, condvar, 
@@ -90,4 +98,28 @@ print(HP_plot(data = subset(df_yield, carbon_source == "fru" & qS_carbon == 10),
 print(HP_plot(data = subset(df_yield, carbon_source == "succ"),
   xvar = "loopless", yvar = "qS_carbon_g", condvar = "carbon_source",
   ylimits = c(-1/4, 1)), split = c(2,2,2,2))
+dev.off()
+
+
+# +++++++++++++ FLUX VARIABILITY ANALYSIS (FVA) ++++++++++++++++++++++++++++++++
+
+# FVA tells us how much variation is allowed to happen in the flux of certain
+# reactions, without compromising the objective to e.g. 99 % of the optimal solution
+
+svg("simulations/flux_variability.svg", width = 8, height = 6)
+xyplot(minimum + maximum ~ factor(reaction, unique(reaction)) | carbon_source, 
+  filter(df_fva, qS_carbon != 10),
+  par.settings = custom.lattice(), pch = 19, 
+  ylim = c(-6, 6), 
+  ylab = expression("flux "*"[mmol h"^-1*" gDCW"^-1*"]"),
+  xlab = "reaction",
+  layout = c(1, 3), as.table = TRUE, between = list(x = 0.5, y = 0.5),
+  scales = list(alternating = FALSE, x =list(rot = 35, cex = 0.7)),
+  panel = function(x, y, ...) {
+    panel.grid(h = -1, v = -1, col = grey(0.9))
+    panel.abline(h = 0, lwd = 1.5, lty = 2, col = grey(0.5))
+    panel.xyplot(x, y, ...)
+    panel.key(corner = c(0.98,0.95), ...)
+  }
+)
 dev.off()
