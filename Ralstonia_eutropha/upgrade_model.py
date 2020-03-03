@@ -33,13 +33,13 @@ import csv
 import re
 
 
-# wrap all code into main function
-def main():
+
+# IMPORT SBML MODEL ----------------------------------------------------
+
+def import_model(path):
     
-    # IMPORT SBML MODEL ------------------------------------------------
-    
-    # set the path to the model's directory
-    model = cobra.io.read_sbml_model(wd + "sbml/RehMBEL1391_sbml_L2V1.xml")
+    # read model from given path
+    model = cobra.io.read_sbml_model(path)
     # alternatively load test model for comparison
     #ecoli = cobra.test.create_test_model("textbook")
     #salmonella = cobra.test.create_test_model()
@@ -49,17 +49,8 @@ def main():
     print('%i metabolites' % len(model.metabolites))
     print('%i genes' % len(model.genes))
     
-    
-    # The model contains two different sets of environmental variables
-    # that are important for simulation of growth:
-    # A: the model has exchange reactions that simply
-    #    model the extracellular availability (flux) towards the cell;
-    #    these have bounds = (0, 1000) when they 'produce' the metabolite
-    #    or e.g. (-1000, 0) when they 'consume' it
-    # B: model.medium is the mirror of the source exchange reaction
-    #    the medium has positive flux, i.e. produces a compound
-    #
-    # Bounds are not correctly set for reactions during import, only
+    # Fix exchnage reactions:
+    # bounds are not correctly set for reactions during import, only
     # set to standard (-1000, 1000). Many reactions are then reversible
     # which is wrong. Set bounds based on info in 'notes' field, and
     # set all exchange reactions to c(0, 1000))
@@ -72,34 +63,61 @@ def main():
             reaction.lower_bound = 0.0
     
     # check that it worked
-    model.exchanges.list_attr("bounds")
-    model.reactions.query("[A-Z]+t").list_attr("bounds")
+    print(model.exchanges.list_attr('bounds'))
+    print(model.reactions.query('[A-Z]+t').list_attr('bounds'))
     
+    # return imported model
+    return model
+
+
+# TESTING FOR ENERGY GENERATING CYCLES ---------------------------------
+#
+# Energy generating cycles can generate ATP, NADPH or other energy/reducant 
+# 'currency' of the cell out of thin air (see Fritzemeier et a., PLOS Comp Bio, 2017). 
+# Such cycles represent factual errors of the model, and they 
+# can occur when reactions are not correctly mass or charge balanced. 
+# For example, one reaction converts a metabolite into another and a
+# second reaction converts it back but this time generates ATP. Such cycles
+# can even appear when reactions are correctly balanced, but one of the two 
+# reactions would not normally occur because of thermodynamic restrictions 
+# (far from equilibrium,) and therefore not reversible. FBA does not take
+# thermodynamics into account but we can constrain reversibility as a fix.
+
+def test_EGC(model):
     
-    # set a growth
-    model.medium = {
-        'EX_mg2_e': 10.0,
-        'EX_pi_e': 100.0,
-        'EX_cobalt2_e': 10.0,
-        'EX_cl_e': 10.0,
-        'EX_k_e': 10.0,
-        'EX_fe3_e': 10.0,
-        'EX_so4_e': 10.0,
-        'EX_na_e': 10.0,
-        'EX_o2_e': 18.5,
-        'EX_mobd_e': 10.0,
-        'EX_h2o_e': 1000.0,
-        'EX_h_e': 100.0,
-        'EX_fru_e': 3.0,
-        'EX_nh4_e': 10.0
-        }
+    # According to the workflow of Fritzemeier et al., we add dissipation reactions
+    # e.g. for ATP, NADH and so on.
+    diss_reactions = ['ATP_diss', 'GTP_diss', 'NADH_diss', 'NADPH_diss', 'UQ_diss']
+    model.add_reactions([cobra.Reaction(r) for r in diss_reactions])
     
-    # set objective function
-    model.objective = {model.reactions.Biomass: 1}
+    model.reactions.ATP_diss.build_reaction_from_string('atp_c + h2o_c --> adp_c + h_c + pi_c')
+    model.reactions.GTP_diss.build_reaction_from_string('gtp_c + h2o_c --> gdp_c + h_c + pi_c')
+    model.reactions.NADH_diss.build_reaction_from_string('nadh_c --> nad_c + h_c')
+    model.reactions.NADPH_diss.build_reaction_from_string('nadph_c --> nadp_c + h_c')
+    model.reactions.UQ_diss.build_reaction_from_string('uqh2_c --> uq_c + 2.0 h_c')
     
+    # Next we loop through the dissipation reactions
+    print(' ----- SUMMARY OF ENERGY GENERATING CYCLES ----- ')
+    for r in diss_reactions:
+        
+        # first set the ojective to max dissipation reaction
+        model.objective = {model.reactions.get_by_id(r): 1}
+        
+        # run FBA analysis, all solutions should evaluate to zero
+        solution = model.optimize()
+        print(str(solution) + ', status: ' + str(solution.status))
     
-    # MODIFY/ADD REACTIONS ---------------------------------------------
-    #
+    # clean up by removing all dissipation reactions
+    model.remove_reactions(diss_reactions)
+
+
+# MODIFY/ADD REACTIONS -------------------------------------------------
+#
+# several reactions were identified as erroneous and this function 
+# corrects those. It also adds reactions that were missing.
+
+def modify_reactions(model):
+    
     # There's an artificial NADH generating cycle around the metabolite
     # 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
     # P5CD4 --> PROD4/P5CD5 --> PTO4H --> P5CD4
@@ -201,32 +219,68 @@ def main():
     
     # silence original lumped reaction for CBB cycle
     model.reactions.CBBCYC.bounds = (0.0, 0.0)
+
+
+# TESTING GROWTH WITH FBA ------------------------------------------
+#
+# run one simple FBA analysis with the model, simulating 
+# growth in fructose
+
+def test_FBA(model):
     
+    # set a growth medium
+    model.medium = {
+        'EX_mg2_e': 10.0,
+        'EX_pi_e': 100.0,
+        'EX_cobalt2_e': 10.0,
+        'EX_cl_e': 10.0,
+        'EX_k_e': 10.0,
+        'EX_fe3_e': 10.0,
+        'EX_so4_e': 10.0,
+        'EX_na_e': 10.0,
+        'EX_o2_e': 18.5,
+        'EX_mobd_e': 10.0,
+        'EX_h2o_e': 1000.0,
+        'EX_h_e': 100.0,
+        'EX_fru_e': 3.0,
+        'EX_nh4_e': 10.0
+        }
     
-    # TESTING WITH FBA -------------------------------------------------
-    #
+    # set objective function
+    model.objective = {model.reactions.Biomass: 1}
     # run FBA analysis
     solution = model.optimize()
     
     # print solution and status from linear programming solver
-    print([solution, "status: ", solution.status])
+    print(' ----- SUMMARY OF FBA TEST RUN ----- ')
+    print(str(solution) + ', status: ' + str(solution.status))
     
     # quick summary of FBA analysis
     print(model.summary())
+
+
+# EXECUTE FUNCTIONS ----------------------------------------------------
+
+def main():
     
-    # summary of energy balance
-    print(model.metabolites.atp_c.summary())
+    # import model
+    model = import_model(path = 'sbml/RehMBEL1391_sbml_L2V1.xml')
     
-    # summary of redox balance
-    print(model.metabolites.nadh_c.summary())
+    # test energy generating cycles
+    test_EGC(model.copy())
     
+    # modify reactions
+    modify_reactions(model)
     
-    # EXPORT SBML MODEL ------------------------------------------------
-    #
+    # test energy generating cycles again
+    test_EGC(model.copy())
+    
+    # test run with FBA
+    test_FBA(model)
+    
     # save modified model as SBML Level 3, version 1
-    cobra.io.write_sbml_model(model, "sbml/RehMBEL1391_sbml_L3V1.xml")
-    cobra.io.save_json_model(model, "escher/RehMBEL1391_sbml_L3V1.json")
+    cobra.io.write_sbml_model(model, 'sbml/RehMBEL1391_sbml_L3V1.xml')
+    cobra.io.save_json_model(model, 'escher/RehMBEL1391_sbml_L3V1.json')
 
-
-if __name__== "__main__" :
+if __name__== '__main__' :
     main()
