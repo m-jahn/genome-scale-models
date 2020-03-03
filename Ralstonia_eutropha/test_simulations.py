@@ -25,7 +25,7 @@ def main():
     
     # --- set additional constraints ---
     # silence glyoxylate shunt, isocitrate lyase
-    #model.reactions.ICL.bounds = (0.0, 0.0)
+    model.reactions.ICL.bounds = (0.0, 0.0)
     
     
     # DEFINE ENVIRONMENT ---------------------------------------------------
@@ -108,6 +108,9 @@ def main():
         mm = minimal_medium.copy()
         mm[row['carbon_source']] = row['qS_carbon']
         mm[row['nitrogen_source']] = row['qS_nitrogen']
+        
+        # optionally constrain biomass to experimental observation
+        model.reactions.Biomass.upper_bound = row['growth_rate_exp']
         
         # construct filename
         filename = (

@@ -117,6 +117,13 @@ xyplot(minimum + maximum ~ factor(reaction, unique(reaction)) | carbon_source,
   scales = list(alternating = FALSE, x =list(rot = 35, cex = 0.7)),
   panel = function(x, y, ...) {
     panel.grid(h = -1, v = -1, col = grey(0.9))
+    panel.rect(0, -6, 5.5, -4, col = grey(0.85), border = NA)
+    panel.rect(5.5, -6, 12.5, -4, col = "white", border = grey(0.85))
+    panel.rect(12.5, -6, 18.5, -4, col = grey(0.85), border = NA)
+    panel.rect(18.5, -6, 27.5, -4, col = "white", border = grey(0.85))
+    panel.rect(27.5, -6, 36.5, -4, col = grey(0.85), border = NA)
+    panel.rect(36.5, -6, 38.5, -4, col = "white", border = grey(0.85))
+    panel.text(c(3, 9, 15, 23, 32, 37), rep(-5, 6), labels = c("ED", "EMP", "CBB", "PYR", "TCA", "GLX"))
     panel.abline(h = 0, lwd = 1.5, lty = 2, col = grey(0.5))
     panel.xyplot(x, y, ...)
     panel.key(corner = c(0.98,0.95), ...)
