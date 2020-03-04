@@ -45,6 +45,7 @@ def import_model(path):
     #salmonella = cobra.test.create_test_model()
     
     # summary of the imported model
+    print(' ----- KEY NUMBERS ----- ')
     print('%i reactions' % len(model.reactions))
     print('%i metabolites' % len(model.metabolites))
     print('%i genes' % len(model.genes))
@@ -63,6 +64,7 @@ def import_model(path):
             reaction.lower_bound = 0.0
     
     # check that it worked
+    print(' ----- BOUNDS FOR EXCHANGE AND TRANSPORT REACTIONS ----- ')
     print(model.exchanges.list_attr('bounds'))
     print(model.reactions.query('[A-Z]+t').list_attr('bounds'))
     
@@ -87,14 +89,22 @@ def test_EGC(model):
     
     # According to the workflow of Fritzemeier et al., we add dissipation reactions
     # e.g. for ATP, NADH and so on.
-    diss_reactions = ['ATP_diss', 'GTP_diss', 'NADH_diss', 'NADPH_diss', 'UQ_diss']
+    diss_reactions = [s + '_diss' for s in ['ATP', 'GTP', 'CTP', 'UTP', 'ITP', 'NADH', 'NADPH', 'FADH2', 'UQ', 'ACCOA', 'GLU', 'PRO']]
     model.add_reactions([cobra.Reaction(r) for r in diss_reactions])
     
     model.reactions.ATP_diss.build_reaction_from_string('atp_c + h2o_c --> adp_c + h_c + pi_c')
+    model.reactions.CTP_diss.build_reaction_from_string('ctp_c + h2o_c --> cdp_c + h_c + pi_c')
     model.reactions.GTP_diss.build_reaction_from_string('gtp_c + h2o_c --> gdp_c + h_c + pi_c')
+    model.reactions.UTP_diss.build_reaction_from_string('utp_c + h2o_c --> udp_c + h_c + pi_c')
+    model.reactions.ITP_diss.build_reaction_from_string('itp_c + h2o_c --> idp_c + h_c + pi_c')
     model.reactions.NADH_diss.build_reaction_from_string('nadh_c --> nad_c + h_c')
     model.reactions.NADPH_diss.build_reaction_from_string('nadph_c --> nadp_c + h_c')
+    model.reactions.FADH2_diss.build_reaction_from_string('fadh2_c --> fad_c + 2.0 h_c')
     model.reactions.UQ_diss.build_reaction_from_string('uqh2_c --> uq_c + 2.0 h_c')
+    model.reactions.ACCOA_diss.build_reaction_from_string('accoa_c  + h2o_c --> ac_c + coa_c + h_c')
+    model.reactions.GLU_diss.build_reaction_from_string('glu_c  + h2o_c --> akg_c + nh4_c + 2.0 h_c')
+    model.reactions.PRO_diss.build_reaction_from_string('h_e --> h_c')
+    
     
     # Next we loop through the dissipation reactions
     print(' ----- SUMMARY OF ENERGY GENERATING CYCLES ----- ')
@@ -105,7 +115,7 @@ def test_EGC(model):
         
         # run FBA analysis, all solutions should evaluate to zero
         solution = model.optimize()
-        print(str(solution) + ', status: ' + str(solution.status))
+        print(str(solution) + ', dissipation reaction: ' + str(r) + ', status: ' + str(solution.status))
     
     # clean up by removing all dissipation reactions
     model.remove_reactions(diss_reactions)
