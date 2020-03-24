@@ -29,9 +29,11 @@ import pandas as pd
 import tabulate
 import cobra
 import cobra.test
+from cobrapy_bigg_client import client
+from bioservices.uniprot import UniProt
+from bioservices.kegg import KEGG
 import csv
 import re
-
 
 
 # IMPORT SBML MODEL ----------------------------------------------------
@@ -45,16 +47,17 @@ def import_model(path):
     #salmonella = cobra.test.create_test_model()
     
     # summary of the imported model
-    print(' ----- KEY NUMBERS ----- ')
+    print(' ----- MODEL KEY NUMBERS ----- ')
     print('%i reactions' % len(model.reactions))
     print('%i metabolites' % len(model.metabolites))
     print('%i genes' % len(model.genes))
     
-    # Fix exchnage reactions:
+    # Fix exchange reactions:
     # bounds are not correctly set for reactions during import, only
     # set to standard (-1000, 1000). Many reactions are then reversible
     # which is wrong. Set bounds based on info in 'notes' field, and
     # set all exchange reactions to c(0, 1000))
+    print('...setting bounds on exchange reactions')
     for reaction in model.reactions:
         if reaction in model.exchanges:
             reaction.lower_bound = 0.0
@@ -65,8 +68,8 @@ def import_model(path):
     
     # check that it worked
     print(' ----- BOUNDS FOR EXCHANGE AND TRANSPORT REACTIONS ----- ')
-    print(model.exchanges.list_attr('bounds'))
-    print(model.reactions.query('[A-Z]+t').list_attr('bounds'))
+    print('first 10 exchange reactions: \n' + str(model.exchanges.list_attr('bounds')[0:9]))
+    print('first 10 metabolic reactions: \n' + str(model.reactions.query('[A-Z]+t').list_attr('bounds')[0:9]))
     
     # return imported model
     return model
@@ -75,7 +78,7 @@ def import_model(path):
 # TESTING FOR ENERGY GENERATING CYCLES ---------------------------------
 #
 # Energy generating cycles can generate ATP, NADPH or other energy/reducant 
-# 'currency' of the cell out of thin air (see Fritzemeier et a., PLOS Comp Bio, 2017). 
+# 'currency' of the cell out of thin air (see Fritzemeier et al., PLOS Comp Bio, 2017). 
 # Such cycles represent factual errors of the model, and they 
 # can occur when reactions are not correctly mass or charge balanced. 
 # For example, one reaction converts a metabolite into another and a
@@ -102,7 +105,7 @@ def test_EGC(model):
     model.reactions.FADH2_diss.build_reaction_from_string('fadh2_c --> fad_c + 2.0 h_c')
     model.reactions.UQ_diss.build_reaction_from_string('uqh2_c --> uq_c + 2.0 h_c')
     model.reactions.ACCOA_diss.build_reaction_from_string('accoa_c  + h2o_c --> ac_c + coa_c + h_c')
-    model.reactions.GLU_diss.build_reaction_from_string('glu_c  + h2o_c --> akg_c + nh4_c + 2.0 h_c')
+    model.reactions.GLU_diss.build_reaction_from_string('glu__L_c  + h2o_c --> akg_c + nh4_c + 2.0 h_c')
     model.reactions.PRO_diss.build_reaction_from_string('h_e --> h_c')
     
     
@@ -128,6 +131,7 @@ def test_EGC(model):
 
 def modify_reactions(model):
     
+    print('...modifying reactions')
     # There's an artificial NADH generating cycle around the metabolite
     # 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
     # P5CD4 --> PROD4/P5CD5 --> PTO4H --> P5CD4
@@ -231,7 +235,247 @@ def modify_reactions(model):
     model.reactions.CBBCYC.bounds = (0.0, 0.0)
 
 
-# TESTING GROWTH WITH FBA ------------------------------------------
+# ADDING ANNOTATIONS FROM BIGG -----------------------------------------
+# 
+# helper function to convert Bigg keys to memote-compatible ones
+def change_keys(input_str):
+    if input_str == 'InChI Key': return 'inchikey'
+    elif input_str == 'RHEA': return 'rhea'
+    elif input_str == 'Reactome Compound': return 'reactome'
+    elif input_str == 'Reactome Reaction': return 'reactome'
+    elif input_str == 'CHEBI': return 'chebi'
+    elif input_str == 'SEED Compound': return 'seed.compound'
+    elif input_str == 'SEED Reaction': return 'seed.reaction'
+    elif input_str == 'Human Metabolome Database': return 'hmdb'
+    elif input_str == 'MetaNetX (MNX) Chemical': return 'metanetx.chemical'
+    elif input_str == 'MetaNetX (MNX) Equation': return 'metanetx.reaction'
+    elif input_str == 'KEGG Compound': return 'kegg.compound'
+    elif input_str == 'KEGG Reaction': return 'kegg.reaction'
+    elif input_str == 'BioCyc': return 'biocyc'
+    elif input_str == 'EC Number': return 'ec-code'
+    else: return input_str
+
+
+# we use cobrapy_bigg_client to retrieve annotation,
+# it was installed using: 'pip3 install cobrapy_bigg_client'
+def update_met_annotation(model):
+    
+    # fetch global list of metabolites from BiGG
+    all_met = client.list_metabolites()
+    
+    # create pairs of metabolite trivial name and id from ref
+    met_list = pd.DataFrame({
+        'id': all_met.list_attr("id"),
+        'name': all_met.list_attr("name")
+        })
+    
+    # update IDs from old to new standard
+    count_id = 0
+    for met in model.metabolites:
+        hit = met_list['name'] == met.name
+        if hit.any():
+            if sum(hit) != 1:
+                print('...metabolite matches more than one reference, taking 1st hit')
+            new_id = met_list.loc[hit, 'id'].to_list()[0]
+            new_id = new_id + '_' + met.compartment
+            if met.id != new_id:
+                print('...converted old id: ' + met.id + ' to new id: ' + new_id)
+                met.id = new_id
+                count_id = count_id + 1
+                # also update name of exchange reaction for respective 
+                # metabolite if one exists
+                ex_rea = 'EX_' + met.id
+                if ex_rea in model.reactions.list_attr('id'):
+                    model.reactions.get_by_id(ex_rea).id = 'EX_' + new_id
+    
+    # update annotation for metabolites
+    count_an = 0
+    for met in model.metabolites:
+        # remove compartment tag c,e, or p
+        search_id = re.sub("_[cep]$", "", met.id)
+        hit = met_list['id'] == search_id
+        if hit.any():
+            ref_met = client.get_metabolite(search_id)[0]
+            print('...updated metabolite annotation for ' + ref_met.id)
+            # copy selected annotation from reference
+            # trim annotation from links and nested lists
+            new_annot = ref_met.annotation['database_links']
+            new_annot = {change_keys(key): [i['id'] for i in new_annot[key]] for key in new_annot.keys()}
+            # add the bigg identifier itself also to annotation slot
+            new_annot['bigg.metabolite'] = ref_met.id
+            # add a prefix to reactome to match standard regex pattern
+            if 'reactome' in new_annot.keys():
+                new_annot['reactome'] = ['R-ALL-' + i for i in new_annot['reactome']]
+            met.annotation = new_annot
+            met.charge = ref_met.charge
+            met.formula = ref_met.formula
+            met.notes = ref_met.notes
+            count_an = count_an + 1
+    
+    # final reporting
+    print(' ----- SUMMARY OF METABOLITE CHANGES ----- ')
+    print('updated metabolite IDs: ' + str(count_id))
+    print('updated metabolite annotation: ' + str(count_an))
+
+
+def update_rea_annotation(model):
+    
+    # fetch global list of reactions from BiGG
+    all_rea = client.list_reactions()
+    
+    # create pairs of reaction trivial name and id from ref
+    rea_list = pd.DataFrame({
+        'id': all_rea.list_attr("id"),
+        'name': all_rea.list_attr("name")
+        })
+    
+    # update annotation for reactions
+    count_id = 0
+    count_re = 0
+    for rea in model.reactions:
+        hit_id = rea_list['id'] == rea.id
+        hit_name = rea_list['name'] == rea.name
+        if hit_id.any():
+            ref_rea = client.get_reaction(rea.id)
+        elif hit_name.any():
+            new_id = rea_list.loc[hit_name, 'id'].to_list()[0]
+            ref_rea = client.get_reaction(new_id)
+            # update IDs from old to new standard
+            # if A) the new ID doesnt exist yet and B) the reaction name
+            # is unique, otherwise more than 1 reaction will get same ID
+            cond1 = new_id not in model.reactions.list_attr("id")
+            cond2 = sum([rea.name == i  for i in model.reactions.list_attr("name")]) == 1
+            if cond1 & cond2:
+                rea.id = new_id
+                count_id = count_id +1
+        else:
+            ref_rea = False
+        if ref_rea:
+            print('...updated reaction annotation for ' + rea.id)
+            # copy selected annotation from reference
+            # trim annotation from links and nested lists
+            new_annot = ref_rea.annotation['database_links']
+            new_annot = {change_keys(key): [i['id'] for i in new_annot[key]] for key in new_annot.keys()}
+            new_annot['bigg.reaction'] = ref_rea.id
+            rea.annotation = new_annot
+            count_re = count_re + 1
+    
+    # final reporting
+    print(' ----- SUMMARY OF REACTION CHANGES ----- ')
+    print('updated reaction IDs: ' + str(count_id))
+    print('updated reaction annotation: ' + str(count_re))
+
+
+# ADDING GENE ANNOTATIONS FROM UNIPROT ---------------------------------
+# 
+# for this purpose we use the very comprehensive bioservices
+# package for python that has connectivity to all possible databases
+def update_gene_annotation(model):
+    
+    # open client connection
+    uni = UniProt(verbose = False)
+    kegg = KEGG(verbose = False)
+    
+    # fetch uniprot annotation table for all genes as pandas df
+    gene_list = model.genes.list_attr("id")
+    print('...downloading annotation for ' + str(len(gene_list)) + ' genes from uniprot.org')
+    df = uni.get_df(gene_list, limit = len(gene_list))
+    print('...downloading annotation for ' + str(len(gene_list)) + ' genes from kegg.jp')
+    dict_ncbi = {e: kegg.parse(kegg.get("reh:" + str(e)))['DBLINKS']['NCBI-ProteinID'] for e in gene_list}
+    # remove entries that are not according to Reh standard
+    df = df[[len(i) == 6 for i in df['Entry']]]
+    
+    # some rows are merged entries for 2 KEGG IDs
+    # in this case we simply duplicate the rows and split entries
+    kegg_id = 'Gene names  (ordered locus )'
+    df_duplicated = list(filter(lambda x: len(str(x)) > 9, df[kegg_id]))
+    df_duplicated = list(set(df_duplicated))
+    print('...splitting duplicated entries: ' + str(df_duplicated))
+    # duplicate rows for entries if necessary and split IDs
+    # this currently works only if 2 IDs are merged, not more
+    for i in df_duplicated:
+        if sum(df[kegg_id] == i) == 1:
+            df = df.append(df[(df[kegg_id] == i)])
+        df.loc[df[kegg_id] == i, kegg_id] = re.split(" ", i)
+    
+    # replace NaN values with empty strings
+    df.fillna('', inplace = True)
+    
+    # loop through all genes and add annotation
+    for index, row in df.iterrows():
+        
+        # construct new dict with SBML conformity
+        new_annot = {
+            'uniprot': row['Entry'],
+            'kegg.genes': 'reh:' + row['Gene names  (ordered locus )'],
+            'ncbiprotein': dict_ncbi[row['Gene names  (ordered locus )']],
+            'protein_name': row['Protein names'],
+            'gene_name': row['Gene names  (primary )'],
+            'length': row['Length'],
+            'mol_mass': row['Mass']
+            }
+        # assign new annotation to each gene
+        gene = model.genes.get_by_id(row['Gene names  (ordered locus )'])
+        gene.annotation = new_annot
+    
+    # final reporting
+    print(' ----- SUMMARY OF GENE ANNOTATION ----- ')
+    print('updated annotation for genes/proteins: ' + str(len(df)))
+
+
+# ADDING SBO TERMS FOR METAB AND REACTIONS -----------------------------
+# 
+# SBO terms are a controlled vocabulary describing models or systems 
+# biology tools. They help to characterize all entities of a model
+# using well defined and fixed terms 
+def update_sbo_terms(model):
+    
+    # ---------- METABOLITES ----------
+    # add the same SBO term for 'simple chemical' for all metabolites
+    # as recommended by memote
+    for met in model.metabolites:
+        met.annotation['sbo'] = 'SBO:0000247'
+    print('...added SBO terms for ' + str(len(model.metabolites)) + ' metabolites')
+    
+    # ----------  REACTIONS  ----------
+    # add a more diverse set of SBO terms for all reactions,
+    # according to memote.io:
+    #   "SBO:0000176 represents the term 'biochemical reaction'. Every 
+    #   metabolic reaction that is not a transport or boundary reaction 
+    #   should be annotated with this."
+    #   "SBO:0000627 represents the term 'exchange reaction'. The Systems 
+    #   Biology Ontology defines an exchange reaction as follows: 'A 
+    #   modeling process to provide matter influx or efflux to a model'"
+    #   "'SBO:0000185' and 'SBO:0000655' represent the terms 
+    #   'translocation reaction' and 'transport reaction', respectively, 
+    #   in addition to their children"
+    for rea in model.reactions:
+        # SBO term for exchange/boundary reactions
+        if rea.boundary:
+            rea.annotation['sbo'] = ['SBO:0000627']
+        # SBO term for transport reactions
+        elif rea.compartments == {'e', 'c'}:
+            rea.annotation['sbo'] = ['SBO:0000655']
+        # SBO term for all other biochemical reactions
+        else: rea.annotation['sbo'] = ['SBO:0000176']
+    print('...added SBO terms for ' + str(len(model.reactions)) + ' reactions')
+    
+    # ----------    GENES    ----------
+    # add the SBO term "SBO:0000243" for 'gene' as recommended by memote
+    for gene in model.genes:
+        if 'sbo' in gene.annotation.keys():
+            if not 'SBO:0000243' in gene.annotation['sbo']:
+                gene.annotation['sbo'] = gene.annotation['sbo'] + ['SBO:0000243']
+        else: gene.annotation['sbo'] = ['SBO:0000243']
+    print('...added SBO terms for ' + str(len(model.genes)) + ' genes')
+    
+    # -------- BIOMASS REACTION -------
+    # add the SBO term "SBO:0000243" for the biomass reaction as recommended by memote
+    for biom in model.reactions.query('[Bb]iomass|BIOMASS'):
+        biom.annotation['sbo'].append('SBO:0000629')
+
+
+# TESTING GROWTH WITH FBA ----------------------------------------------
 #
 # run one simple FBA analysis with the model, simulating 
 # growth in fructose
@@ -285,12 +529,26 @@ def main():
     # test energy generating cycles again
     test_EGC(model.copy())
     
+    # update metabolite annotation from Bigg db
+    update_met_annotation(model)
+    
+    # update reaction annotation from Bigg db
+    update_rea_annotation(model)
+    
+    # update gene annotation from uniprot
+    update_gene_annotation(model)
+    
+    # update SBO annotation for met, react, genes
+    update_sbo_terms(model)
+    
     # test run with FBA
     test_FBA(model)
     
     # save modified model as SBML Level 3, version 1
     cobra.io.write_sbml_model(model, 'sbml/RehMBEL1391_sbml_L3V1.xml')
+    print('...model exported as SBML file')
     cobra.io.save_json_model(model, 'escher/RehMBEL1391_sbml_L3V1.json')
+    print('...model exported as JSON file')
 
 if __name__== '__main__' :
     main()
