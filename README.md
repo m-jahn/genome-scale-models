@@ -1,4 +1,7 @@
-# genome-scale-models
+---
+title: "genome-scale-models"
+author: "Michael Jahn"
+---
 
 Genome scale metabolic models in SBML format
 
@@ -8,36 +11,50 @@ Genome scale metabolic models in SBML format
 
 #### Models
 
-- **Model of _Ralstonia eutropha_** a.k.a. **_Cupriavidus necator_** H16. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
+**_Ralstonia eutropha_** a.k.a. **_Cupriavidus necator_** H16, genome scale metabolic model. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
 
 
-#### Changes from original models
+**Changes from original model**
 
-**_Ralstonia eutropha_** (Park *et al.*, 2011)
+The following changes correct errors, remove unnecessary reactions, or add new reactions. The original model, for example, showed flux through artificial energy generating cycles (see Fritzemeier _et al._, PLOS Comp Bio, 2017). After identification and removal of the following issues, no activity of such cycles was found anymore using FBA.
 
-- There's an artificial NADH generating cycle around the metabolite 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions, `P5CD4` --> `PROD4`/`P5CD5` --> `PTO4H` --> `P5CD4`. The cycle generates 2 NADH per turn. The NADH/NAD cofactor stoichiometry for reaction P5CD5/PROD4 was reversed and was corrected.
+- There's an artificial NADH generating cycle around the metabolite 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions, `P5CD4 --> PROD4`/`P5CD5 --> PTO4H --> P5CD4`. The cycle generates 2 NADH per turn. The NADH/NAD cofactor stoichiometry for reaction `P5CD5`/`PROD4` was reversed and was corrected.
 - Related to the problem with this reaction is that it is duplicated as `PROD4` (also same gene). The reaction was removed.
 - A reaction that seems to contain an error is `NADHDH`, an NADH dehydrogenase that converts UQ spontaneously to UQH2, a reaction that requires NADH canonically (see BiGG reaction: NADHDH). Cofactors were added.
 - The TCA cycle reaction succinyl-CoA-synthetase `SUCOAS` is importantly not set to 'reversible' as it's supposed to be, and therefore constrained to wrong direction regarding canonical flow of TCA. Constraints were changed to allow reversible flux.
-- The reaction `MICITL` is the last step of the methyl-citrate cycle, an alternative route through TCA from oaa + prop-coa --> succ + pyr. It carries artificially high flux, so flux of the final reaction was constrained.
-- `PYK` is allowed in the model to go in reverse direction (pyr + atp --> pep + adp) but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). Standard _E. coli_ models also exclude the reverse reaction.
+- The reaction `MICITL` is the last step of the methyl-citrate cycle, an alternative route through TCA from `oaa + propcoa --> succ + pyr`. It carries artificially high flux, so flux of the final reaction was constrained.
+- `PYK` is allowed in the model to go in reverse direction (`pyr + atp --> pep + adp`) but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). Standard _E. coli_ models also exclude the reverse reaction.
 - Several alternative reactions to `PYK` (`PYK1`, `PYK2`, `PYK3`) that carry most likely very little or no flux in _R. eutropha_, were silenced.
-- Pyruvate carboxylase `PYC` should only run in direction from pyr --> oaa, but not reverse (see E. coli reference models in BiGG).
+- Pyruvate carboxylase `PYC` should only run in direction from `pyr --> oaa`, but not reverse (see E. coli reference models in BiGG).
 - PEP carboxylase `PPC` has correct bounds but one H+ reactant too much. The reaction was corrected.
-- Two different metabolites, asp_c and aspsa_c, are labelled with the name of aspartate in the model and take part in different reactions. However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.
-- Some reactions (e.g. `CABPS`, carbamoylphosphate synthase) require hco3 instead of co2 as substrate for phophorylation. However, a co2 <=> hco3 equilibration reaction is missing (see BiGG reaction `HCO3E`). The reaction was added.
-- The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates fru --> f6p. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in _R. eutropha_. Therefore the PEP-PTS reaction
+- Two different metabolites, `asp_c` and `aspsa_c`, are labelled with the name of aspartate in the model and take part in different reactions. However `aspsa_c` is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.
+- Some reactions (e.g. `CABPS`, carbamoylphosphate synthase) require `hco3` instead of `co2` as substrate for phosphorylation. However, a `co2 <=> hco3` equilibration reaction is missing (see BiGG reaction `HCO3E`). The reaction was added.
+- The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates `fru --> f6p`. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in _R. eutropha_. Therefore the PEP-PTS reaction
 was silenced (more details, see Kaddor & Steinbuechel, 2011).
-- The original model only contains a lumped reaction for the CBB cycle. In order to include a working CBB cycle, two reactions need to be added, 1) Phosphoribulokinase `PRUK` (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing phosphorylation of Ribulose-5-phosphate: atp_c + rl5p_c --> adp_c + h_c + rb15bp_c. And 2) Ribulose-1,5-bisphosphate carboxylase `RBPC` (cbbS2, H16_B1394; cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427) catalyzing the addition of CO2: co2_c + h2o_c + rb15bp_c --> 2.0 h_c + 2.0 3pg_c. The metabolite Ribulose-1,5-bisphosphate was added and the orihinal reaction `CBBCYC` silenced.
+- The original model only contains a lumped reaction for the CBB cycle. In order to include a working CBB cycle, two reactions need to be added, 1) Phosphoribulokinase `PRUK` (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing phosphorylation of Ribulose-5-phosphate: `atp_c + rl5p_c --> adp_c + h_c + rb15bp_c`. And 2) Ribulose-1,5-bisphosphate carboxylase `RBPC` (cbbS2, H16_B1394; cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427) catalyzing the addition of CO2: `co2_c + h2o_c + rb15bp_c --> 2.0 h_c + 2.0 3pg_c`. The metabolite Ribulose-1,5-bisphosphate was added and the original reaction `CBBCYC` silenced.
+- The following incomplete gene annotations were removed or corrected: `ugpQ`, `H16_A2326gdpD`, `unknown`, `H16_A024`, `H16_A2911plsC1`, `plsC2`, `spontaneous`
+- IDs for 385 metabolites were updated using `cobrapy-bigg-client`
+- IDs for 220 reactions were updated using `cobrapy-bigg-client`
+- Annotation for 887 metabolites was added using `cobrapy-bigg-client`
+- Annotation for 535 reactions was added using `cobrapy-bigg-client`
+- Annotation for 1265 genes was added using `bioservices.uniprot` and `bioservices.kegg`
 
+**Memote score**
+
+The [Memote web service](https://memote.io/) was used to test the capabilities of the model and identify problems. A comparison was made between the original published model (`Memote_RehMBEL1391_sbml_L2V1`), and the upgraded version of the model with the changes listed above (`Memote_RehMBEL1391_sbml_L3V1`). The memote score **improved from 28% to 76%** owing to the addition of metadata, and correcting many errors. The reports for the original and improved model can be found [here](Memote_RehMBEL1391_sbml_L2V1.html) and [here](Memote_RehMBEL1391_sbml_L3V1.html).
+
+<img src="Ralstonia_eutropha/memote/memote_score_comparison.png" width="1000px" style="display: block; margin: auto;" />
 
 #### Repository structure
 
+- The `Ralstonia_eutropha` folder contains the following subfolders/files:
 - `sbml/` -- folder containing the SBML model files (`*.xml`)
 - `simulations/` -- folder with simulation results tables (`*.csv`)
 - `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
-- `upgrade_model.py` -- import original model and convert to most recent SBML standard. 
-   Add reactions and modify erroneous reactions. Test FBA with COBRApy
+- `memote` -- folder containing the latest memote reports as `*.html` documents
+- `upgrade_model.py` -- functions to import original model and convert to most recent SBML standard. 
+   Add reactions and modify erroneous reactions. Add [Bigg](http://bigg.ucsd.edu/) and [uniprot](https://www.uniprot.org/) annotation. 
+   Test FBA with COBRApy
 - `flux_analysis.py` -- wrapper functions for FBA and FVA with COBRApy
 - `test_simulations.py` -- script to run many simulations at once using COBRApy
 - `plot_simulations.R` -- R script to plot results from FBA, FVA, or other simulations
