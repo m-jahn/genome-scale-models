@@ -27,6 +27,8 @@ The following changes correct errors, remove unnecessary reactions, or add new r
 - Several alternative reactions to `PYK` (`PYK1`, `PYK2`, `PYK3`) that carry most likely very little or no flux in _R. eutropha_, were silenced.
 - Pyruvate carboxylase `PYC` should only run in direction from `pyr --> oaa`, but not reverse (see E. coli reference models in BiGG).
 - PEP carboxylase `PPC` has correct bounds but one H+ reactant too much. The reaction was corrected.
+- The biomass equation incorrectly contains pyridoxine as the required cofactor, but the canonical metaboliyte is pyridoxal-5-phosphate (pydx5p). Correcting this error prevents an infeasible cycle of reactions where the same enzyme (`H16_A2802`) shows different reaction directionalities for the same metabolites (only difference being phosphorylated or not).
+- Together with this error two reactions in pyridoxal phosphate metabolism (`PYR5OXX`, `PYR5OXM`) were set to irreversible, as they were taking part in an artificial O2 generating cycle, and are thermodynamically unlikely to go reverse.
 - Two different metabolites, `asp_c` and `aspsa_c`, are labelled with the name of aspartate in the model and take part in different reactions. However `aspsa_c` is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.
 - Some reactions (e.g. `CABPS`, carbamoylphosphate synthase) require `hco3` instead of `co2` as substrate for phosphorylation. However, a `co2 <=> hco3` equilibration reaction is missing (see BiGG reaction `HCO3E`). The reaction was added.
 - The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates `fru --> f6p`. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in _R. eutropha_. Therefore the PEP-PTS reaction
@@ -52,9 +54,7 @@ The [Memote web service](https://memote.io/) was used to test the capabilities o
 - `simulations/` -- folder with simulation results tables (`*.csv`)
 - `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
 - `memote` -- folder containing the latest memote reports as `*.html` documents
-- `upgrade_model.py` -- functions to import original model and convert to most recent SBML standard. 
-   Add reactions and modify erroneous reactions. Add [Bigg](http://bigg.ucsd.edu/) and [uniprot](https://www.uniprot.org/) annotation. 
-   Test FBA with COBRApy
+- `upgrade_model.py` -- functions to import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Add [Bigg](http://bigg.ucsd.edu/) and [uniprot](https://www.uniprot.org/) annotation. Test FBA with COBRApy
 - `flux_analysis.py` -- wrapper functions for FBA and FVA with COBRApy
 - `test_simulations.py` -- script to run many simulations at once using COBRApy
 - `plot_simulations.R` -- R script to plot results from FBA, FVA, or other simulations

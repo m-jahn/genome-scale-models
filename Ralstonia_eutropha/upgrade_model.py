@@ -131,7 +131,7 @@ def test_EGC(model):
 
 def modify_reactions(model):
     
-    print('...modifying reactions')
+    print('...modifying reactions:')
     # There's an artificial NADH generating cycle around the metabolite
     # 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
     # P5CD4 --> PROD4/P5CD5 --> PTO4H --> P5CD4
@@ -140,25 +140,30 @@ def modify_reactions(model):
     # the NADH/NAD are cofactor stoichiometry is reversed
     # (should be: h2o_c + nad_c + 4hglusa_c ⇌ 2.0 h_c + nadh_c + e4hglu_c)
     model.reactions.P5CD5.build_reaction_from_string('e4hglu_c + nadh_c + 2.0 h_c <=> 4hglusa_c + h2o_c + nad_c')
+    print('...corrected cofactor usage for reaction P5CD5')
     
     # Another problem with this reaction is, it is duplicated as PROD4 
     # (including the same gene annotation --> remove it)
     model.reactions.PROD4.delete()
+    print('...deleted duplicated reaction PROD4')
     
     # A reaction that seems to contain an error is NADHDH
     # a NADH dehydrogenase that converts UQ spontaneously to UQH2,
     # a reaction that requires NADH canonically (query BiGG reaction: NADHDH)
     model.reactions.NADHDH.build_reaction_from_string('3.0 h_c + nadh_c + uq_c --> nad_c + 2.0 h_e + uqh2_c')
+    print('...corrected cofactor usage for reaction NADHDH')
     
     # The TCA cycle reaction succinyl-CoA-synthetase SUCOAS is importantly not set to 'reversible'
     # as it's supposed to be, and therefore constrained to wrong direction
     # regarding canonical flow of TCA
     model.reactions.SUCOAS.bounds = (-1000.0, 1000.0)
+    print('...set reversibility for reaction SUCOAS')
     
     # The reaction MICITL is the last step of the methyl-citrate cycle, an
     # alternative route through TCA from oaa + prop-coa --> succ + pyr.
     # It carries artificially high flux, so flux of the final reaction was constrained.
     model.reactions.MICITL.bounds = (0.0, 0.0)
+    print('...silenced reaction MICITL, the last step of the methyl citrate cycle')
     
     # PYK is allowed in the model to go in reverse direction (pyr + atp --> pep + adp)
     # but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). 
@@ -169,19 +174,59 @@ def modify_reactions(model):
     model.reactions.PYK1.bounds = (0.0, 0.0)
     model.reactions.PYK2.bounds = (0.0, 0.0)
     model.reactions.PYK3.bounds = (0.0, 0.0)
+    print('...set irreversibility for reaction PYK')
     
     # Pyruvate carboxylase (PYC) should only run in direction 
     # from pyr --> oaa, but not reverse (see E. coli reference models in BiGG).
     model.reactions.PYC.bounds = (0.0, 1000.0)
+    print('...set irreversibility for reaction PYC')
+    
     # PEP carboxylase PPC has correct bounds but one H+ reactant too much.
     # The reaction was corrected.
     model.reactions.PPC.build_reaction_from_string('co2_c + h2o_c + pep_c --> h_c + oaa_c + pi_c')
+    print('...corrected products for reaction PPC')
+    
+    # The biomass equation incorrectly contains pyridoxine as the required
+    # cofactor, but the canonical metaboliyte is pyridoxal-5-phosphate (pydx5p)
+    # Correcting this error prevents an infeasible cycle of reactions
+    # where the same enzyme shows different reaction directionalities for
+    # the same metabolites (only difference being phosphorylated or not): 
+    # pdx5p --> pydx5p --> pyam5p ---|  (de-phosph. to pydam)
+    # pydxn <-- pydx   <-- pydam  <--|
+    # Removing pydxn from cofactors and adding pydx5p 
+    # (MW = 247.142 g/mol, 0.111 g/247.142 g/mol = 0.449 mmol/g)
+    model.reactions.Cofactors_and_vitamins.add_metabolites({
+        model.metabolites.pydx5p_c: -0.449})
+    model.reactions.Cofactors_and_vitamins.subtract_metabolites({
+        model.metabolites.pydxn_c: -0.656})
+    print('...corrected Cofactor reaction by replacing pyridoxine with pyridoxal-5-phophate')
+    
+    # Therefore correct two reactions in pyridoxal phosphate metabolism
+    # catalyzed by the same enzyme (H16_A2802). These reactions are
+    # the same for the phosphorylated variant of pyridoxal metabolites,
+    # pdx5p --> pydx5p <-- pyam5p.
+    # pyridoxamine oxidase should only run in forward direction 
+    # according to http://modelseed.org/biochem/reactions/rxn01252
+    # --> change name, id, and bounds
+    model.reactions.PYR5OXX.id = 'PYDXNO'
+    model.reactions.PYDXNO.name = 'Pyridoxine oxidase'
+    model.reactions.PYDXNO.bounds = (0.0, 1000.0)
+    print('...set irreversibility for reaction PYDXNO')
+    
+    # pyridoxal oxidase should only run in forward direction
+    # according to http://modelseed.org/biochem/reactions/rxn01251
+    # --> change name, id, and bounds
+    model.reactions.PYR5OXM.id = 'PYDXO_1'
+    model.reactions.PYDXO_1.name = 'Pyridoxamine:oxygen oxidoreductase (deaminating)'
+    model.reactions.PYDXO_1.bounds = (0.0, 1000.0)
+    print('...set irreversibility for reaction PYDXO_1')
     
     # Two different metabolites, asp_c and aspsa_c, are labelled with the 
     # name of aspartate in the model and take part in different reactions.
     # However aspsa_c is in reality L-Aspartate 4-semialdehyde (source: BiGG)
     # this was renamed in the model. The reactions are correct.
     model.metabolites.aspsa_c.name = 'L-Aspartate 4-semialdehyde'
+    print('...corrected name for aspsa_c to L-Aspartate 4-semialdehyde')
     
     # Some reactions (e.g. CABPS, carbamoylphosphate synthase) require hco3
     # instead of co2 as substrate for phophorylation. However, a co2 <=> hco3
@@ -193,6 +238,7 @@ def modify_reactions(model):
     HCO3E.upper_bound = 1000.0
     model.add_reactions([HCO3E])
     model.reactions.HCO3E.build_reaction_from_string('co2_c + h2o_c <=> h_c + hco3_c')
+    print('...added a HCO3 equilibration reaction')
     
     # The primary means of fructose uptake seems to be the ABC transporter
     # (ATP dependent import). A second ATP-dependent reaction, fructokinase, 
@@ -201,8 +247,11 @@ def modify_reactions(model):
     # phosphorylation exists in R. eutropha. Therefore the PEP-PTS reaction
     # was silenced (more details, see Kaddor & Steinbuechel, 2011).
     model.reactions.FRUpts2.bounds = (0.0, 0.0)
+    print('...inactivated FRUpts2 (fructose PEP-PTS) reaction')
+    
     # add gene-reaction-rules for fruABC
     model.reactions.FRUabc.gene_reaction_rule = '( H16_B1498 and H16_B1499 and H16_B1500 )'
+    print('...added gene association for fructose ABC transporter')
     
     # The original model only contains a lumped reaction for the CBB cycle.
     # In order to include a working CBB cycle, two reactions need to be added,
@@ -233,6 +282,7 @@ def modify_reactions(model):
     
     # silence original lumped reaction for CBB cycle
     model.reactions.CBBCYC.bounds = (0.0, 0.0)
+    print('...added PRUK and RBPC (Rubisco) reactions instead of lumped reaction')
 
 
 # ADDING ANNOTATIONS FROM BIGG -----------------------------------------
@@ -410,7 +460,6 @@ def update_gene_annotation(model):
             'kegg.genes': 'reh:' + row['Gene names  (ordered locus )'],
             'ncbiprotein': dict_ncbi[row['Gene names  (ordered locus )']],
             'protein_name': row['Protein names'],
-            'gene_name': row['Gene names  (primary )'],
             'length': row['Length'],
             'mol_mass': row['Mass']
             }
