@@ -2,9 +2,9 @@
 # +    IMPORT, MODIFICATION, AND TESTING OF RALSTONIA EUTROPHA GEM     +
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
-# Script to import and modify an SBML (systems biology markup
-# language) model which describea the metabolism of a bacterial cell.
-# This script performs the following basic steps
+# Functions to import and modify an SBML (systems biology markup
+# language) model which describes the metabolism of a bacterial cell.
+# Functions perform the following steps: 
 # 
 #  - import cobra and other required libraries
 #  - import an SBML model
@@ -26,9 +26,7 @@
 
 import numpy as np
 import pandas as pd
-import tabulate
 import cobra
-import cobra.test
 from cobrapy_bigg_client import client
 from bioservices.uniprot import UniProt
 from bioservices.kegg import KEGG
@@ -42,9 +40,6 @@ def import_model(path):
     
     # read model from given path
     model = cobra.io.read_sbml_model(path)
-    # alternatively load test model for comparison
-    #ecoli = cobra.test.create_test_model("textbook")
-    #salmonella = cobra.test.create_test_model()
     
     # summary of the imported model
     print(' ----- MODEL KEY NUMBERS ----- ')
@@ -131,22 +126,111 @@ def test_EGC(model):
 
 def modify_reactions(model):
     
-    print('...modifying reactions:')
+    # 1st STEP: remove duplicated reactions
+    # -------------------------------------
+    # update model IDs, names, and gene_reaction_rules the reaction that
+    # is kept from a pair of duplicates
+    model.reactions.TYRTA1.id = 'TYRTA'
+    model.reactions.TYRTA.gene_reaction_rule = model.reactions.TYRTA2.gene_reaction_rule
+    model.reactions.AMDS1.name = '2-Phenylacetamide Amidohydrolase'
+    model.reactions.BZACCOAT1.id = 'BZACCOAT'
+    model.reactions.BZACCOAT.gene_reaction_rule = (
+        model.reactions.BZACCOAT.gene_reaction_rule + ' or ' + 
+        model.reactions.BZACCOAT2.gene_reaction_rule)
+    model.reactions.get_by_id('4NPHP1').id = '4NPHPP'
+    model.reactions.get_by_id('4NPHPP').name = '4-Nitrophenylphosphate phosphatase'
+    model.reactions.get_by_id('4NPHPP').gene_reaction_rule = (
+        model.reactions.get_by_id('4NPHPP').gene_reaction_rule + ' or ' + 
+        model.reactions.get_by_id('4NPHP2').gene_reaction_rule)
+    model.reactions.BZACCOAT.gene_reaction_rule = (
+        model.reactions.HIBD.gene_reaction_rule + ' or ' + 
+        model.reactions.HACOAD3.gene_reaction_rule)
+    model.reactions.G1PTT1.id = 'G1PTT'
+    model.reactions.G1PTT.gene_reaction_rule = (
+        model.reactions.G1PTT.gene_reaction_rule + ' or ' + 
+        model.reactions.G1PTT2.gene_reaction_rule)
+    model.reactions.NITRR.id = 'NTRIR2x'
+    model.reactions.NTRIR2x.gene_reaction_rule = model.reactions.NITRT.gene_reaction_rule
+    model.reactions.SPMS1.id = 'SPMS'
+    model.reactions.P5CD2.name = 'L-Glutamate 5-semialdehyde dehydrogenase'
+    model.reactions.P5CD3.name = 'Trans-4-Hydroxy-L-proline dehydrogenase'
+    model.reactions.P5CD4.name = 'L-1-Pyrroline-3-hydroxy-5-carboxylate dehydrogenase'
+    model.reactions.NO3RUQ1.id = 'NO3R1'
+    model.reactions.UDPG4E.name = 'UDP-glucose 4-epimerase'
+    model.reactions.DADNK.id = 'DADK'
+    model.reactions.DADK.subtract_metabolites({'h_c': -1})
+    model.reactions.UMPK.gene_reaction_rule = (
+        model.reactions.UMPK.gene_reaction_rule + ' or ' + 
+        model.reactions.URIDK2.gene_reaction_rule)
+    model.reactions.SERD.id = 'SERD_L'
+    model.reactions.SERD_L.gene_reaction_rule = (
+        model.reactions.SERD_L.gene_reaction_rule + ' or ' + 
+        model.reactions.SERDHT1.gene_reaction_rule)
+    model.reactions.OAHSL2.id = 'AHSERL4'
+    model.reactions.AHSERL4.name = 'Cysteine synthase Thiosulfate'
+    model.reactions.AHSERL4.gene_reaction_rule = (
+        model.reactions.AHSERL4.gene_reaction_rule + ' or ' + 
+        model.reactions.CYSST3.gene_reaction_rule)
+    model.reactions.GLUDH1.id = 'GLUDy'
+    model.reactions.GLUDy.name = 'Glutamate dehydrogenase (NADP)'
+    model.reactions.GLUDy.gene_reaction_rule = (
+        model.reactions.GLUDy.gene_reaction_rule + ' or ' + 
+        model.reactions.GLUDH2.gene_reaction_rule)
+    model.reactions.GLUDH3.id = 'GLUDxi'
+    model.reactions.GLUDxi.name = 'Glutamate dehydrogenase (NAD)'
+    model.reactions.GLUDxi.gene_reaction_rule = (
+        model.reactions.GLUDxi.gene_reaction_rule + ' or ' + 
+        model.reactions.GLUDH4.gene_reaction_rule)
+    model.reactions.CYTTS6.id = 'SLCYSS'
+    model.reactions.SLCYSS.name = 'O-acetyl-L-serine sulfhydrylase'
+    model.reactions.SLCYSS.gene_reaction_rule = (
+        model.reactions.SLCYSS.gene_reaction_rule + ' or ' + 
+        model.reactions.CYSST2.gene_reaction_rule)
+    model.reactions.PPCSYN1.gene_reaction_rule = (
+        model.reactions.PPCSYN1.gene_reaction_rule + ' or ' + 
+        model.reactions.ACCSYN1.gene_reaction_rule)
+    model.reactions.PPCSYN2.gene_reaction_rule = (
+        model.reactions.PPCSYN2.gene_reaction_rule + ' or ' + 
+        model.reactions.ACCSYN2.gene_reaction_rule)
+    model.reactions.ASPOX1.id = 'ASPO1'
+    model.reactions.ASPO1.gene_reaction_rule = (
+        model.reactions.ASPO1.gene_reaction_rule + ' or ' + 
+        model.reactions.LAAO1.gene_reaction_rule)
+    model.reactions.ALHD3.id = 'ALDD19xr'
+    model.reactions.ACCOACB.id = 'ACCOAC'
+    model.reactions.ACCOAC.gene_reaction_rule = ('( ' +
+        model.reactions.ACCOAC.gene_reaction_rule + ' ) or ' + 
+        model.reactions.BITCB.gene_reaction_rule)
+    model.reactions.ASNN.gene_reaction_rule = (
+        model.reactions.ASNN.gene_reaction_rule + ' or ' + 
+        model.reactions.GLNAS.gene_reaction_rule)
+    
+    # remove all duplicated reactions
+    duplicated_reactions = (
+        ['TYRTA2', 'ASPAM5', 'AMDS4', 'BZACCOAT2', '4NPHP2', 'HACOAD3', 
+        'G1PTT2', 'NA1t2', 'NITRT', 'SPMS2', 'PROD3', 'PROD4', 'NO3RUQ2',
+        'UDPG4E2', 'ADNK2', 'URIDK2', 'SERDHT1', 'CYSST3', 'ASPAM6',
+        'GLUDH2', 'GLUDH4', 'CYSST2', 'ACFM4', 'ACCSYN1', 'ACCSYN2',
+        'LAAO1', 'PHEALDD', 'BITCB', 'GLNAS'])
+    
+    model.remove_reactions(duplicated_reactions)
+    for dupl in duplicated_reactions:
+        print('...removed duplicated reaction ' + dupl)
+    
+    
+    # 2nd STEP: correct known errors in reactions
+    # -------------------------------------
     # There's an artificial NADH generating cycle around the metabolite
     # 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
     # P5CD4 --> PROD4/P5CD5 --> PTO4H --> P5CD4
     # The cycle generates 2 NADH and 2 H+ per turn and carries high flux
     # According to this BiGG reaction: http://bigg.ucsd.edu/models/iIT341/reactions/4HGLSD,
     # the NADH/NAD are cofactor stoichiometry is reversed
-    # (should be: h2o_c + nad_c + 4hglusa_c ⇌ 2.0 h_c + nadh_c + e4hglu_c)
+    # (should be: h2o_c + nad_c + 4hglusa_c <-> 2.0 h_c + nadh_c + e4hglu_c)
     model.reactions.P5CD5.build_reaction_from_string('e4hglu_c + nadh_c + 2.0 h_c <=> 4hglusa_c + h2o_c + nad_c')
+    model.reactions.P5CD5.name = 'L-4-Hydroxyglutamate semialdehyde dehydrogenase'
     print('...corrected cofactor usage for reaction P5CD5')
-    
-    # Another problem with this reaction is, it is duplicated as PROD4 
-    # (including the same gene annotation --> remove it)
-    model.reactions.PROD4.delete()
-    print('...deleted duplicated reaction PROD4')
-    
+        
     # A reaction that seems to contain an error is NADHDH
     # a NADH dehydrogenase that converts UQ spontaneously to UQH2,
     # a reaction that requires NADH canonically (query BiGG reaction: NADHDH)
@@ -273,7 +357,7 @@ def modify_reactions(model):
     RBPC = cobra.Reaction('RBPC')
     RBPC.name = 'Ribulose-bisphosphate carboxylase'
     model.add_reactions([PRUK, RBPC])
-    model.reactions.PRUK.gene_reaction_rule = 'H16_B1389 or PHG421'
+    model.reactions.PRUK.gene_reaction_rule = '( H16_B1389 ) or ( PHG421 )'
     model.reactions.RBPC.gene_reaction_rule = '( H16_B1394 and H16_B1395 ) or ( PHG426 and PHG427 )'
     
     # define reactions from string
@@ -283,6 +367,11 @@ def modify_reactions(model):
     # silence original lumped reaction for CBB cycle
     model.reactions.CBBCYC.bounds = (0.0, 0.0)
     print('...added PRUK and RBPC (Rubisco) reactions instead of lumped reaction')
+    
+    # final reporting
+    print(' ----- SUMMARY OF MODIFIED REACTIONS ----- ')
+    print('removed duplicated reactions: ' + str(len(duplicated_reactions)))
+    print('corrected erroneous reactions: 15')
 
 
 # ADDING ANNOTATIONS FROM BIGG -----------------------------------------
@@ -383,6 +472,7 @@ def update_rea_annotation(model):
     count_id = 0
     count_re = 0
     for rea in model.reactions:
+        rea.name = rea.name.capitalize()
         hit_id = rea_list['id'] == rea.id
         hit_name = rea_list['name'] == rea.name
         if hit_id.any():
@@ -561,43 +651,3 @@ def test_FBA(model):
     # quick summary of FBA analysis
     print(model.summary())
 
-
-# EXECUTE FUNCTIONS ----------------------------------------------------
-
-def main():
-    
-    # import model
-    model = import_model(path = 'sbml/RehMBEL1391_sbml_L2V1.xml')
-    
-    # test energy generating cycles
-    test_EGC(model.copy())
-    
-    # modify reactions
-    modify_reactions(model)
-    
-    # test energy generating cycles again
-    test_EGC(model.copy())
-    
-    # update metabolite annotation from Bigg db
-    update_met_annotation(model)
-    
-    # update reaction annotation from Bigg db
-    update_rea_annotation(model)
-    
-    # update gene annotation from uniprot
-    update_gene_annotation(model)
-    
-    # update SBO annotation for met, react, genes
-    update_sbo_terms(model)
-    
-    # test run with FBA
-    test_FBA(model)
-    
-    # save modified model as SBML Level 3, version 1
-    cobra.io.write_sbml_model(model, 'sbml/RehMBEL1391_sbml_L3V1.xml')
-    print('...model exported as SBML file')
-    cobra.io.save_json_model(model, 'escher/RehMBEL1391_sbml_L3V1.json')
-    print('...model exported as JSON file')
-
-if __name__== '__main__' :
-    main()

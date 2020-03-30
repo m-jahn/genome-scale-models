@@ -35,10 +35,10 @@ The following changes correct errors, remove unnecessary reactions, or add new r
 was silenced (more details, see Kaddor & Steinbuechel, 2011).
 - The original model only contains a lumped reaction for the CBB cycle. In order to include a working CBB cycle, two reactions need to be added, 1) Phosphoribulokinase `PRUK` (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing phosphorylation of Ribulose-5-phosphate: `atp_c + rl5p_c --> adp_c + h_c + rb15bp_c`. And 2) Ribulose-1,5-bisphosphate carboxylase `RBPC` (cbbS2, H16_B1394; cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427) catalyzing the addition of CO2: `co2_c + h2o_c + rb15bp_c --> 2.0 h_c + 2.0 3pg_c`. The metabolite Ribulose-1,5-bisphosphate was added and the original reaction `CBBCYC` silenced.
 - The following incomplete gene annotations were removed or corrected: `ugpQ`, `H16_A2326gdpD`, `unknown`, `H16_A024`, `H16_A2911plsC1`, `plsC2`, `spontaneous`
-- IDs for 385 metabolites were updated using `cobrapy-bigg-client`
-- IDs for 220 reactions were updated using `cobrapy-bigg-client`
-- Annotation for 887 metabolites was added using `cobrapy-bigg-client`
-- Annotation for 535 reactions was added using `cobrapy-bigg-client`
+- IDs for 395 metabolites were updated using `cobrapy-bigg-client`
+- IDs for 268 reactions were updated using `cobrapy-bigg-client`
+- Annotation for 896 metabolites was added using `cobrapy-bigg-client`
+- Annotation for 732 reactions was added using `cobrapy-bigg-client`
 - Annotation for 1265 genes was added using `bioservices.uniprot` and `bioservices.kegg`
 
 **Memote score**
