@@ -218,8 +218,29 @@ def modify_reactions(model):
         print('...removed duplicated reaction ' + dupl)
     
     
-    # 2nd STEP: correct known errors in reactions
-    # -------------------------------------
+    # 2nd STEP: add names to unnamed reactions
+    # ----------------------------------------
+    # overiew about reactions
+    model_reactions = pd.DataFrame({
+        'id': model.reactions.list_attr('id'),
+        'name': model.reactions.list_attr('name'),
+        'reaction': model.reactions.list_attr('reaction'),
+        'gene': model.reactions.list_attr('gene_reaction_rule')
+        })
+    
+    count = 0
+    reactions_unnamed = model_reactions[model_reactions['name'] == '']['id'].to_list()
+    for rea_un in reactions_unnamed:
+        current_rea = model.reactions.get_by_id(rea_un)
+        if current_rea.compartments == {'c', 'e'}:
+            reactants = [len(i.name) for i in current_rea.reactants]
+            rea_name = current_rea.reactants[reactants.index(max(reactants))].name + ' transport'
+            current_rea.name = rea_name
+            count = count + 1
+    
+    
+    # 3rd STEP: correct known errors in reactions
+    # -------------------------------------------
     # There's an artificial NADH generating cycle around the metabolite
     # 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
     # P5CD4 --> PROD4/P5CD5 --> PTO4H --> P5CD4
@@ -371,6 +392,7 @@ def modify_reactions(model):
     # final reporting
     print(' ----- SUMMARY OF MODIFIED REACTIONS ----- ')
     print('removed duplicated reactions: ' + str(len(duplicated_reactions)))
+    print('added names to reactions: ' + str(count))
     print('corrected erroneous reactions: 15')
 
 
