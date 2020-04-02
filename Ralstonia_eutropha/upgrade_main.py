@@ -35,10 +35,10 @@ def main():
     um.test_EGC(model.copy())
     
     # update metabolite annotation from Bigg db
-    um.update_met_annotation(model)
+    um.update_bigg_annotation(model, item_type = 'metabolite')
     
     # update reaction annotation from Bigg db
-    um.update_rea_annotation(model)
+    um.update_bigg_annotation(model, item_type = 'reaction')
     
     # update gene annotation from uniprot
     um.update_gene_annotation(model)

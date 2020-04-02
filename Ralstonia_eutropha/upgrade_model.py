@@ -27,11 +27,12 @@
 import numpy as np
 import pandas as pd
 import cobra
+import csv
+import re
 from cobrapy_bigg_client import client
 from bioservices.uniprot import UniProt
 from bioservices.kegg import KEGG
-import csv
-import re
+from os import path
 
 
 # IMPORT SBML MODEL ----------------------------------------------------
@@ -417,115 +418,166 @@ def change_keys(input_str):
     else: return input_str
 
 
-# we use cobrapy_bigg_client to retrieve annotation,
-# it was installed using: 'pip3 install cobrapy_bigg_client'
-def update_met_annotation(model):
+# helper function to rename reactome IDs
+def change_reactome_ID(id):
+    if re.match('R-[A-Z]{3}-', id) == None:
+        id = 'R-ALL-' + id
+    return(id)
+
+
+# function to 1) import existing Bigg annotation, and 2) add missing 
+# annotation from bigg for a list of metabolites or reactions, 
+# and 3) return items in a cobrapy model
+def get_bigg_annotation(
+    ref_path = 'data/reaction_reference.json',
+    item_list = [],
+    item_type = 'reaction'):
     
-    # fetch global list of metabolites from BiGG
-    all_met = client.list_metabolites()
+    
+    # construct generic reference names based on input params
+    ref_name = item_type + '_reference'
+    
+    # check if already an annotation file exists
+    # if yes load, if no, create new one
+    if path.exists(ref_path):
+        reference = cobra.io.load_json_model(ref_path)
+    else:
+        reference = cobra.Model(ref_name)
+    
+    # determine which items are missing in reference
+    ref_list = getattr(reference, item_type + 's').list_attr('id')
+    item_list = [i for i in item_list if i not in ref_list]
+    
+    
+    # download annotation for unannotated metabolites/reactions
+    # and add to reference 'model'
+    if len(item_list):
+        
+        for item in item_list:
+            
+            # download annotation from Bigg
+            if item_type == 'reaction':
+                ref_item = client.get_reaction(item)
+            else: 
+                ref_item = client.get_metabolite(item)[0]
+            
+            # process annotation
+            new_annot = ref_item.annotation['database_links']
+            new_annot = {change_keys(key): [i['id'] for i in new_annot[key]] for key in new_annot.keys()}
+            # add the bigg identifier itself also to annotation slot
+            new_annot['bigg.' + item_type] = ref_item.id
+            # add a prefix to reactome to match standard regex pattern
+            if 'reactome' in new_annot.keys():
+                new_annot['reactome'] = [change_reactome_ID(i) for i in new_annot['reactome']]
+            ref_item.annotation = new_annot
+            getattr(reference, item_type + 's').add(ref_item)
+            if item_type == 'reaction':
+                reference.add_metabolites(ref_item.metabolites)
+            reference.name = ref_name
+            print('...downloaded annotation for ' + item_type + ': ' + ref_item.id)
+        
+        # export reference with added items as json file
+        cobra.io.save_json_model(reference, ref_path)
+        print('...exported file "' + ref_path + '" with ' + str(len(item_list)) + ' new ' + item_type + 's')
+    
+    return(reference)
+
+
+# function to update metabolites or reactions with annotation
+# obtained from Bigg
+def update_bigg_annotation(
+    model,
+    item_type = 'reaction'):
+    
+    # fetch global list of items from BiGG
+    if item_type == 'reaction':
+        bigg = client.list_reactions()
+    else:
+        bigg = client.list_metabolites()
     
     # create pairs of metabolite trivial name and id from ref
-    met_list = pd.DataFrame({
-        'id': all_met.list_attr("id"),
-        'name': all_met.list_attr("name")
+    bigg = pd.DataFrame({
+        'id': bigg.list_attr("id"),
+        'name': bigg.list_attr("name")
         })
     
     # update IDs from old to new standard
     count_id = 0
-    for met in model.metabolites:
-        hit = met_list['name'] == met.name
+    model_item_type = getattr(model, item_type + 's')
+    for item in model_item_type:
+        
+        # capitalize first letter for reaction names
+        if item_type == 'reaction':
+            item.name = item.name[0:1].capitalize() + item.name[1:]
+        hit = bigg['name'] == item.name
         if hit.any():
-            if sum(hit) != 1:
-                print('...metabolite matches more than one reference, taking 1st hit')
-            new_id = met_list.loc[hit, 'id'].to_list()[0]
-            new_id = new_id + '_' + met.compartment
-            if met.id != new_id:
-                print('...converted old id: ' + met.id + ' to new id: ' + new_id)
-                met.id = new_id
+            if (sum(hit) != 1) and (item_type == 'metabolite'):
+                print('...' + item_type + ' matches more than one reference, taking 1st hit')
+            new_id = bigg.loc[hit, 'id'].to_list()[0]
+            if item_type == 'metabolite':
+                new_id = new_id + '_' + item.compartment
+            # if A) new ID is not the old ID and 
+            #    B) the new ID doesnt exist yet and 
+            #    C) the item name is unique, otherwise more than 1 item will get same ID
+            cond = new_id not in model_item_type.list_attr("id")
+            #cond2 = sum([item.name == i  for i in model_item_type.list_attr("name")]) == 1
+            #if (item.id != new_id) and cond1 and not cond2:
+            #    print(item.id + ' | ' + new_id + ' | ' + item.name)
+            #    print(sum([item.name == i  for i in model_item_type.list_attr("name")]))
+            if (item.id != new_id) and cond:
+                print('...converted old id: ' + item.id + ' to new id: ' + new_id)
+                item.id = new_id
                 count_id = count_id + 1
                 # also update name of exchange reaction for respective 
                 # metabolite if one exists
-                ex_rea = 'EX_' + met.id
-                if ex_rea in model.reactions.list_attr('id'):
-                    model.reactions.get_by_id(ex_rea).id = 'EX_' + new_id
+                if item_type == 'metabolite':
+                    ex_rea = 'EX_' + item.id
+                    if ex_rea in model.reactions.list_attr('id'):
+                        model.reactions.get_by_id(ex_rea).id = 'EX_' + new_id
     
-    # update annotation for metabolites
+        
+    # determine which metabolites are available in bigg
+    if item_type == 'reaction':
+        model_items = model.reactions.list_attr('id')
+    else:
+        model_items = [re.sub("_[cep]$", "", i) for i in model.metabolites.list_attr('id')]
+    
+    # determine intersection between model and bigg and remove duplicates
+    bigg_available = [i for i in model_items if i in bigg['id'].to_list()]
+    bigg_available = list(set(bigg_available))
+    
+        
+    # import existing Bigg annotation from /data,
+    # optionally downloading missing items from Bigg db
+    reference = get_bigg_annotation(
+        ref_path = 'data/' + item_type + '_reference.json',
+        item_list = bigg_available, 
+        item_type = item_type)
+    
+    
+    # update annotation for metabolites/reactions
     count_an = 0
-    for met in model.metabolites:
-        # remove compartment tag c,e, or p
-        search_id = re.sub("_[cep]$", "", met.id)
-        hit = met_list['id'] == search_id
-        if hit.any():
-            ref_met = client.get_metabolite(search_id)[0]
-            print('...updated metabolite annotation for ' + ref_met.id)
-            # copy selected annotation from reference
-            # trim annotation from links and nested lists
-            new_annot = ref_met.annotation['database_links']
-            new_annot = {change_keys(key): [i['id'] for i in new_annot[key]] for key in new_annot.keys()}
-            # add the bigg identifier itself also to annotation slot
-            new_annot['bigg.metabolite'] = ref_met.id
-            # add a prefix to reactome to match standard regex pattern
-            if 'reactome' in new_annot.keys():
-                new_annot['reactome'] = ['R-ALL-' + i for i in new_annot['reactome']]
-            met.annotation = new_annot
-            met.charge = ref_met.charge
-            met.formula = ref_met.formula
-            met.notes = ref_met.notes
+    for item in model_item_type:
+        # remove compartment tag c, e, or p for metabolites
+        if item_type == 'metabolite':
+            search_id = re.sub("_[cep]$", "", item.id)
+        else: 
+            search_id = item.id
+        if search_id in bigg_available:
+            ref_item = getattr(reference, item_type + 's').get_by_id(search_id)
+            item.annotation = ref_item.annotation
+            if item_type == 'metabolite':
+                item.charge = ref_item.charge
+                item.formula = ref_item.formula
+                item.notes = ref_item.notes
             count_an = count_an + 1
+            print('...updated ' + item_type + 'annotation for ' + item.id)
+    
     
     # final reporting
-    print(' ----- SUMMARY OF METABOLITE CHANGES ----- ')
-    print('updated metabolite IDs: ' + str(count_id))
-    print('updated metabolite annotation: ' + str(count_an))
-
-
-def update_rea_annotation(model):
-    
-    # fetch global list of reactions from BiGG
-    all_rea = client.list_reactions()
-    
-    # create pairs of reaction trivial name and id from ref
-    rea_list = pd.DataFrame({
-        'id': all_rea.list_attr("id"),
-        'name': all_rea.list_attr("name")
-        })
-    
-    # update annotation for reactions
-    count_id = 0
-    count_re = 0
-    for rea in model.reactions:
-        rea.name = rea.name.capitalize()
-        hit_id = rea_list['id'] == rea.id
-        hit_name = rea_list['name'] == rea.name
-        if hit_id.any():
-            ref_rea = client.get_reaction(rea.id)
-        elif hit_name.any():
-            new_id = rea_list.loc[hit_name, 'id'].to_list()[0]
-            ref_rea = client.get_reaction(new_id)
-            # update IDs from old to new standard
-            # if A) the new ID doesnt exist yet and B) the reaction name
-            # is unique, otherwise more than 1 reaction will get same ID
-            cond1 = new_id not in model.reactions.list_attr("id")
-            cond2 = sum([rea.name == i  for i in model.reactions.list_attr("name")]) == 1
-            if cond1 & cond2:
-                rea.id = new_id
-                count_id = count_id +1
-        else:
-            ref_rea = False
-        if ref_rea:
-            print('...updated reaction annotation for ' + rea.id)
-            # copy selected annotation from reference
-            # trim annotation from links and nested lists
-            new_annot = ref_rea.annotation['database_links']
-            new_annot = {change_keys(key): [i['id'] for i in new_annot[key]] for key in new_annot.keys()}
-            new_annot['bigg.reaction'] = ref_rea.id
-            rea.annotation = new_annot
-            count_re = count_re + 1
-    
-    # final reporting
-    print(' ----- SUMMARY OF REACTION CHANGES ----- ')
-    print('updated reaction IDs: ' + str(count_id))
-    print('updated reaction annotation: ' + str(count_re))
+    print(' ----- SUMMARY OF ' + item_type.upper() + ' CHANGES ----- ')
+    print('updated ' + item_type + ' IDs: ' + str(count_id))
+    print('updated ' + item_type + ' annotation: ' + str(count_an))
 
 
 # ADDING GENE ANNOTATIONS FROM UNIPROT ---------------------------------
