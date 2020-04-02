@@ -586,36 +586,78 @@ def update_bigg_annotation(
 # 
 # for this purpose we use the very comprehensive bioservices
 # package for python that has connectivity to all possible databases
-def update_gene_annotation(model):
+def get_gene_annotation(
+    ref_path = 'data/gene_reference.json',
+    item_list = [],
+    item_type = 'gene'):
     
     # open client connection
     uni = UniProt(verbose = False)
     kegg = KEGG(verbose = False)
     
-    # fetch uniprot annotation table for all genes as pandas df
-    gene_list = model.genes.list_attr("id")
-    print('...downloading annotation for ' + str(len(gene_list)) + ' genes from uniprot.org')
-    df = uni.get_df(gene_list, limit = len(gene_list))
-    print('...downloading annotation for ' + str(len(gene_list)) + ' genes from kegg.jp')
-    dict_ncbi = {e: kegg.parse(kegg.get("reh:" + str(e)))['DBLINKS']['NCBI-ProteinID'] for e in gene_list}
-    # remove entries that are not according to Reh standard
-    df = df[[len(i) == 6 for i in df['Entry']]]
-    
-    # some rows are merged entries for 2 KEGG IDs
-    # in this case we simply duplicate the rows and split entries
+    # construct generic reference names based on input params
+    ref_name = item_type + '_reference'
     kegg_id = 'Gene names  (ordered locus )'
-    df_duplicated = list(filter(lambda x: len(str(x)) > 9, df[kegg_id]))
-    df_duplicated = list(set(df_duplicated))
-    print('...splitting duplicated entries: ' + str(df_duplicated))
-    # duplicate rows for entries if necessary and split IDs
-    # this currently works only if 2 IDs are merged, not more
-    for i in df_duplicated:
-        if sum(df[kegg_id] == i) == 1:
-            df = df.append(df[(df[kegg_id] == i)])
-        df.loc[df[kegg_id] == i, kegg_id] = re.split(" ", i)
     
-    # replace NaN values with empty strings
-    df.fillna('', inplace = True)
+    # check if already an annotation file exists
+    # if yes load, if no, create new one
+    if path.exists(ref_path):
+        reference = pd.read_json(ref_path)
+        
+        # determine which items are missing in reference
+        ref_list = reference[kegg_id].to_list()
+        item_list = [i for i in item_list if i not in ref_list]
+    
+    # download annotation for unannotated genes
+    # and add to reference dataframe
+    if len(item_list):
+        
+        # fetch uniprot annotation table for all genes as pandas df
+        print('...downloading annotation for ' + str(len(item_list)) + ' genes from uniprot.org')
+        df = uni.get_df(item_list, limit = len(item_list))
+        print('...downloading annotation for ' + str(len(item_list)) + ' genes from kegg.jp')
+        dict_ncbi = {e: kegg.parse(kegg.get("reh:" + str(e)))['DBLINKS']['NCBI-ProteinID'] for e in item_list}
+        # remove entries that are not according to Reh standard
+        df = df[[len(i) == 6 for i in df['Entry']]]
+        
+        # some rows are merged entries for 2 KEGG IDs
+        # in this case we simply duplicate the rows and split entries
+        df_duplicated = list(filter(lambda x: len(str(x)) > 9, df[kegg_id]))
+        df_duplicated = list(set(df_duplicated))
+        print('...splitting duplicated entries: ' + str(df_duplicated))
+        # duplicate rows for entries if necessary and split IDs
+        # this currently works only if 2 IDs are merged, not more
+        for i in df_duplicated:
+            if sum(df[kegg_id] == i) == 1:
+                df = df.append(df[(df[kegg_id] == i)])
+            df.loc[df[kegg_id] == i, kegg_id] = re.split(" ", i)
+        
+        # replace NaN values with empty strings
+        df.fillna('', inplace = True)
+        
+        # merge processed uniprot and kegg data
+        df['ncbiprotein'] = [dict_ncbi[i] for i in df[kegg_id].to_list()]
+        
+        # merge newly downloaded refs with existing refs
+        if path.exists(ref_path):
+            reference = pd.concat([reference, df], ignore_index = True)
+        else:
+            reference = df
+            
+        # export reference with added items as json file
+        reference.to_json(ref_path)
+        print('...exported file "' + ref_path + '" with ' + str(len(item_list)) + ' new ' + item_type + 's')
+    
+    return(reference)
+
+
+def update_gene_annotation(model):
+    
+    
+    df = get_gene_annotation(
+        ref_path = 'data/gene_reference.json',
+        item_list = model.genes.list_attr("id"),
+        item_type = 'gene')
     
     # loop through all genes and add annotation
     for index, row in df.iterrows():
@@ -624,7 +666,7 @@ def update_gene_annotation(model):
         new_annot = {
             'uniprot': row['Entry'],
             'kegg.genes': 'reh:' + row['Gene names  (ordered locus )'],
-            'ncbiprotein': dict_ncbi[row['Gene names  (ordered locus )']],
+            'ncbiprotein': row['ncbiprotein'],
             'protein_name': row['Protein names'],
             'length': row['Length'],
             'mol_mass': row['Mass']
