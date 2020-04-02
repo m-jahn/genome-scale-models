@@ -511,19 +511,21 @@ def update_bigg_annotation(
             item.name = item.name[0:1].capitalize() + item.name[1:]
         hit = bigg['name'] == item.name
         if hit.any():
-            if (sum(hit) != 1) and (item_type == 'metabolite'):
-                print('...' + item_type + ' matches more than one reference, taking 1st hit')
-            new_id = bigg.loc[hit, 'id'].to_list()[0]
+            # list of possible new ID
+            new_id_list = bigg.loc[hit, 'id'].to_list()
+            # if the old ID is present, don't change anything
+            # if not, choose a new ID, and here prefer the shortest/
+            # most concise one
+            if item.id in new_id_list:
+                new_id = item.id
+            else:
+                new_id_length = [len(i) for i in new_id_list]
+                new_id = new_id_list[new_id_length.index(min(new_id_length))]
             if item_type == 'metabolite':
                 new_id = new_id + '_' + item.compartment
-            # if A) new ID is not the old ID and 
-            #    B) the new ID doesnt exist yet and 
-            #    C) the item name is unique, otherwise more than 1 item will get same ID
+            # proceed if A) new ID is not the old ID and 
+            #            B) the new ID doesnt exist yet
             cond = new_id not in model_item_type.list_attr("id")
-            #cond2 = sum([item.name == i  for i in model_item_type.list_attr("name")]) == 1
-            #if (item.id != new_id) and cond1 and not cond2:
-            #    print(item.id + ' | ' + new_id + ' | ' + item.name)
-            #    print(sum([item.name == i  for i in model_item_type.list_attr("name")]))
             if (item.id != new_id) and cond:
                 print('...converted old id: ' + item.id + ' to new id: ' + new_id)
                 item.id = new_id
@@ -571,7 +573,7 @@ def update_bigg_annotation(
                 item.formula = ref_item.formula
                 item.notes = ref_item.notes
             count_an = count_an + 1
-            print('...updated ' + item_type + 'annotation for ' + item.id)
+            print('...updated ' + item_type + ' annotation for ' + item.id)
     
     
     # final reporting
