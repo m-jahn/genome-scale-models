@@ -1,7 +1,4 @@
----
-title: "genome-scale-models"
-author: "Michael Jahn"
----
+# genome-scale-models
 
 Genome scale metabolic models in SBML format
 
@@ -34,12 +31,14 @@ The following changes correct errors, remove unnecessary reactions, or add new r
 - The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates `fru --> f6p`. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in _R. eutropha_. Therefore the PEP-PTS reaction
 was silenced (more details, see Kaddor & Steinbuechel, 2011).
 - The original model only contains a lumped reaction for the CBB cycle. In order to include a working CBB cycle, two reactions need to be added, 1) Phosphoribulokinase `PRUK` (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing phosphorylation of Ribulose-5-phosphate: `atp_c + rl5p_c --> adp_c + h_c + rb15bp_c`. And 2) Ribulose-1,5-bisphosphate carboxylase `RBPC` (cbbS2, H16_B1394; cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427) catalyzing the addition of CO2: `co2_c + h2o_c + rb15bp_c --> 2.0 h_c + 2.0 3pg_c`. The metabolite Ribulose-1,5-bisphosphate was added and the original reaction `CBBCYC` silenced.
-- The following incomplete gene annotations were removed or corrected: `ugpQ`, `H16_A2326gdpD`, `unknown`, `H16_A024`, `H16_A2911plsC1`, `plsC2`, `spontaneous`
 - IDs for 395 metabolites were updated using `cobrapy-bigg-client`
-- IDs for 268 reactions were updated using `cobrapy-bigg-client`
+- IDs for 461 reactions were updated using `cobrapy-bigg-client`
 - Annotation for 896 metabolites was added using `cobrapy-bigg-client`
-- Annotation for 732 reactions was added using `cobrapy-bigg-client`
+- Annotation for 771 reactions was added using `cobrapy-bigg-client`
 - Annotation for 1265 genes was added using `bioservices.uniprot` and `bioservices.kegg`
+- Names were added for 53 reactions
+- 29 duplicated reactions were removed
+- 7 incomplete gene annotations were removed or corrected (`ugpQ`, `H16_A2326gdpD`, `unknown`, `H16_A024`, `H16_A2911plsC1`, `plsC2`, `spontaneous`)
 
 **Memote score**
 
@@ -49,12 +48,18 @@ The [Memote web service](https://memote.io/) was used to test the capabilities o
 
 #### Repository structure
 
-- The `Ralstonia_eutropha` folder contains the following subfolders/files:
-- `sbml/` -- folder containing the SBML model files (`*.xml`)
-- `simulations/` -- folder with simulation results tables (`*.csv`)
+The `Ralstonia_eutropha` folder contains the following **folders**:
+
+- `data/` -- folder containing the reference 'model' files with Bigg annotation (`*.json`)
 - `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
 - `memote` -- folder containing the latest memote reports as `*.html` documents
+- `sbml/` -- folder containing the SBML model files (`*.xml`)
+- `simulations/` -- folder with simulation results tables (`*.csv`)
+
+The `Ralstonia_eutropha` folder contains the following **scripts**:
+
 - `upgrade_model.py` -- functions to import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Add [Bigg](http://bigg.ucsd.edu/) and [uniprot](https://www.uniprot.org/) annotation. Test FBA with COBRApy
+- `upgrade_main.py` -- main script for execution of model upgrade
 - `flux_analysis.py` -- wrapper functions for FBA and FVA with COBRApy
 - `test_simulations.py` -- script to run many simulations at once using COBRApy
 - `plot_simulations.R` -- R script to plot results from FBA, FVA, or other simulations
