@@ -239,6 +239,20 @@ def modify_reactions(model):
             current_rea.name = rea_name
             count = count + 1
     
+    # adjust names for important reactions in core metabolism manually
+    model.reactions.TRKT1.id = 'TKT1'
+    model.reactions.TRKT2.id = 'TKT2'
+    model.reactions.PTA.id = 'PTAr'
+    model.reactions.PTAr.name = 'Phosphotransacetylase'
+    model.reactions.SUCCD1.id = 'SUCDi'
+    model.reactions.SUCDi.name = 'Succinate dehydrogenase (irreversible)'
+    model.reactions.SUCCD2.id = 'SUCD4'
+    model.reactions.SUCCD3.id = 'SUCD1'
+    model.reactions.SUCD1.name = 'Succinate dehydrogenase'
+    model.reactions.SUCD1.subtract_metabolites({model.metabolites.h_c: -1})
+    model.metabolites.uq_c.name = 'Ubiquinone-8'
+    model.metabolites.uqh2_c.name = 'Ubiquinol-8'
+    
     
     # 3rd STEP: correct known errors in reactions
     # -------------------------------------------
