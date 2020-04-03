@@ -404,6 +404,7 @@ def modify_reactions(model):
     model.reactions.CBBCYC.bounds = (0.0, 0.0)
     print('...added PRUK and RBPC (Rubisco) reactions instead of lumped reaction')
     
+    
     # final reporting
     print(' ----- SUMMARY OF MODIFIED REACTIONS ----- ')
     print('removed duplicated reactions: ' + str(len(duplicated_reactions)))
@@ -667,7 +668,6 @@ def get_gene_annotation(
 
 def update_gene_annotation(model):
     
-    
     df = get_gene_annotation(
         ref_path = 'data/gene_reference.json',
         item_list = model.genes.list_attr("id"),
@@ -689,9 +689,44 @@ def update_gene_annotation(model):
         gene = model.genes.get_by_id(row['Gene names  (ordered locus )'])
         gene.annotation = new_annot
     
+    
+    # get previously downloaded genome annotation for R. eutropha
+    # (source: uniprot.org)
+    genome_db = pd.read_csv('data/genome_annotation.csv')
+    
+    # loop through all reactions, get EC number where available and
+    # add genes corresponding to EC number to reaction.genes
+    count_gene = 0
+    for rea in model.reactions:
+        if 'ec-code' in rea.annotation:
+            ec_code = rea.annotation['ec-code']
+            # only add gene association to reactions with unique EC number
+            # to avoid gene inflation
+            if len(ec_code) == 1:
+                ec_code = ec_code[0]
+                genes_db = genome_db[genome_db['EC_number'] == ec_code]['locus_tag'].to_list()
+                genes_db = list(set(genes_db))
+                genes_model = [re.sub('^G_', '', i.name) for i in rea.genes]
+                # determine which items are missing in model
+                genes_new = [i for i in genes_db if i not in genes_model]
+                if len(genes_new):
+                    if len(rea.gene_reaction_rule):
+                        sep = ' or '
+                    else:
+                        sep = ''
+                    rea.gene_reaction_rule = rea.gene_reaction_rule + sep + ' or '.join(genes_new)
+                    print('...added genes: ' + str(genes_new) + ' to reaction: ' + rea.id)
+                    count_gene = count_gene + 1
+    
+    # manual changes not present in uniprot (source: kegg)
+    model.reactions.GAPD.gene_reaction_rule = (
+        model.reactions.GAPD.gene_reaction_rule + ' or PHG418')
+    count_gene = count_gene + 1
+    
     # final reporting
     print(' ----- SUMMARY OF GENE ANNOTATION ----- ')
     print('updated annotation for genes/proteins: ' + str(len(df)))
+    print('added genes IDs to reactions: ' + str(count_gene))
 
 
 # ADDING SBO TERMS FOR METAB AND REACTIONS -----------------------------
