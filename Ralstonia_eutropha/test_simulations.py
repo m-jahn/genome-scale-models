@@ -19,7 +19,7 @@ import flux_analysis as mfa
 # wrap all code into main function
 def main():
     
-    # IMPORT SBML MODEL ----------------------------------------------------
+    # IMPORT SBML MODEL ------------------------------------------------
     
     model = cobra.io.read_sbml_model("sbml/RehMBEL1391_sbml_L3V1.xml")
     
@@ -28,7 +28,7 @@ def main():
     model.reactions.ICL.bounds = (0.0, 0.0)
     
     
-    # DEFINE ENVIRONMENT ---------------------------------------------------
+    # DEFINE ENVIRONMENT -----------------------------------------------
     
     # we define the medium as Ralstonia eutropha minimal medium with the
     # following core components.
@@ -36,8 +36,8 @@ def main():
     # in excess that can be used by the model.
     # Some components are particularly important:
     #  - the terminal e- acceptor, can be O2 or NO3, or other NO species
-    #  - the carbon source, we can test 
-    #  - the nitrogen source, mostly NH4
+    #  - the carbon source 
+    #  - the nitrogen source, in most cases NH4
     
     minimal_medium = {
         'EX_mg2_e': 10.0,
@@ -88,11 +88,11 @@ def main():
     
     
     # sets of reactions for important pathways
-    reactions_ED = ['PGI', 'G6PDH', 'PGL', 'EDD', 'EDA']
-    reactions_EMP = ['FBA', 'TPI', 'GA3PD', 'PGK', 'PGM', 'ENO']
-    reactions_CBB = ['TRKT1', 'TRKT2', 'TRADL', 'RPE', 'RPI', 'PRUK', 'RBPC']
-    reactions_pyr = ['PYK', 'PPC', 'PYC', 'PPCK', 'PDH1', 'PDH2', 'ME1', 'ME2']
-    reactions_TCA = ['CITS', 'ACONT1', 'ACONT2', 'ICITD', 'ICITDp', 'AKGDH', 'SUCOAS', 'SUCCD3', 'FUMR', 'MDH1']
+    reactions_ED = ['PGI', 'G6PDH2r', 'PGL', 'EDD', 'EDA']
+    reactions_EMP = ['FBA', 'TPI', 'GAPD', 'PGK', 'PGM', 'ENO']
+    reactions_CBB = ['TKT1', 'TKT2', 'TAh', 'RPE', 'RPI', 'PRUK', 'RBPC']
+    reactions_pyr = ['PYK', 'PPC', 'PC', 'PPCK', 'PDH1', 'PDH2', 'ME1', 'ME2']
+    reactions_TCA = ['CS', 'ACONT1', 'ACONT2', 'ICDHx', 'ICDHyr', 'AKGDH', 'SUCOAS', 'SUCD1', 'FUM', 'MDH']
     reactions_glx = ['ICL', 'MALS']
     reactions_FVA = (
         reactions_ED + reactions_EMP + 
@@ -110,7 +110,7 @@ def main():
         mm[row['nitrogen_source']] = row['qS_nitrogen']
         
         # optionally constrain biomass to experimental observation
-        model.reactions.Biomass.upper_bound = row['growth_rate_exp']
+        #model.reactions.Biomass.upper_bound = row['growth_rate_exp']
         
         # construct filename
         filename = (
@@ -125,7 +125,8 @@ def main():
             result = mfa.run_FBA(
                 model = model.copy(), 
                 medium = mm,
-                FVA = reactions_FVA
+                FVA = reactions_FVA,
+                FVA_optimality = 0.95
                 )
             # save result from pandas data frame to hdd
             result['FBA'].to_csv('simulations/' + filename + '_FBA.csv')

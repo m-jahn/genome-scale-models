@@ -3,6 +3,7 @@ library(lattice)
 library(latticeExtra)
 library(tidyverse)
 library(Rtools)
+library(stringi)
 
 
 # +++++++++++++ LOAD MODEL SIMULATION DATA +++++++++++++++++++++++++++++++++++++
@@ -11,7 +12,10 @@ library(Rtools)
 read_flux_results <- function(files) {
   lapply(files, function(filename) {
     read_csv(filename) %>%
-    mutate(simulation = gsub("simulations.|EX_|_e|_F[BV]A.csv", "", filename))
+    mutate(simulation = 
+      stri_extract_first(filename, 
+        regex = '(succ|fru|for).*nh4_e_[0-9]*.[0-9]*') %>% 
+      gsub("_e|_EX", "", .))
   }) %>% 
   
   # combine list of files
@@ -27,8 +31,10 @@ read_flux_results <- function(files) {
 }
 
 # list of FBA simulation result files to load
-df_fba <- read_flux_results(list.files("simulations", pattern = "_FBA.csv$", full.names = TRUE))
-df_fva <- read_flux_results(list.files("simulations", pattern = "_FVA.csv$", full.names = TRUE))
+fba_dir = "simulations/FBA_growth_constrained/"
+fva_dir = "simulations/FVA_growth_constrained/"
+df_fba <- read_flux_results(list.files(fba_dir, pattern = "_FBA.csv$", full.names = TRUE))
+df_fva <- read_flux_results(list.files(fva_dir, pattern = "_FVA.csv$", full.names = TRUE))
 
 
 # +++++++++++++ YIELD AND UPTAKE RATES +++++++++++++++++++++++++++++++++++++++++
@@ -51,7 +57,7 @@ df_yield <- df_fba %>% filter(reaction == "EX_BIOMASS_c") %>%
   )
   
   
-# +++++++++++++ PLOTTING YEILD +++++++++++++++++++++++++++++++++++++++++++++++++
+# +++++++++++++ PLOT YIELD +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Herbet-Pirt-plot function to create plots using different parameters
 HP_plot <- function(data, xvar, yvar, condvar, 
@@ -100,13 +106,65 @@ print(HP_plot(data = subset(df_yield, carbon_source == "succ"),
   ylimits = c(-1/4, 1)), split = c(2,2,2,2))
 dev.off()
 
+# +++++++++++++ PLOT MAJOR FLUXES (FBA) ++++++++++++++++++++++++++++++++++++++++
+
+# for a set of FBA simulations with different growth rate and different substrate
+# limitations, plot the highest (exchnage) fluxes per condition
+# if, optionally, growth rate is constrained to experimentally determined rates
+# we can see where additional carbon or energy are dissipated apart from biomass
+#
+# First get an overview about conditions
+df_fba %>% group_by(carbon_source, qS_carbon) %>% 
+  summarize(n_reactions = length(reaction))
+
+# prepare data and plot FBA fluxes for exchange reactions
+plot_exchange <- df_fba %>%
+  
+  # select only exchnage reactions
+  filter(
+    grepl("^EX_", reaction),
+    qS_carbon != 10,
+    loopless != 0) %>%
+  
+  # add a nominal instead of numeric column for qS to allow
+  # direct comparison
+  group_by(carbon_source, reaction) %>% 
+  mutate(qS_carbon_level = factor(qS_carbon) %>% as.numeric) %>%
+  
+  # sort by average flux per reaction, descending
+  group_by(reaction) %>%
+  mutate(average_flux = mean(loopless)) %>% 
+  arrange(desc(average_flux)) %>%
+  
+  xyplot(loopless ~ factor(reaction, unique(reaction)) | carbon_source, .,
+    groups = qS_carbon_level,
+    par.settings = custom.lattice(), pch = 19,
+    ylim = c(-10, 10), 
+    ylab = expression("flux "*"[mmol h"^-1*" gDCW"^-1*"]"),
+    xlab = "reaction",
+    layout = c(1, 3), 
+    as.table = TRUE, between = list(x = 0.5, y = 0.5),
+    scales = list(alternating = FALSE, x =list(rot = 35, cex = 0.7)),
+    panel = function(x, y, ...) {
+      panel.grid(h = -1, v = -1, col = grey(0.9))
+      panel.abline(v = 1:60, col = grey(0.9))
+      panel.abline(h = 0, col = grey(0.2))
+      panel.barplot(x, y, origin = 0, beside = TRUE, ewidth = 0.05, ...)
+    }
+  )
+
+
+svg("simulations/flux_exchange_reactions.svg", width = 8, height = 6)
+print(plot_exchange)
+dev.off()
+
 
 # +++++++++++++ FLUX VARIABILITY ANALYSIS (FVA) ++++++++++++++++++++++++++++++++
 
 # FVA tells us how much variation is allowed to happen in the flux of certain
 # reactions, without compromising the objective to e.g. 99 % of the optimal solution
 
-svg("simulations/flux_variability.svg", width = 8, height = 6)
+svg("simulations/flux_variability_0_95.svg", width = 8, height = 6)
 xyplot(minimum + maximum ~ factor(reaction, unique(reaction)) | carbon_source, 
   filter(df_fva, qS_carbon != 10),
   par.settings = custom.lattice(), pch = 19, 
@@ -118,8 +176,8 @@ xyplot(minimum + maximum ~ factor(reaction, unique(reaction)) | carbon_source,
   panel = function(x, y, ...) {
     panel.grid(h = -1, v = -1, col = grey(0.9))
     panel.rect(0, -6, 5.5, -4, col = grey(0.85), border = NA)
-    panel.rect(5.5, -6, 12.5, -4, col = "white", border = grey(0.85))
-    panel.rect(12.5, -6, 18.5, -4, col = grey(0.85), border = NA)
+    panel.rect(5.5, -6, 11.5, -4, col = "white", border = grey(0.85))
+    panel.rect(11.5, -6, 18.5, -4, col = grey(0.85), border = NA)
     panel.rect(18.5, -6, 27.5, -4, col = "white", border = grey(0.85))
     panel.rect(27.5, -6, 36.5, -4, col = grey(0.85), border = NA)
     panel.rect(36.5, -6, 38.5, -4, col = "white", border = grey(0.85))
