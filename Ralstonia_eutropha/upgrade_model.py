@@ -252,6 +252,8 @@ def modify_reactions(model):
     model.reactions.SUCD1.subtract_metabolites({model.metabolites.h_c: -1})
     model.metabolites.uq_c.name = 'Ubiquinone-8'
     model.metabolites.uqh2_c.name = 'Ubiquinol-8'
+    model.reactions.BKAR1.id = 'PCNO'
+    model.reactions.PCNO.name = 'Propanoyl-CoA:NADP+ 2-oxidoreductase'
     
     
     # 3rd STEP: correct known errors in reactions
