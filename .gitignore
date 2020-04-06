@@ -1,3 +1,4 @@
 Ralstonia_eutropha/simulations/*
 Ralstonia_eutropha/test.py
 Ralstonia_eutropha/__pycache__/*
+plot_essentiality.R
