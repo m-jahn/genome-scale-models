@@ -129,7 +129,7 @@ def modify_reactions(model):
     
     # 1st STEP: remove duplicated reactions
     # -------------------------------------
-    # update model IDs, names, and gene_reaction_rules the reaction that
+    # update model IDs, names, and gene_reaction_rules for the reaction that
     # is kept from a pair of duplicates
     model.reactions.TYRTA1.id = 'TYRTA'
     model.reactions.TYRTA.gene_reaction_rule = model.reactions.TYRTA2.gene_reaction_rule
@@ -205,6 +205,11 @@ def modify_reactions(model):
     model.reactions.ASNN.gene_reaction_rule = (
         model.reactions.ASNN.gene_reaction_rule + ' or ' + 
         model.reactions.GLNAS.gene_reaction_rule)
+    model.reactions.SUCSD1.id = 'SSALy'
+    model.reactions.SSALy.name = 'Succinate-semialdehyde dehydrogenase (NADP)'
+    model.reactions.SUCCt.id = 'SUCCt2r'
+    model.reactions.SUCCt2r.name = 'Succinate transport via proton symport'
+    model.reactions.SUCCt2r.bounds = [-1000.0, 1000.0]
     
     # remove all duplicated reactions
     duplicated_reactions = (
@@ -212,7 +217,8 @@ def modify_reactions(model):
         'G1PTT2', 'NA1t2', 'NITRT', 'SPMS2', 'PROD3', 'PROD4', 'NO3RUQ2',
         'UDPG4E2', 'ADNK2', 'URIDK2', 'SERDHT1', 'CYSST3', 'ASPAM6',
         'GLUDH2', 'GLUDH4', 'CYSST2', 'ACFM4', 'ACCSYN1', 'ACCSYN2',
-        'LAAO1', 'PHEALDD', 'BITCB', 'GLNAS'])
+        'LAAO1', 'PHEALDD', 'BITCB', 'GLNAS', 'SUCSD2', 'GABAT1',
+        'SUCCet'])
     
     model.remove_reactions(duplicated_reactions)
     for dupl in duplicated_reactions:
@@ -254,6 +260,12 @@ def modify_reactions(model):
     model.metabolites.uqh2_c.name = 'Ubiquinol-8'
     model.reactions.BKAR1.id = 'PCNO'
     model.reactions.PCNO.name = 'Propanoyl-CoA:NADP+ 2-oxidoreductase'
+    model.reactions.MNAO1.id = 'AACTOOR'
+    model.reactions.AACTOOR.name = 'Aminoacetone:oxygen oxidoreductase(deaminating)(flavin-containing)'
+    model.reactions.ALDRD1.id = 'LALDO2x'
+    model.reactions.LALDO2x.name = 'D-Lactaldehyde:NAD+ 1-oxidoreductase'
+    model.reactions.ALDRD2.id = 'LCARR'
+    model.reactions.LCARR.name = 'Lacaldehyde reductase (R-propane-1,2-diol forming)'
     
     
     # 3rd STEP: correct known errors in reactions
@@ -281,6 +293,19 @@ def modify_reactions(model):
     model.reactions.SUCOAS.bounds = (-1000.0, 1000.0)
     print('...set reversibility for reaction SUCOAS')
     
+    # One reason that Succ-dehydrogenase is not essential in the model is
+    # a shortcut called the methylglyoxal pathway, where DHAP (or here, via 
+    # another intermediate, ac-Coa) gets metabolized to methylglyoxal, 
+    # lactaldehyde, lactate, and pyruvate under glucose overflow conditions
+    # However this pathway contains several very toxic intermediates and is 
+    # unlikely to carry more than minimal flux (see wikipedia: methyglyoxal pathway)
+    # The reaction that the model contains is completely incorrect and
+    # can be removed (converts mthglx directly to pyr without neccessary 
+    # intermediates). The key reaction making mthglx was silenced.
+    model.remove_reactions(['LCTAD2'])
+    model.reactions.AACTOOR.bounds = [0.0, 0.0]
+    print('...removed erroneous reaction in methyglyoxal pathway')
+    
     # The reaction MICITL is the last step of the methyl-citrate cycle, an
     # alternative route through TCA from oaa + prop-coa --> succ + pyr.
     # It carries artificially high flux, so flux of the final reaction was constrained.
@@ -302,6 +327,12 @@ def modify_reactions(model):
     # from pyr --> oaa, but not reverse (see E. coli reference models in BiGG).
     model.reactions.PYC.bounds = (0.0, 1000.0)
     print('...set irreversibility for reaction PYC')
+    
+    # Ornithine cyclodeaminase is a link for a shortcut from succinate to fumarate
+    # via L-proline, a very artifical reaction that bypasses succinate dehydrogenase
+    # The reaction should not run in both direction according to other Bigg models
+    model.reactions.ORNC.bounds = (0.0, 1000.0)
+    print('...set irreversibility for reaction ORNCD')
     
     # PEP carboxylase PPC has correct bounds but one H+ reactant too much.
     # The reaction was corrected.
@@ -372,7 +403,7 @@ def modify_reactions(model):
     print('...inactivated FRUpts2 (fructose PEP-PTS) reaction')
     
     # add gene-reaction-rules for fruABC
-    model.reactions.FRUabc.gene_reaction_rule = '( H16_B1498 and H16_B1499 and H16_B1500 )'
+    model.reactions.FRUabc.gene_reaction_rule = 'H16_B1498 and H16_B1499 and H16_B1500'
     print('...added gene association for fructose ABC transporter')
     
     # The original model only contains a lumped reaction for the CBB cycle.
@@ -395,8 +426,8 @@ def modify_reactions(model):
     RBPC = cobra.Reaction('RBPC')
     RBPC.name = 'Ribulose-bisphosphate carboxylase'
     model.add_reactions([PRUK, RBPC])
-    model.reactions.PRUK.gene_reaction_rule = '( H16_B1389 ) or ( PHG421 )'
-    model.reactions.RBPC.gene_reaction_rule = '( H16_B1394 and H16_B1395 ) or ( PHG426 and PHG427 )'
+    model.reactions.PRUK.gene_reaction_rule = 'H16_B1389 or PHG421'
+    model.reactions.RBPC.gene_reaction_rule = '( PHG426 and PHG427 ) or ( H16_B1394 and H16_B1395 )'
     
     # define reactions from string
     model.reactions.PRUK.build_reaction_from_string('atp_c + rl5p_c --> adp_c + h_c + rb15bp_c')
@@ -781,6 +812,74 @@ def update_sbo_terms(model):
     # add the SBO term "SBO:0000243" for the biomass reaction as recommended by memote
     for biom in model.reactions.query('[Bb]iomass|BIOMASS'):
         biom.annotation['sbo'].append('SBO:0000629')
+
+
+# UPDATE ENZYME STOICHIOMETRIES BASED ON BARSEQ ------------------------
+#
+# BarSeq data available for R. eutropha in our lab contains important
+# information about possible essential genes. Essential genes in the
+# model were predicted using the script in 'essentiality_analysis.py'.
+# The result was compared with the list of essential genes derived from
+# BarSeq (cultivation of a transposon knockout library). The updates
+# derived from that are implemented in the following function.
+
+def update_stoichiometry(model):
+    
+    # This is the preferred way to annotate complex stoichiometry 
+    # (quoted from RBApy manual, https://sysbioinra.github.io/RBApy/usage.html#sec2.3.2.3):
+    # "RBApy assumes that the boolean relation is always “or”s of “and”s."
+    # Example: ( STM3795  and  STM3796 )  or  ( STM3901  and  STM3902 )
+    
+    # STEP 1: correct false positive essential genes
+    # ----------------------------------------------
+    # the sulfate adenylyltransferase, reaction SADT, requires 4 
+    # enzyme subunits to be present. This is a mistake, only 2 subunits are required,
+    # subunit 1 is CysN (H16_A2995, H16_B0626), and subunit 2 is cysD 
+    # (H16_A2996, H16_B0627), making none of the genes essential anymore
+    model.reactions.SADT.gene_reaction_rule = '( H16_A2995 and H16_A2996 ) or ( H16_B0626 or H16_B0627 )'
+    
+    # the sulfite reductase, reaction SLFR, requires 3 enzyme subunits 
+    # to be present. This is a mistake, subunits CysI1 (H16_A2999) and 
+    # CysI2 (H16_A1639) seem to be isoenzymes of the beta subunit.
+    # Only the alpha subunit (H16_B2500) seems to be essential (compare E.coli, uniprot)
+    model.reactions.SLFR.gene_reaction_rule = '( H16_A2999 and H16_B2500) or ( H16_A1639 and H16_B2500 )'
+    
+    # STEP 2: correct false negative essential genes
+    # ----------------------------------------------
+    # On top of the list are reactions involving 7 NADH-DH subunits 
+    # all turning out to be essential by BarSeq. 6 more NADH-DH subunits
+    # have low BarSeq counts but *could* be essential, i.e. are at least
+    # not part of the non-essential group and ahve not enough verfied
+    # Tn integrations. Therefore the best assumption is to set all 
+    # NADH subunits as essential
+    model.reactions.NADHDH.gene_reaction_rule = (
+        '( H16_A1051 and H16_A1052 and H16_A1050 and H16_A1055 and ' + 
+        'H16_A1056 and H16_A1053 and H16_A1054 and H16_A1061 and ' +
+        'H16_A1060 and H16_A1063 and H16_A1062 and H16_A1059 and ' +
+        'H16_A1058 and H16_A1057 and H16_A0251 )'
+    )
+    model.reactions.NADHHq1.gene_reaction_rule = model.reactions.NADHDH.gene_reaction_rule
+    model.reactions.NADH5.gene_reaction_rule = model.reactions.NADHDH.gene_reaction_rule
+    
+    # The next top candidate is ATPsynthase. Here the error is obviously a single 
+    # gene that was added erroneously using an OR rule. In addition to
+    # the 5 BarSeq essential genes, further 2 subunits are probably essential
+    # but have too low reads/insertions. With those it'd be 7 out of 8 
+    # annotated genes that are likely essential.
+    model.reactions.ATPS4m.gene_reaction_rule = (
+        '( H16_A3643 and H16_A3642 and H16_A3639 and H16_A3636 and ' + 
+        'H16_A3637 and H16_A3638 and H16_A3640 and H16_A3641 )'
+    )
+    
+    # Succinate dehydrogenase, two reactions (SUCD1 and SUCDi) with 5 genes
+    # of which 4 are essential according to BarSeq (H16_A2632, H16_A2631, 
+    # H16_A2630 and H16_A2629). According to model simulations, however, 
+    # they are only essential under growth on succinate, not LB, fructose,
+    # or probably other C sources that don't involve later part of TCA
+    # Several reactions related to unlikely TCA short cuts were removed
+    # or corrected, particularly related to the methylglyoxal shunt
+    
+    # check gene reaction rule for acetyl-Coa carboxylase, id ACCOAC
 
 
 # TESTING GROWTH WITH FBA ----------------------------------------------

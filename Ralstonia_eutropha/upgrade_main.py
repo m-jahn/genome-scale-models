@@ -46,6 +46,9 @@ def main():
     # update SBO annotation for met, react, genes
     um.update_sbo_terms(model)
     
+    # update stoichiometry of complexes
+    um.update_stoichiometry(model)
+    
     # test run with FBA
     um.test_FBA(model)
     
