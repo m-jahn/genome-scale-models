@@ -266,6 +266,8 @@ def modify_reactions(model):
     model.reactions.LALDO2x.name = 'D-Lactaldehyde:NAD+ 1-oxidoreductase'
     model.reactions.ALDRD2.id = 'LCARR'
     model.reactions.LCARR.name = 'Lacaldehyde reductase (R-propane-1,2-diol forming)'
+    model.reactions.CABPS.id = 'CBPS'
+    model.reactions.CBPS.name = 'Carbamoyl-phosphate synthase (glutamine-hydrolysing)'
     
     
     # 3rd STEP: correct known errors in reactions
@@ -305,6 +307,13 @@ def modify_reactions(model):
     model.remove_reactions(['LCTAD2'])
     model.reactions.AACTOOR.bounds = [0.0, 0.0]
     print('...removed erroneous reaction in methyglyoxal pathway')
+    
+    # Similar reactions that allow succ-DH or Akg-DH to be bypassed in the TCA
+    # are the GABA shunt, that really exists but was never shown to carry major 
+    # flux (a natural putrescine degradation pathway). Or the Prolyl-4 
+    # hydroxylase that converts 2OG to Succ.
+    model.reactions.GABAT2.bounds = [0.0, 0.0]
+    model.reactions.P4HX.bounds = [0.0, 0.0]
     
     # The reaction MICITL is the last step of the methyl-citrate cycle, an
     # alternative route through TCA from oaa + prop-coa --> succ + pyr.
@@ -391,6 +400,7 @@ def modify_reactions(model):
     HCO3E.upper_bound = 1000.0
     model.add_reactions([HCO3E])
     model.reactions.HCO3E.build_reaction_from_string('co2_c + h2o_c <=> h_c + hco3_c')
+    model.reactions.HCO3E.gene_reaction_rule = 'H16_A0169 or H16_B2270 or H16_B2403'
     print('...added a HCO3 equilibration reaction')
     
     # The primary means of fructose uptake seems to be the ABC transporter
@@ -403,7 +413,7 @@ def modify_reactions(model):
     print('...inactivated FRUpts2 (fructose PEP-PTS) reaction')
     
     # add gene-reaction-rules for fruABC
-    model.reactions.FRUabc.gene_reaction_rule = 'H16_B1498 and H16_B1499 and H16_B1500'
+    model.reactions.FRUabc.gene_reaction_rule = '( H16_B1498 and H16_B1499 and H16_B1500 )'
     print('...added gene association for fructose ABC transporter')
     
     # The original model only contains a lumped reaction for the CBB cycle.
@@ -731,7 +741,7 @@ def update_gene_annotation(model):
     # add genes corresponding to EC number to reaction.genes
     count_gene = 0
     for rea in model.reactions:
-        if 'ec-code' in rea.annotation:
+        if ('ec-code' in rea.annotation) and (rea.id not in ['PRUK', 'RBPC', 'HCO3E']):
             ec_code = rea.annotation['ec-code']
             # only add gene association to reactions with unique EC number
             # to avoid gene inflation
@@ -858,7 +868,7 @@ def update_stoichiometry(model):
         'H16_A1060 and H16_A1063 and H16_A1062 and H16_A1059 and ' +
         'H16_A1058 and H16_A1057 and H16_A0251 )'
     )
-    model.reactions.NADHHq1.gene_reaction_rule = model.reactions.NADHDH.gene_reaction_rule
+    model.reactions.NADH16.gene_reaction_rule = model.reactions.NADHDH.gene_reaction_rule
     model.reactions.NADH5.gene_reaction_rule = model.reactions.NADHDH.gene_reaction_rule
     
     # The next top candidate is ATPsynthase. Here the error is obviously a single 
@@ -877,9 +887,131 @@ def update_stoichiometry(model):
     # they are only essential under growth on succinate, not LB, fructose,
     # or probably other C sources that don't involve later part of TCA
     # Several reactions related to unlikely TCA short cuts were removed
-    # or corrected, particularly related to the methylglyoxal shunt
+    # or corrected, particularly related to the methylglyoxal shunt.
+    # (see modify_reactions()). This doesn't make SUCD1 and SUCDi 
+    # essential but will yield considerably lower growth rate under growth 
+    # on fructose ('beneficial' but not essential reaction).
     
-    # check gene reaction rule for acetyl-Coa carboxylase, id ACCOAC
+    
+    # Acetyl-Coa carboxylase (reaction id ACCOAC) is an important initial
+    # step in fatty acid synthesis (Ac-Coa --> mal-Coa). In E. coli the enzyme 
+    # has 4 essential subunits (AND rule), in the model the gene reaction 
+    # rule is less clear. We use the four canonical subunits from Uniprot
+    # (AccA, B, C2, D) that are all essential in BarSeq
+    model.reactions.ACCOAC.gene_reaction_rule = (
+        '( H16_A1223 and H16_A3171 and H16_A3172 and H16_A2611 )'
+    )
+    
+    # Cytosolic lactate dehydrogenase is essential with both subunits 
+    # (H16_A1681 and H16_A1682 annotated as one enzyme in Uniprot), according to
+    # BarSeq. We can update the gene rules for cytosolic and cytochrome
+    # associated LDH.
+    model.reactions.LDHm.gene_reaction_rule = 'H16_A3091'
+    model.reactions.DLDHD.gene_reaction_rule = (
+        '( H16_A1681 and H16_A1682 )'
+    )
+    
+    # reaction 2-dehydropantoate 2-reductase (DPR) has two out of three
+    # associated genes marked as essential by BarSeq (H16_B1769, H16_A1715
+    # but not H16_B1719). These three seem to be isoenzymes (first two identical
+    # except for 1 AA). The OR rule seems to be justified.
+    
+    # reaction Carbamoylphosphate synthase (glutamine hydrolysing) (CBPS)
+    # is essential in BarSeq but was not in the model because of an
+    # erroneous OR rule. In facto both subunits seem to be required 
+    # (see comparable reaction in E.coli, Bigg)
+    model.reactions.CBPS.gene_reaction_rule = (
+        '( H16_A2454 and H16_A2452 )'
+    )
+    
+    # reaction CATL (2.0 3han_c + 2.0 o2_c --> cvn_c + h2_c + 2.0 h2o2_c) 
+    # is associated with 3 catalase genes that should rather be 
+    # associated with the canonical catalase (CAT, 2.0 h2o2_c --> 2.0 h2o_c + o2_c)
+    # instead. One of them is essential (H16_B1428, katE2), the others not.
+    # The rule is updated to reflect that the essential one is required.
+    model.reactions.CAT.gene_reaction_rule = (
+        '( H16_B1428 and H16_A2777 ) or ( H16_B1428 and H16_A3109 )'
+    )
+    
+    # Two genes associated with Citrate synthase (CS) are essential
+    # according to BarSeq (H16_A2627, H16_B0357) while 3 others or not.
+    # The rule is updated to reflect that the essential ones are required.
+    model.reactions.CS.gene_reaction_rule = (
+        '( H16_A2627 and H16_B0357 and H16_B2211 ) or ' +
+        '( H16_A2627 and H16_B0357 and H16_A1229 ) or ' +
+        '( H16_A2627 and H16_B0357 and H16_B0414 )'
+    )
+    
+    # Reaction dehydrofolate reductase (DHFR) has both associated genes
+    # marked as essential in BarSeq. Uniprot query reveals that 
+    # H16_A2704 (folA2) and H16_A1840 (folA1) do not align i.e. are no
+    # isoenzymes but subunits. Change OR to AND rule.
+    model.reactions.DHFR.gene_reaction_rule = (
+        '( H16_A2704 and H16_A1840 )'
+    )
+    
+    # 4 reactions for Ribonucleoside-diphosphate reductase for all 4 
+    # nucleotides are carried out by the same 3 subunits, of which two
+    # are the canonical subunits nrdA (H16_A3234) and nrdB (H16_A3235).
+    # These two are essential in BarSeq data, while the third enzyme 
+    # (H16_A2390, nrdJ) seems to be dispensable. Updated reaction rule
+    # accordingly.
+    RNDrule = '( H16_A3234 and H16_A3235 ) or ( H16_A3234 and H16_A3235 and H16_A2390 )'
+    model.reactions.RNDR1.gene_reaction_rule = RNDrule
+    model.reactions.RNDR2.gene_reaction_rule = RNDrule
+    model.reactions.RNDR3.gene_reaction_rule = RNDrule
+    model.reactions.RNDR4.gene_reaction_rule = RNDrule
+    
+    # reaction Ribulose 5-phosphate 3-epimerase (RPE) has 2 out of 3 
+    # associated genes marked as essential by BarSeq (rpe, H16_A3317, rpe1 H16_B1391)
+    # The megaplasmid borne gene PHG423 (rpe2) is an isoenzyme of rpe1
+    # and not essential, but all are very similar (65% identity, 95% for rpe1 and 2). 
+    # It is surprising that two less-related subunits are essential, pointing
+    # to diverging functions. It seems that H16_B1391 can functionally replace
+    # PHG423 but not the other way around. Nevertheless the model should 
+    # reflect the sequence identity of the genome and plasmid isoenzymes.
+    model.reactions.RPE.gene_reaction_rule = (
+        '( H16_B1391 and H16_A3317 ) or ( PHG423 and H16_A3317 )'
+    )
+    
+    # reaction transketolase has (TKT1, TKT2) has three associated genes
+    # of which 2 are essential (H16_B1388, H16_A3147) and one (PHG420) 
+    # is a perfect iso-enzyme of H16_B1388 located on the megaplasmid 
+    # (96.6% identical). All three are isoenzymes but as with RPE, the two
+    # less-similar enzymes are essential pointing to different roles. The
+    # plasmid isoenzyme is not-essential, maybe expression from plasmid is
+    # generally lower. We still treat PHG420 and H16_B1388 as perfect isoenzymes
+    TKTrule = '( H16_B1388 and H16_A3147 ) or ( PHG420 and H16_A3147 )'
+    model.reactions.TKT1.gene_reaction_rule = TKTrule
+    model.reactions.TKT2.gene_reaction_rule = TKTrule
+    
+    # NOTES:
+    # ------
+    #
+    # Some reactions/genes marked as essential using BarSeq are tRNA-
+    # synthetases responsible to load empty tRNAs with their corresponding
+    # amino acid. The model contains a complete set of tRNA synthetase
+    # reactions but currently uses amino acids directly in protein bio
+    # synthesis. This could be changed later to reflect that protein
+    # biosynthesis actually uses loaded tRNAs (making those reactions 
+    # also essential in silico)
+    #
+    # Some reactions in the model contain an excessive number of genes 
+    # associated with them, such as
+    # - Enoyl-CoA hydratase
+    # - Acetyltransferase
+    # - Aldehyde dehydrogenase (butanal, NAD)
+    
+    # It is not clear yet what is the best way to handle those. The 
+    # excessive list of genes with 'OR' rule is a consequence of very general 
+    # and unspecific annotation of genes (example: putative acyl-transferase).
+    # One option is to ignore this problem, the other is the minimalistic 
+    # approach and weed out all non-essential genes associated with an essential 
+    # reaction, thus leaving only Barseq-curated genes in.
+    
+    # final reporting
+    print(' ----- SUMMARY OF STOICHIOMETRY CHANGES ----- ')
+    print('updated gene reaction rules for 20 reactions')
 
 
 # TESTING GROWTH WITH FBA ----------------------------------------------
