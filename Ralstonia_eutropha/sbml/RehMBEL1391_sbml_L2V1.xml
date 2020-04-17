@@ -1655,7 +1655,7 @@
       <speciesReference species="M_adp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_KDO8PS" name="2-dehydro-3-deoxyphosphooctonate aldolase (3-deoxy -D-manno-octulosonic -acid 8-phosphate synthase)" reversible="false">
+  <reaction id="R_KDO8PS" name="2-dehydro-3-deoxyphosphooctonate aldolase (3-deoxy-D-manno-octulosonic-acid 8-phosphate synthase)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1186 )</html:p>
@@ -1739,7 +1739,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_BAPT2" name="beta-alanine--pyruvate transaminase" reversible="true">
+  <reaction id="R_BAPT2" name="beta-alanine-pyruvate transaminase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0272 )</html:p>
@@ -1759,7 +1759,7 @@
       <speciesReference species="M_pyr_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_COBTt" name="" reversible="true">
+  <reaction id="R_COBALTt5" name="Cobalt (Co+2) transport via diffusion (extracellular to cytoplasm)" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -2024,7 +2024,7 @@
       <speciesReference species="M_2hba_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_4HPHEA2" name="4-hydroxyphenylacetat e-3-hydroxylase" reversible="false">
+  <reaction id="R_4HPHEA2" name="4-hydroxyphenylacetate-3-hydroxylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0496 )</html:p>
@@ -2108,7 +2108,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_4HPHEA1" name="4-hydroxyphenylacetat e-3-hydroxylase" reversible="false">
+  <reaction id="R_4HPHEA1" name="4-hydroxyphenylacetate-3-hydroxylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0496 )</html:p>
@@ -3757,7 +3757,7 @@
       <speciesReference species="M_pyr_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_METTHFD" name="methylenetetrahydrof olatedehydrogenase (NADP)" reversible="true">
+  <reaction id="R_METTHFD" name="methylenetetrahydrofolatedehydrogenase (NADP)" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1370 )</html:p>
@@ -4182,7 +4182,7 @@
       <speciesReference species="M_nad_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_HYDRTS" name="hydratase" reversible="false">
+  <reaction id="R_HYDRTS" name="Naphthyl-2-methylene-succinyl-CoA hydratase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1070 ) or ( H16_B0359 ) or ( H16_A1069 ) or ( H16_A2151 ) or ( H16_A1289 ) or ( H16_A3307 ) or ( H16_B0706 )</html:p>
@@ -4244,7 +4244,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_6CARHC" name="6-carboxyhexanoate--CoA ligase" reversible="false">
+  <reaction id="R_6CARHC" name="6-carboxyhexanoate-CoA ligase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1438 ) or ( H16_B0928 )</html:p>
@@ -4400,7 +4400,7 @@
       <speciesReference species="M_nadp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_KNTAPB" name="" reversible="true">
+  <reaction id="R_KNTAPB" name="4-(2-Aminophenyl)-2,4-dioxobutanoate dehydratase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -4713,7 +4713,7 @@
       <speciesReference species="M_dgluc_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_AMTF2" name="aminomethyltransfer ase" reversible="false">
+  <reaction id="R_THFAT" name="Tetrahydrofolate aminomethyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3619 ) or ( H16_A1567 )</html:p>
@@ -4836,7 +4836,7 @@
       <speciesReference species="M_xmp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_ACCOAAT1" name="acetyl-CoA Cacetyltransferase" reversible="true">
+  <reaction id="R_ACCOAAT1" name="acetyl-CoA C-acetyltransferase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1720 ) or ( H16_B0662 ) or ( H16_A1713 ) or ( H16_A0867 ) or ( H16_A0868 ) or ( H16_B0668 ) or ( H16_A0872 ) or ( H16_B0406 ) or ( H16_B1369 ) or ( H16_A0170 ) or ( H16_A1445 ) or ( H16_A1438 ) or ( H16_A2148 ) or ( H16_B0759 ) or ( H16_B0380 ) or ( H16_B0381 ) or ( H16_A1528 ) or ( H16_A1297 ) or ( H16_A1887 ) or ( H16_B1771 )</html:p>
@@ -4875,7 +4875,7 @@
       <speciesReference species="M_so2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_HTTOG" name="lumping reaction" reversible="false">
+  <reaction id="R_HTTOG" name="Hydantoin-5-propionate hydrolase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -4937,7 +4937,7 @@
       <speciesReference species="M_caasp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CATOCS" name="unclear reaction" reversible="false">
+  <reaction id="R_CATOCS" name="2-Chloro-3-oxoadipate lyase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -5225,7 +5225,7 @@
       <speciesReference species="M_2dhglcn6p_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_NADSG" name="NAD+ synthase (glutaminehydrolysing)" reversible="false">
+  <reaction id="R_NADSG" name="NAD+ synthase (glutamine hydrolysing)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0749 )</html:p>
@@ -6108,7 +6108,7 @@
       <speciesReference species="M_lac__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CABPS" name="carbamoylphosphate synthase (glutaminehydrolysing)" reversible="false">
+  <reaction id="R_CABPS" name="carbamoylphosphate synthase (glutamine hydrolysing)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2454 ) or ( H16_A2452 ) or ( H16_A2106 )</html:p>
@@ -6627,7 +6627,7 @@
       <speciesReference species="M_na_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_3OACT" name="3-oxoacid CoAtransferase" reversible="true">
+  <reaction id="R_3OACT" name="3-oxoacid CoA-transferase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1332 ) or ( H16_A1331 )</html:p>
@@ -7404,7 +7404,7 @@
       <speciesReference species="M_adp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CCPPCCOAL" name="cyclopropanecarboxy late:CoA ligase" reversible="false">
+  <reaction id="R_CCPPCCOAL" name="cyclopropanecarboxylate:CoA ligase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0677 ) or ( H16_B2522 ) or ( H16_B1709 ) or ( H16_A1700 ) or ( H16_A2794 ) or ( H16_A2252 ) or ( H16_A2807 ) or ( H16_A1718 ) or ( H16_A0866 ) or ( H16_A0871 ) or ( H16_A1230 ) or ( H16_B0174 ) or ( H16_A1519 ) or ( H16_B1335 ) or ( H16_B0910 ) or ( H16_B1264 ) or ( H16_B1148 ) or ( H16_B1662 ) or ( H16_A2978 )</html:p>
@@ -7426,7 +7426,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CCPAMAH" name="Ncyclopropylammelide alkylamino hydrolase" reversible="false">
+  <reaction id="R_CCPAMAH" name="N-cyclopropylammelide alkylamino hydrolase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0862 )</html:p>
@@ -7897,7 +7897,7 @@
       <speciesReference species="M_nad_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PPNTCL" name="phosphopantothenat e-cysteine ligase" reversible="false">
+  <reaction id="R_PPNTCL" name="phosphopantothenate-cysteine ligase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3048 )</html:p>
@@ -8979,7 +8979,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1.25"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PPTCDC" name="phosphopantothenoy lcysteine decarboxylase" reversible="false">
+  <reaction id="R_PPTCDC" name="phosphopantothenoylcysteine decarboxylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3048 )</html:p>
@@ -8999,7 +8999,7 @@
       <speciesReference species="M_4ppnte_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PHAS" name="polyhydroxyalkanoat e synthase" reversible="true">
+  <reaction id="R_PHAS" name="polyhydroxyalkanoate synthase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2003 ) or ( H16_A1437 )</html:p>
@@ -9121,7 +9121,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CCHCCOAL" name="cyclohexanecarboxyla te-CoA ligase" reversible="false">
+  <reaction id="R_CCHCCOAL" name="cyclohexanecarboxylate-CoA ligase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1693 )</html:p>
@@ -9271,7 +9271,7 @@
       <speciesReference species="M_glu__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UNAGCVT" name="UDP-Nacetylglucosamine 1-carboxyvinyltransfera se" reversible="false">
+  <reaction id="R_UNAGCVT" name="UDP-Nacetylglucosamine 1-carboxyvinyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3418 )</html:p>
@@ -10813,7 +10813,7 @@
       <speciesReference species="M_acal_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_NADHHq1" name="NADH dehydrogenase (ubiquinone-8  and  3 protons)" reversible="false">
+  <reaction id="R_NADH16" name="NADH dehydrogenase (ubiquinone-8 and 3 protons)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1051 ) or ( H16_A1052 ) or ( H16_A1050 ) or ( H16_A1055 ) or ( H16_A1056 ) or ( H16_A1053 ) or ( H16_A1054 ) or ( H16_A1061 ) or ( H16_A1060 ) or ( H16_A1063 ) or ( H16_A1062 ) or ( H16_A1059 ) or ( H16_A1058 ) or ( H16_A1057 ) or ( H16_A0251 )</html:p>
@@ -10856,7 +10856,7 @@
       <speciesReference species="M_sllct_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_NADHHq2" name="NADH dehydrogenase (ubiquinone-8 )" reversible="false">
+  <reaction id="R_NADH5" name="NADH dehydrogenase (ubiquinone-8)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1051 ) or ( H16_A1052 ) or ( H16_A1050 ) or ( H16_A1055 ) or ( H16_A1056 ) or ( H16_A1053 ) or ( H16_A1054 ) or ( H16_A1061 ) or ( H16_A1060 ) or ( H16_A1063 ) or ( H16_A1062 ) or ( H16_A1059 ) or ( H16_A1058 ) or ( H16_A1057 ) or ( H16_A0251 )</html:p>
@@ -11328,7 +11328,7 @@
       <speciesReference species="M_acac_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PTA" name="phosphotransacetylas e" reversible="true">
+  <reaction id="R_PTA" name="phosphotransacetylase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1631 ) or ( H16_B1871 )</html:p>
@@ -12137,7 +12137,7 @@
       <speciesReference species="M_pyr_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CYSTBL2" name="cystathionine betalyase" reversible="false">
+  <reaction id="R_CYSTBL2" name="cystathionine beta-lyase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1447 )</html:p>
@@ -12221,7 +12221,7 @@
       <speciesReference species="M_h2o_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CYSTBL1" name="cystathionine b-lyase" reversible="false">
+  <reaction id="R_CYSTBL1" name="cystathionine beta-lyase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1447 )</html:p>
@@ -12431,7 +12431,7 @@
       <speciesReference species="M_hopt_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_ACMSD" name="aminocarboxymucon ate-semialdehyde decarboxylase" reversible="false">
+  <reaction id="R_ACMSD" name="aminocarboxymuconate-semialdehyde decarboxylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0330 )</html:p>
@@ -12984,7 +12984,7 @@
       <speciesReference species="M_sql_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_GLCBRAN" name="1,4-alpha-glucan branching enzyme (glycogen -&amp;amp;gt; bglycogen)" reversible="false">
+  <reaction id="R_GLCBRAN" name="1,4-alpha-glucan branching enzyme (glycogen -> bglycogen)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1559 )</html:p>
@@ -13083,7 +13083,7 @@
       <speciesReference species="M_nadp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_MTTGH" name="5-methyltetrahydropter oyltriglutamate--homocysteine methyltransferase" reversible="false">
+  <reaction id="R_MTTGH" name="5-methyltetrahydropter oyltriglutamate-homocysteine methyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1581 )</html:p>
@@ -13925,7 +13925,7 @@
       <speciesReference species="M_sah_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_NNDMBZPT" name="Nicotinate-nucleotide dimethylbenzimidazo le phosphoribosyltransferase" reversible="false">
+  <reaction id="R_NNDMBZPT" name="Nicotinate-nucleotide dimethylbenzimidazole phosphoribosyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2968 )</html:p>
@@ -14245,7 +14245,7 @@
       <speciesReference species="M_2odhfac_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PRFGAS" name="phosphoribosylformy lglycinamidine synthase" reversible="false">
+  <reaction id="R_PRFGAS" name="phosphoribosylformyl glycinamidine synthase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1511 )</html:p>
@@ -15101,7 +15101,7 @@
       <speciesReference species="M_ACP_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_2H3MBZP" name="2-hydroxy-3-methylbenzalpyruvat e hydratase-aldolase" reversible="false">
+  <reaction id="R_2H3MBZP" name="2-hydroxy-3-methylbenzalpyruvate hydratase-aldolase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1070 ) or ( H16_B0359 ) or ( H16_A1069 ) or ( H16_A2151 ) or ( H16_A1289 ) or ( H16_A3307 ) or ( H16_B0706 )</html:p>
@@ -15952,7 +15952,7 @@
       <speciesReference species="M_asp__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_GLUABUTt" name="4-aminobutyrate/gluta mate antiport" reversible="true">
+  <reaction id="R_GLUABUTt" name="4-aminobutyrate/glutamate antiport" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -17270,7 +17270,7 @@
       <speciesReference species="M_co2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_DHADT2" name="ihydroxy-acid dehydratase" reversible="false">
+  <reaction id="R_DHADT2" name="Dihydroxy-acid dehydratase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2987 ) or ( H16_B0280 )</html:p>
@@ -17393,7 +17393,7 @@
       <speciesReference species="M_accoa_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PCT2" name="propionate CoAtransferase" reversible="true">
+  <reaction id="R_PCT2" name="propionate CoA-transferase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2718 )</html:p>
@@ -18374,7 +18374,7 @@
       <speciesReference species="M_na_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CRNCDH" name="Carnityl-CoA dehydratse" reversible="true">
+  <reaction id="R_CRNCDH" name="Carnityl-CoA dehydratase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2078 ) or ( H16_B2438 )</html:p>
@@ -18722,7 +18722,7 @@
       <speciesReference species="M_butn_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_MECDPS" name="2-C-methyl-Derythritol 2,4-cyclodiphosphate synthase" reversible="false">
+  <reaction id="R_MECDPS" name="2-C-methyl-D-erythritol 2,4-cyclodiphosphate synthase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A1457 )</html:p>
@@ -18976,7 +18976,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_NACUP" name="Nicotinic acid uptake" reversible="false">
+  <reaction id="R_NACUP" name="Nicotinic acid transport" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -19014,7 +19014,7 @@
       <speciesReference species="M_dchrooe_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CMBLD2" name="carboxymethylenebut enolidase" reversible="false">
+  <reaction id="R_CMBLD2" name="carboxymethylenebutenolidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2215 ) or ( H16_A3488 ) or ( H16_A2739 )</html:p>
@@ -19077,7 +19077,7 @@
       <speciesReference species="M_nad_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CMBLD6" name="carboxymethylenebut enolidase" reversible="false">
+  <reaction id="R_CMBLD6" name="carboxymethylenebutenolidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2215 ) or ( H16_A3488 ) or ( H16_A2739 )</html:p>
@@ -19183,7 +19183,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CMBLD5" name="carboxymethylenebut enolidase" reversible="false">
+  <reaction id="R_CMBLD5" name="carboxymethylenebutenolidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2215 ) or ( H16_A3488 ) or ( H16_A2739 )</html:p>
@@ -19203,7 +19203,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CMBLD4" name="carboxymethylenebut enolidase" reversible="false">
+  <reaction id="R_CMBLD4" name="carboxymethylenebutenolidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2215 ) or ( H16_A3488 ) or ( H16_A2739 )</html:p>
@@ -19223,7 +19223,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CMBLD3" name="carboxymethylenebut enolidase" reversible="false">
+  <reaction id="R_CMBLD3" name="carboxymethylenebutenolidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2215 ) or ( H16_A3488 ) or ( H16_A2739 )</html:p>
@@ -19266,7 +19266,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CMBLD7" name="carboxymethylenebut enolidase" reversible="false">
+  <reaction id="R_CMBLD7" name="carboxymethylenebutenolidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2215 ) or ( H16_A3488 ) or ( H16_A2739 )</html:p>
@@ -19456,7 +19456,7 @@
       <speciesReference species="M_3hivcoa_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_FDHGq" name="formate dehydrogenase (quinone-8)" reversible="false">
+  <reaction id="R_FDHGq" name="formate dehydrogenase (quinone-8: 2 protons)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -20292,7 +20292,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_AG3POAT" name="1-acylglycerol-3-phosphate Oacyltransferase" reversible="false">
+  <reaction id="R_AG3POAT" name="1-acylglycerol-3-phosphate O-acyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2911 ) or ( H16_A0519 )</html:p>
@@ -20398,7 +20398,7 @@
       <speciesReference species="M_sb1p_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_ACOADH1" name="acyl-CoA dehydrogenase (butanoyl-CoA)" reversible="true">
+  <reaction id="R_ACOADH1" name="acyl-CoA dehydrogenase butanoyl-CoA)" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1371 ) or ( H16_B0850 ) or ( H16_B0752 ) or ( H16_A0172 ) or ( H16_B0485 )</html:p>
@@ -20559,7 +20559,7 @@
       <speciesReference species="M_succ_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_BAPYRT" name="beta-alanine--pyruvate transaminase" reversible="true">
+  <reaction id="R_BAPYRT" name="beta-alanine-pyruvate transaminase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0272 )</html:p>
@@ -21459,7 +21459,7 @@
       <speciesReference species="M_nadp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UMBM1" name="ubiquinone/menaqui none biosynthesis methyltransferase" reversible="false">
+  <reaction id="R_UMBM1" name="ubiquinone/menaquinone biosynthesis methyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0445 )</html:p>
@@ -21479,7 +21479,7 @@
       <speciesReference species="M_mk_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UMBM2" name="ubiquinone/menaqui none biosynthesis methyltransferase" reversible="false">
+  <reaction id="R_UMBM2" name="ubiquinone/menaquinone biosynthesis methyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0445 )</html:p>
@@ -21499,7 +21499,7 @@
       <speciesReference species="M_sah_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_AMTF" name="aminomethyltransfer ase" reversible="false">
+  <reaction id="R_AMTF" name="aminomethyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3619 )</html:p>
@@ -21626,7 +21626,7 @@
       <speciesReference species="M_thr__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PRGNFT" name="phosphoribosylglycin amide formyltransferase" reversible="true">
+  <reaction id="R_PRGNFT" name="phosphoribosylglycinamide formyltransferase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3042 )</html:p>
@@ -22057,7 +22057,7 @@
       <speciesReference species="M_adp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CRNt7" name="Carnitine/butyrobetai ne antiporter" reversible="false">
+  <reaction id="R_CRNt7" name="Carnitine/butyrobetaine antiporter" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -22077,7 +22077,7 @@
       <speciesReference species="M_crn_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_THPT" name="transhexaprenyltranstransferase" reversible="false">
+  <reaction id="R_THPT" name="trans-hexaprenyltranstransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3253 )</html:p>
@@ -22385,7 +22385,7 @@
       <speciesReference species="M_h_c" stoichiometry="2"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_3HBZOR" name="3-hydroxybenzoate,NA DH:oxygen oxidoreductase" reversible="false">
+  <reaction id="R_3HBZOR" name="3-hydroxybenzoate,NADH:oxygen oxidoreductase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -22703,7 +22703,7 @@
       <speciesReference species="M_orn_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_BTNACL" name="biotin-[acetyl-CoAcarboxylase] ligase" reversible="false">
+  <reaction id="R_BTNACL" name="biotin acetyl CoA carboxylase ligase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2946 ) or ( H16_A0135 )</html:p>
@@ -23325,7 +23325,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UAEPGR" name="UDP-Nacetylenolpyruvoylgl ucosamine reductase" reversible="false">
+  <reaction id="R_UAEPGR" name="UDP-Nacetylenolpyruvoylglucosamine reductase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3061 )</html:p>
@@ -23346,7 +23346,7 @@
       <speciesReference species="M_nadp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_FPGLUS1" name="olylpolyglutamate synthase" reversible="false">
+  <reaction id="R_FPGLUS1" name="Folylpolyglutamate synthase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2610 )</html:p>
@@ -23663,7 +23663,7 @@
       <speciesReference species="M_fadh2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_4CBMCLC" name="4-carboxymuconolacto ne decarboxylase" reversible="true">
+  <reaction id="R_4CBMCLC" name="4-carboxymuconolactone decarboxylase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B2288 ) or ( H16_A0535 )</html:p>
@@ -23683,7 +23683,7 @@
       <speciesReference species="M_co2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_FLALDTHR" name="fluoroacetaldehyde:Lthreonine aldehydetransferase" reversible="true">
+  <reaction id="R_FLALDTHR" name="fluoroacetaldehyde:L-threonine aldehydetransferase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -24778,7 +24778,7 @@
       <speciesReference species="M_ac_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PRMIIZCI" name="1-(5-phosphoribosyl)-5-[(5-phosphoribosylamino )methylideneamino)i midazole-4-carboxamide isomerase" reversible="true">
+  <reaction id="R_PRMIIZCI" name="1-(5-phosphoribosyl)-5-[(5-phosphoribosylamino)-methylideneamino) imidazole-4-carboxamide isomerase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3411 )</html:p>
@@ -24946,7 +24946,7 @@
       <speciesReference species="M_h_c" stoichiometry="3"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_U3HGAAT" name="UDP-3-O-(3-hydroxymyristoyl)glu cosamine acyltransferase" reversible="false">
+  <reaction id="R_U3HGAAT" name="UDP-3-O-(3-hydroxymyristoyl)glucosamine acyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2045 )</html:p>
