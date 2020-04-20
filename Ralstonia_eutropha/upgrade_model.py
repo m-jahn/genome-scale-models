@@ -255,9 +255,6 @@ def modify_reactions(model):
     model.reactions.SUCCD2.id = 'SUCD4'
     model.reactions.SUCCD3.id = 'SUCD1'
     model.reactions.SUCD1.name = 'Succinate dehydrogenase'
-    model.reactions.SUCD1.subtract_metabolites({model.metabolites.h_c: -1})
-    model.metabolites.uq_c.name = 'Ubiquinone-8'
-    model.metabolites.uqh2_c.name = 'Ubiquinol-8'
     model.reactions.BKAR1.id = 'PCNO'
     model.reactions.PCNO.name = 'Propanoyl-CoA:NADP+ 2-oxidoreductase'
     model.reactions.MNAO1.id = 'AACTOOR'
@@ -268,7 +265,8 @@ def modify_reactions(model):
     model.reactions.LCARR.name = 'Lacaldehyde reductase (R-propane-1,2-diol forming)'
     model.reactions.CABPS.id = 'CBPS'
     model.reactions.CBPS.name = 'Carbamoyl-phosphate synthase (glutamine-hydrolysing)'
-    
+    model.metabolites.uq_c.name = 'Ubiquinone-8'
+    model.metabolites.uqh2_c.name = 'Ubiquinol-8'
     
     # 3rd STEP: correct known errors in reactions
     # -------------------------------------------
@@ -314,12 +312,28 @@ def modify_reactions(model):
     # hydroxylase that converts 2OG to Succ.
     model.reactions.GABAT2.bounds = [0.0, 0.0]
     model.reactions.P4HX.bounds = [0.0, 0.0]
+    print('...silence reactions for GABA shunt and Prolyl hydroxylase bypass')
+    
+    # Succinate dehydrogenase has incorrect reaction stoichiometry regarding H+
+    model.reactions.SUCD1.subtract_metabolites({model.metabolites.h_c: -1})
+    print('...Succinate dehydrogenase contains one H+ too much, was removed')
     
     # The reaction MICITL is the last step of the methyl-citrate cycle, an
     # alternative route through TCA from oaa + prop-coa --> succ + pyr.
     # It carries artificially high flux, so flux of the final reaction was constrained.
     model.reactions.MICITL.bounds = (0.0, 0.0)
     print('...silenced reaction MICITL, the last step of the methyl citrate cycle')
+    
+    # The reaction MCTOP is annotated as 'unclear reation' and seems to be
+    # erroneous compared with a Bigg reference.
+    model.reactions.MCTOP.id = 'OCDOR'
+    model.reactions.OCDOR.name = '3-oxopropionyl-CoA:NAD+ oxidoreductase'
+    model.reactions.OCDOR.build_reaction_from_string('h_c + malcoa_c + nadph_c --> h2o_c + nadp_c + 3oppcoa_c')
+    
+    # The following reaction OPTHP is also annotaed as 'unclear reaction',
+    # although the reaction itself is correct.
+    model.reactions.OPTHP.id = 'HPCOR'
+    model.reactions.HPCOR.name = '3-hydroxypropionyl-CoA:NADP+ oxidoreductase'
     
     # PYK is allowed in the model to go in reverse direction (pyr + atp --> pep + adp)
     # but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). 
@@ -447,12 +461,51 @@ def modify_reactions(model):
     model.reactions.CBBCYC.bounds = (0.0, 0.0)
     print('...added PRUK and RBPC (Rubisco) reactions instead of lumped reaction')
     
+    # The model contains a reaction to synthesize a precursor of the essential
+    # cofactor thiamin monophosphate (thmmp) using a non-exisitng pseudo reaction
+    # called 'MISRXN', named in the model as 'unclear reaction'. This reaction
+    # has to be removed and replaced by a correct Thiazole phosphate synthesis
+    # reaction (see Bigg reference reaction THZPSN)
+    model.remove_reactions(['MISRXN'])
+    print('...removed erroneous thiamin precursor synthesis reaction')
+    
+    # For this reaction a new intermediate metabolite, 4-hydroxy benzyl 
+    # alcohol, is required for which metabolizing reactions exist in the model
+    M_4hba = cobra.Metabolite('4hba_c')
+    M_4hba.compartment = 'c'
+    M_4hba.name = '4-Hydroxy-benzyl alcohol'
+    M_4hba.formula = 'C7H8O2'
+    M_4hba.charge = 0
+    model.add_metabolites([M_4hba])
+    
+    # However, one reaction that connects the metabolite with the next
+    # intermediates in the model must be added, a dehydrogenase oxidizing 
+    # the benzyl alcohol to benzyl aldehyde
+    R_4HBADH = cobra.Reaction('4HBADH')
+    R_4HBADH.name = '4 hydroxy benzyl alcohol dehydrogenase'
+    R_4HBADH.lower_bound = -1000.0
+    R_4HBADH.upper_bound = 1000.0
+    model.add_reactions([R_4HBADH])
+    model.reactions.get_by_id('4HBADH').build_reaction_from_string('nad_c + 4hba_c <=> h_c + nadh_c + 4hbzald_c')
+    
+    # Add reaction for Thiazole phosphate synthesis.
+    # The involved genes are thiG (H16_A0238), thiF (H16_A0330), thiS (H16_A0237),
+    # and thiH (?). According to Uniprot, ThiG forms heterodimers with either 
+    # ThiH or ThiS.
+    THZPSN = cobra.Reaction('THZPSN')
+    THZPSN.name = 'Thiazole phosphate synthesis'
+    THZPSN.lower_bound = 0.0
+    THZPSN.upper_bound = 1000.0
+    model.add_reactions([THZPSN])
+    model.reactions.THZPSN.build_reaction_from_string('atp_c + cys__L_c + dx5p_c + tyr__L_c --> thzp_c + ala__L_c + amp_c + co2_c + h_c + h2o_c + ppi_c + 4hba_c')
+    model.reactions.THZPSN.gene_reaction_rule = '( H16_A0238 and H16_A0237 and H16_A0330 )'
+    print('...added correct thiamin precursor synthesis reaction')
     
     # final reporting
     print(' ----- SUMMARY OF MODIFIED REACTIONS ----- ')
     print('removed duplicated reactions: ' + str(len(duplicated_reactions)))
     print('added names to reactions: ' + str(count))
-    print('corrected erroneous reactions: 15')
+    print('corrected erroneous reactions: 21')
 
 
 # ADDING ANNOTATIONS FROM BIGG -----------------------------------------
