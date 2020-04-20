@@ -65,8 +65,32 @@ def run_essentiality(model, medium):
     return(result)
 
 
+# function to extract information of essential genes from model
+# and return result as data frame
+def query_model_genes(model, gene_list):
+    # make a new result data frame
+    df = pd.DataFrame(columns = ([
+        'gene', 'reaction_id', 
+        'reaction_name', 
+        'reaction_reaction'])
+        )
+    
+    for gene in gene_list:
+        reactions = list(model.genes.get_by_id(gene).reactions)
+        for r in reactions:
+            df = df.append({
+                'gene': gene,
+                'reaction_id': r.id,
+                'reaction_name': r.name,
+                'reaction_reaction': r.reaction},
+                ignore_index = True
+                )
+    
+    return(df)
+
+
 # MAIN FUNCTION --------------------------------------------------------
-# wrap all code into main function
+# wrap all queries into main function
 def main():
     
     # IMPORT SBML MODEL ------------------------------------------------
@@ -77,24 +101,24 @@ def main():
     # RUN SINGLE ESSENTIALITY ANALYSIS FOR LB --------------------------
     #
     # create a new pandas df for results
-    df = pd.DataFrame(
-        [i.id for i in model.genes],
-        columns = ['gene']
-        )
+    # query information for all genes in the model
+    df = query_model_genes(
+        model.copy(),
+        gene_list = [i.id for i in model.genes])
     
     # test essentiality on LB complete medium
     print('...running essentiality analysis for: LB medium')
     result_lb = run_essentiality(
-        model = model.copy(), 
+        model = model.copy(),
         medium = get_lb_medium(model.reactions.list_attr('id'))
         )
     
     # assign result to new column in df
-    df['LB_medium'] = [1 if i.id in result_lb else 0 for i in model.genes]
+    df['LB_medium'] = [1 if i in result_lb else 0 for i in df['gene'].to_list()]
     print('...found ' + str(len(result_lb)) + ' essential genes')
     
     
-    # RUN ESSENTIALITY ANALYSIS IN A LOOP ------------------------------
+    # RUN ESSENTIALITY ANALYSES FOR MINIMAL MEDIUM IN A LOOP -----------
     #
     # to test essentiality on different growth substrates
     # that were tested experimentally
@@ -144,13 +168,13 @@ def main():
             )
         
         # assign result to new column in df
-        df[result_name] = [1 if i.id in result else 0 for i in model.genes]
+        df[result_name] = [1 if i in result else 0 for i in df['gene'].to_list()]
         print('...found ' + str(len(result)) + ' essential genes')
     
-    # save result from pandas data frame to hdd
+    # save results from pandas data frame to hdd
     result_dir = 'simulations/essentiality/model_gene_essentiality.csv'
     df.to_csv(result_dir)
-    print('...result dataframe saved to ' + result_dir)
+    print('...result table saved to ' + result_dir)
 
 
 if __name__== "__main__" :
