@@ -14,7 +14,7 @@
   <species id="M_phaccoa_c" name="Phenylacetyl-CoA" compartment="c" boundaryCondition="false" />
   <species id="M_2h3mbzpyr_c" name="2-Hydroxy-3-methylbenzalpyruvate" compartment="c" boundaryCondition="false" />
   <species id="M_mettrna_c" name="L-Methionyl-tRNA (Met)" compartment="c" boundaryCondition="false" />
-  <species id="M_ugmd_c" name="UDP-N-acetylmuramoyl-L-alanyl-Dgamma-glutamyl-meso-2,6-diaminopimelate" compartment="c" boundaryCondition="false" />
+  <species id="M_ugmd_c" name="UDP-N-acetylmuramoyl-L-alanyl-D-gamma-glutamyl-meso-2,6-diaminopimelate" compartment="c" boundaryCondition="false" />
   <species id="M_adprib_c" name="ADP-D-ribose" compartment="c" boundaryCondition="false" />
   <species id="M_nacn_c" name="Nicotinate D-ribonucleotide" compartment="c" boundaryCondition="false" />
   <species id="M_selnp_c" name="Selenophosphate" compartment="c" boundaryCondition="false" />
@@ -274,10 +274,10 @@
   <species id="M_cit_e" name="Citrate" compartment="e" boundaryCondition="true" />
   <species id="M_iletrna_c" name="L-Isoleucyl-tRNA(Ile)" compartment="c" boundaryCondition="false" />
   <species id="M_cit_c" name="Citrate" compartment="c" boundaryCondition="false" />
-  <species id="M_caiz_c" name="5-carboxyamino-1-(5-phospho-Dribosyl)imidazole" compartment="c" boundaryCondition="false" />
+  <species id="M_caiz_c" name="5-carboxyamino-1-(5-phospho-D-ribosyl)imidazole" compartment="c" boundaryCondition="false" />
   <species id="M_s2mbdlipo_c" name="S-(2-Methylbutanoyl)-dihydrolipoamide-E" compartment="c" boundaryCondition="false" />
   <species id="M_2a3cms_c" name="2-Amino-3-carboxymuconate semialdehyde" compartment="c" boundaryCondition="false" />
-  <species id="M_fprica_c" name="5-Formamido-1-(5-phospho-Dribosyl)" compartment="c" boundaryCondition="false" />
+  <species id="M_fprica_c" name="5-Formamido-1-(5-phospho-D-ribosyl)" compartment="c" boundaryCondition="false" />
   <species id="M_d6pgc_c" name="6-Phospho-D-gluconate" compartment="c" boundaryCondition="false" />
   <species id="M_a6rp5p2_c" name="5-Amino-6-(5'-phosphoribitylamino)uracil" compartment="c" boundaryCondition="false" />
   <species id="M_2naptha_c" name="2-Naphthoic acid" compartment="c" boundaryCondition="false" />
@@ -353,7 +353,7 @@
   <species id="M_cretn_c" name="Creatinine" compartment="c" boundaryCondition="false" />
   <species id="M_malcoa_c" name="Malonyl-CoA" compartment="c" boundaryCondition="false" />
   <species id="M_l1p3h5c_c" name="L-1-Pyrroline-3-hydroxy-5-carboxylate" compartment="c" boundaryCondition="false" />
-  <species id="M_ugmda_c" name="UDP-N-acetylmuramoyl-L-alanyl-Dglutamyl-6-carboxy-L-lysyl-D-alanyl-Dalanine" compartment="c" boundaryCondition="false" />
+  <species id="M_ugmda_c" name="UDP-N-acetylmuramoyl-L-alanyl-D-glutamyl-6-carboxy-L-lysyl-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
   <species id="M_4fmuclac_c" name="4-Fluoromuconolactone" compartment="c" boundaryCondition="false" />
   <species id="M_dhbpt_c" name="Dihydrobiopterin" compartment="c" boundaryCondition="false" />
   <species id="M_aamppn_c" name="alpha-Aminopropiononitrile" compartment="c" boundaryCondition="false" />
@@ -391,13 +391,13 @@
   <species id="M_s7p_c" name="Sedoheptulose 7-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_pyr_c" name="Pyruvate" compartment="c" boundaryCondition="false" />
   <species id="M_pheacnit_c" name="Phenylacetonitrile" compartment="c" boundaryCondition="false" />
-  <species id="M_uaccg_c" name="UDP-N-acetyl-3-(1-carboxyvinyl)-Dglucosamine" compartment="c" boundaryCondition="false" />
+  <species id="M_uaccg_c" name="UDP-N-acetyl-3-(1-carboxyvinyl)-D-glucosamine" compartment="c" boundaryCondition="false" />
   <species id="M_idlac_c" name="Indolelactate" compartment="c" boundaryCondition="false" />
   <species id="M_icit_c" name="Isocitrate" compartment="c" boundaryCondition="false" />
   <species id="M_du_e" name="Deoxyuridine" compartment="e" boundaryCondition="true" />
   <species id="M_fad_c" name="FAD" compartment="c" boundaryCondition="false" />
   <species id="M_icit_e" name="Isocitrate" compartment="e" boundaryCondition="true" />
-  <species id="M_uaagmmda_c" name="Undecaprenyl-diphospho-Nacetylmuramoyl-(N-acetylglucosamine)-Lalanyl-D-glutaminyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
+  <species id="M_uaagmmda_c" name="Undecaprenyl-diphospho-N-acetylmuramoyl-(N-acetylglucosamine)-L-alanyl-D-glutaminyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
   <species id="M_gn_e" name="Guanine" compartment="e" boundaryCondition="true" />
   <species id="M_4mctch_c" name="4-Methylcatechol" compartment="c" boundaryCondition="false" />
   <species id="M_carbs_c" name="N-Carbamoylsarcosine" compartment="c" boundaryCondition="false" />
@@ -442,7 +442,7 @@
   <species id="M_dhnapthsul_c" name="1,2-Dihydroxynaphthalene-6-sulfonate" compartment="c" boundaryCondition="false" />
   <species id="M_4c2hhd_c" name="4-Carboxy-2-hydroxyhexa-2,4-dienedioate" compartment="c" boundaryCondition="false" />
   <species id="M_opp_c" name="all-trans-Octaprenyl diphosphate" compartment="c" boundaryCondition="false" />
-  <species id="M_uamag_c" name="UDP-N-acetylmuramoyl-L-alanyl-Dglutamate" compartment="c" boundaryCondition="false" />
+  <species id="M_uamag_c" name="UDP-N-acetylmuramoyl-L-alanyl-D-glutamate" compartment="c" boundaryCondition="false" />
   <species id="M_ga6p_c" name="D-Glucosamine 6-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_4fchcd_c" name="4-Fluorocyclohexadiene-cis,cis-1,2-diol" compartment="c" boundaryCondition="false" />
   <species id="M_cl_c" name="Chloride" compartment="c" boundaryCondition="false" />
@@ -572,7 +572,7 @@
   <species id="M_sprmd_c" name="Spermidine" compartment="c" boundaryCondition="false" />
   <species id="M_tre_c" name="Trehalose" compartment="c" boundaryCondition="false" />
   <species id="M_nadh_c" name="Nicotinamide adenine dinucleotide -reduced" compartment="c" boundaryCondition="false" />
-  <species id="M_kdpg_c" name="2-Dehydro-3-deoxy-6-phospho-Dgluconate" compartment="c" boundaryCondition="false" />
+  <species id="M_kdpg_c" name="2-Dehydro-3-deoxy-6-phospho-D-gluconate" compartment="c" boundaryCondition="false" />
   <species id="M_gensa_c" name="2,5-Dihydroxybenzoate" compartment="c" boundaryCondition="false" />
   <species id="M_gensa_e" name="2,5-Dihydroxybenzoate" compartment="e" boundaryCondition="true" />
   <species id="M_ddm_c" name="Bis(4'-chlorophenyl)methane" compartment="c" boundaryCondition="false" />
@@ -624,7 +624,7 @@
   <species id="M_4hglusa_c" name="L-4-Hydroxyglutamate semialdehyde" compartment="c" boundaryCondition="false" />
   <species id="M_glac_c" name="D-Galactose" compartment="c" boundaryCondition="false" />
   <species id="M_tym_c" name="Tyramine" compartment="c" boundaryCondition="false" />
-  <species id="M_uaagmda_c" name="Undecaprenyl-diphospho-Nacetylmuramoyl-(N-acetylglucosamine)-Lalanyl-D-glutamyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
+  <species id="M_uaagmda_c" name="Undecaprenyl-diphospho-N-acetylmuramoyl-(N-acetylglucosamine)-L-alanyl-D-glutamyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
   <species id="M_asn__L_e" name="L-Asparagine" compartment="e" boundaryCondition="true" />
   <species id="M_2mac_c" name="2-Maleylacetate" compartment="c" boundaryCondition="false" />
   <species id="M_sl26da_c" name="N-Succinyl-LL-2,6-diaminoheptanedioate" compartment="c" boundaryCondition="false" />
@@ -690,7 +690,7 @@
   <species id="M_ccppccoa_c" name="Cyclopropanecarboxyl-CoA" compartment="c" boundaryCondition="false" />
   <species id="M_adlipo_c" name="S-Acetyldihydrolipoamide-E" compartment="c" boundaryCondition="false" />
   <species id="M_mlttr_c" name="Maltotriose" compartment="c" boundaryCondition="false" />
-  <species id="M_udpg2aa_c" name="UDP-3-O-(3-hydroxytetradecanoyl)-Nacetylglucosamine" compartment="c" boundaryCondition="false" />
+  <species id="M_udpg2aa_c" name="UDP-3-O-(3-hydroxytetradecanoyl)-N-acetylglucosamine" compartment="c" boundaryCondition="false" />
   <species id="M_mlttr_e" name="Maltotriose" compartment="e" boundaryCondition="true" />
   <species id="M_nadma_c" name="N-Acetyl-D-mannosamine" compartment="c" boundaryCondition="false" />
   <species id="M_adchor_c" name="4-amino-4-deoxychorismate" compartment="c" boundaryCondition="false" />
@@ -776,7 +776,7 @@
   <species id="M_3hpppn_e" name="3-(3-Hydroxy-phenyl)-propanoic acid" compartment="e" boundaryCondition="true" />
   <species id="M_3hpppn_c" name="3-(3-Hydroxy-phenyl)-propanoic acid" compartment="c" boundaryCondition="false" />
   <species id="M_naneu_e" name="N-Acetylneuraminate" compartment="e" boundaryCondition="true" />
-  <species id="M_fpram_c" name="2-(Formamido)-N1-(5-phospho-Dribosyl) acetamidine" compartment="c" boundaryCondition="false" />
+  <species id="M_fpram_c" name="2-(Formamido)-N1-(5-phospho-D-ribosyl) acetamidine" compartment="c" boundaryCondition="false" />
   <species id="M_3h5ohcoa_c" name="3-Hydroxy-5-oxohexanoyl-CoA" compartment="c" boundaryCondition="false" />
   <species id="M_aso3_c" name="arsenite" compartment="c" boundaryCondition="false" />
   <species id="M_aso3_e" name="arsenite" compartment="e" boundaryCondition="true" />
@@ -797,7 +797,7 @@
   <species id="M_akg_c" name="2-Oxoglutarate" compartment="c" boundaryCondition="false" />
   <species id="M_3hbcoa_c" name="(S)-3-Hydroxybutanoyl-CoA" compartment="c" boundaryCondition="false" />
   <species id="M_7m3o6ocoa_c" name="7-Methyl-3-oxo-6-octenoyl-CoA" compartment="c" boundaryCondition="false" />
-  <species id="M_lipidX_c" name="2,3-Bis(3-hydroxytetradecanoyl)-beta-Dglucosaminyl 1-phosphate" compartment="c" boundaryCondition="false" />
+  <species id="M_lipidX_c" name="2,3-Bis(3-hydroxytetradecanoyl)-beta-D-glucosaminyl 1-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_c34dhdhf_c" name="(+)-(3S,4R)-cis-3,4-Dihydroxy-3,4-dihydrofluorene" compartment="c" boundaryCondition="false" />
   <species id="M_nacyllaminoacid_c" name="nacyllaminoacid" compartment="c" boundaryCondition="false" />
   <species id="M_fuc_e" name="L-Fucose" compartment="e" boundaryCondition="true" />
@@ -861,7 +861,7 @@
   <species id="M_4chbenz_c" name="4-Chlorobenzoate" compartment="c" boundaryCondition="false" />
   <species id="M_thym_c" name="Thymine" compartment="c" boundaryCondition="false" />
   <species id="M_r1p_c" name="alpha-D-Ribose 1-phosphate" compartment="c" boundaryCondition="false" />
-  <species id="M_2cpr5p_c" name="1-(2-Carboxyphenylamino)-1'-deoxy-Dribulose 5'-phosphate" compartment="c" boundaryCondition="false" />
+  <species id="M_2cpr5p_c" name="1-(2-Carboxyphenylamino)-1'-deoxy-D-ribulose 5'-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_bzop_c" name="Benzoyl phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_agmatine_c" name="Agmatine" compartment="c" boundaryCondition="false" />
   <species id="M_26dchp_c" name="2,6-Dichlorophenol" compartment="c" boundaryCondition="false" />
@@ -890,7 +890,7 @@
   <species id="M_i3ac_c" name="Indole-3-acetate" compartment="c" boundaryCondition="false" />
   <species id="M_citnl_c" name="Citronellate" compartment="c" boundaryCondition="false" />
   <species id="M_3opp_c" name="3-Oxopropanoate" compartment="c" boundaryCondition="false" />
-  <species id="M_dx5p_c" name="1-Deoxy-D-xylulose 5-phosphate" compartment="c" boundaryCondition="false" />
+  <species id="M_dx5p_c" name="1-deoxy-D-xylulose 5-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_cpp_c" name="Coproporphyrinogen III" compartment="c" boundaryCondition="false" />
   <species id="M_25drapp_c" name="2,5-Diamino-6-(5'-phosphoribosylamino)-4-pyrimidineone" compartment="c" boundaryCondition="false" />
   <species id="M_mnt1p_c" name="D-Mannitol 1-phosphate" compartment="c" boundaryCondition="false" />
@@ -914,7 +914,7 @@
   <species id="M_parax_c" name="Paraoxon" compartment="c" boundaryCondition="false" />
   <species id="M_4hbzald_c" name="4-Hydroxybenzaldehyde" compartment="c" boundaryCondition="false" />
   <species id="M_hmgth_c" name="S-(Hydroxymethyl)glutathione" compartment="c" boundaryCondition="false" />
-  <species id="M_saicar_c" name="1-(5'-Phosphoribosyl)-5-amino-4-(Nsuccinocarboxamide)-imidazole" compartment="c" boundaryCondition="false" />
+  <species id="M_saicar_c" name="1-(5'-Phosphoribosyl)-5-amino-4-(N-succinocarboxamide)-imidazole" compartment="c" boundaryCondition="false" />
   <species id="M_5co46dp_c" name="5-(3'-Carboxy-3'-oxopropyl)-4,6-dihydroxypicolinate" compartment="c" boundaryCondition="false" />
   <species id="M_formate_c" name="Formate" compartment="c" boundaryCondition="false" />
   <species id="M_datp_c" name="dATP" compartment="c" boundaryCondition="false" />
@@ -958,7 +958,7 @@
   <species id="M_4chcat_c" name="4-Chlorocatechol" compartment="c" boundaryCondition="false" />
   <species id="M_camp_c" name="cAMP" compartment="c" boundaryCondition="false" />
   <species id="M_uqh2_c" name="Ubiquinol" compartment="c" boundaryCondition="false" />
-  <species id="M_4ppcys_c" name="N-[(R)-4'-Phosphopantothenoyl]-Lcysteine" compartment="c" boundaryCondition="false" />
+  <species id="M_4ppcys_c" name="N-[(R)-4'-Phosphopantothenoyl]-L-cysteine" compartment="c" boundaryCondition="false" />
   <species id="M_an_c" name="Anthranilate" compartment="c" boundaryCondition="false" />
   <species id="M_an_e" name="Anthranilate" compartment="e" boundaryCondition="true" />
   <species id="M_4hbzcoa_c" name="4-Hydroxybenzoyl-CoA" compartment="c" boundaryCondition="false" />
@@ -1077,7 +1077,7 @@
   <species id="M_tnittol_c" name="Trinitrotoluene" compartment="c" boundaryCondition="false" />
   <species id="M_bisphenol_c" name="Bisphenol A" compartment="c" boundaryCondition="false" />
   <species id="M_c120ACP_c" name="Dodecanoyl-[acyl-carrier protein]" compartment="c" boundaryCondition="false" />
-  <species id="M_dtdp4d6dg_c" name="dTDP-4-dehydro-6-deoxy-alpha-Dglucose" compartment="c" boundaryCondition="false" />
+  <species id="M_dtdp4d6dg_c" name="dTDP-4-dehydro-6-deoxy-alpha-D-glucose" compartment="c" boundaryCondition="false" />
   <species id="M_gluc_c" name="D-Gluconate" compartment="c" boundaryCondition="false" />
   <species id="M_o2_c" name="Oxygen" compartment="c" boundaryCondition="false" />
   <species id="M_ptrc_e" name="Putrescine" compartment="e" boundaryCondition="true" />
@@ -1155,7 +1155,7 @@
   <species id="M_g1p_c" name="D-Glucose 1-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_trp__L_e" name="L-Tryptophan" compartment="e" boundaryCondition="true" />
   <species id="M_ppn_c" name="Propynoate" compartment="c" boundaryCondition="false" />
-  <species id="M_u3hga_c" name="UDP-3-O-(3-hydroxytetradecanoyl)-Dglucosamine" compartment="c" boundaryCondition="false" />
+  <species id="M_u3hga_c" name="UDP-3-O-(3-hydroxytetradecanoyl)-D-glucosamine" compartment="c" boundaryCondition="false" />
   <species id="M_3slala_c" name="3-Sulfino-L-alanine" compartment="c" boundaryCondition="false" />
   <species id="M_4c4h2oadip_c" name="4-Carboxy-4-hydroxy-2-oxoadipate" compartment="c" boundaryCondition="false" />
   <species id="M_imp_c" name="IMP" compartment="c" boundaryCondition="false" />
@@ -1190,7 +1190,7 @@
   <species id="M_6checoa_c" name="6-Carboxyhex-2-enoyl-CoA" compartment="c" boundaryCondition="false" />
   <species id="M_xan_e" name="Xanthine" compartment="e" boundaryCondition="true" />
   <species id="M_5hiac_c" name="5-Hydroxyindoleacetate" compartment="c" boundaryCondition="false" />
-  <species id="M_uagmda_c" name="Undecaprenyl-diphospho-Nacetylmuramoyl-L-alanyl-D-glutamylmeso-2,6-diaminopimeloyl-D-alanyl-Dalanine" compartment="c" boundaryCondition="false" />
+  <species id="M_uagmda_c" name="Undecaprenyl-diphospho-N-acetylmuramoyl-L-alanyl-D-glutamylmeso-2,6-diaminopimeloyl-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
   <species id="M_indole_c" name="Indole 2,3-Benzopyrrole" compartment="c" boundaryCondition="false" />
   <species id="M_mtg_c" name="Methylglyoxal" compartment="c" boundaryCondition="false" />
   <species id="M_5hnfkn_c" name="5-Hydroxy-N-formylkynurenine" compartment="c" boundaryCondition="false" />
@@ -1304,7 +1304,7 @@
   <species id="M_tethbp_c" name="Tetrahydrobiopterin" compartment="c" boundaryCondition="false" />
   <species id="M_fa_c" name="Formamide" compartment="c" boundaryCondition="false" />
   <species id="M_2opp_c" name="2-Octaprenylphenol" compartment="c" boundaryCondition="false" />
-  <species id="M_uaagmm5da_c" name="Undecaprenyl-diphospho-Nacetylmuramoyl-(N-acetylglucosamine)-Lalanyl-D-glutaminyl-meso-2,6-diaminopimeloyl-(glycyl)5-D-alanyl-Dalanine" compartment="c" boundaryCondition="false" />
+  <species id="M_uaagmm5da_c" name="Undecaprenyl-diphospho-N-acetylmuramoyl-(N-acetylglucosamine)-L-alanyl-D-glutaminyl-meso-2,6-diaminopimeloyl-(glycyl)5-D-alanyl-D-alanine" compartment="c" boundaryCondition="false" />
   <species id="M_pydx5p_c" name="Pyridoxal 5'-phosphate" compartment="c" boundaryCondition="false" />
   <species id="M_trnaarg_c" name="tRNA(Arg)" compartment="c" boundaryCondition="false" />
   <species id="M_athr_c" name="L-Allo-threonine" compartment="c" boundaryCondition="false" />
@@ -1333,7 +1333,7 @@
   <species id="M_alltn_e" name="Allantoin" compartment="e" boundaryCondition="true" />
   <species id="M_pgp_c" name="Phosphatidylglycerophosphate" compartment="c" boundaryCondition="false" />
   <species id="M_creatine_c" name="Creatine" compartment="c" boundaryCondition="false" />
-  <species id="M_fgam_c" name="N2-Formyl-N1-(5-phospho-Dribosyl) glycinamide" compartment="c" boundaryCondition="false" />
+  <species id="M_fgam_c" name="N2-Formyl-N1-(5-phospho-D-ribosyl) glycinamide" compartment="c" boundaryCondition="false" />
   <species id="M_parat_c" name="Parathion" compartment="c" boundaryCondition="false" />
   <species id="M_2hlmdnit_c" name="2-Hydroxylamino-4,6-dinitrotoluene" compartment="c" boundaryCondition="false" />
   <species id="M_tyr__L_c" name="L-Tyrosine" compartment="c" boundaryCondition="false" />
@@ -2390,7 +2390,7 @@
       <html:p>GENE_ASSOCIATION: </html:p>
       <html:p>PROTEIN_ASSOCIATION: </html:p>
       <html:p>SUBSYSTEM: Biosynthesis of steroids</html:p>
-      <html:p>PROTEIN_CLASS: 2.5.1.29 2. 5.1.33 2.5. 1.30</html:p>
+      <html:p>PROTEIN_CLASS: 2.5.1.29 2.5.1.33 2.5.1.30</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
       <html:p>HOLE: true</html:p>
@@ -3239,7 +3239,7 @@
       <speciesReference species="M_adp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_APPT" name="acid phosphatase" reversible="false">
+  <reaction id="R_APPT" name="acid phosphatase (FMN)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1238 ) or ( H16_A0767 )</html:p>
@@ -3573,7 +3573,7 @@
       <speciesReference species="M_pppi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CARSA" name="Ncarbamoylsarcosine amidase" reversible="false">
+  <reaction id="R_CARSA" name="N-carbamoylsarcosine amidase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0926 )</html:p>
@@ -6045,7 +6045,7 @@
       <speciesReference species="M_ahhmd_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_HPPPNtr" name="hydroxyphenyl)propi onate transport via proton symport, reversible" reversible="true">
+  <reaction id="R_HPPPNtr" name="3-(3-hydroxyphenyl)propionate transport via proton symport, reversible" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -6393,7 +6393,7 @@
       <speciesReference species="M_so3_c" stoichiometry="2"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UNAGDP" name="UDP-Nacetylglucosamine diphosphorylase" reversible="false">
+  <reaction id="R_UNAGDP" name="UDP-N-acetylglucosamine diphosphorylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0262 )</html:p>
@@ -7053,7 +7053,7 @@
       <speciesReference species="M_co2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CCPPMD" name="Ncyclopropylmelamine deaminase" reversible="false">
+  <reaction id="R_CCPPMD" name="N-cyclopropylmelamine deaminase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0862 )</html:p>
@@ -7074,7 +7074,7 @@
       <speciesReference species="M_ccpam_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_14HPED" name="1-(4'-hydroxyphenyl)ethan ol dehydrogenase" reversible="false">
+  <reaction id="R_14HPED" name="1-(4'-hydroxyphenyl)ethanol dehydrogenase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0663 ) or ( H16_B0572 ) or ( H16_A1828 ) or ( H16_A1256 ) or ( H16_A0679 ) or ( H16_B2561 ) or ( H16_A0893 ) or ( H16_B0034 ) or ( H16_A2586 ) or ( H16_B1417 ) or ( H16_B0831 ) or ( H16_A2460 )</html:p>
@@ -9271,7 +9271,7 @@
       <speciesReference species="M_glu__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UNAGCVT" name="UDP-Nacetylglucosamine 1-carboxyvinyltransferase" reversible="false">
+  <reaction id="R_UNAGCVT" name="UDP-N-acetylglucosamine 1-carboxyvinyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3418 )</html:p>
@@ -10254,7 +10254,7 @@
       <speciesReference species="M_h2o_c" stoichiometry="6"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CNTOB" name="unclear reaction" reversible="false">
+  <reaction id="R_CNTOB" name="trans-cinnamate hydrolase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -10681,7 +10681,7 @@
       <speciesReference species="M_urate_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UAMAGDAS" name="UDP-N-acetylmuramoyl-L-alanyl-D-glutamyl-meso-2,6-diaminopimeloyl-Dalanyl-D-alanine synthetase" reversible="false">
+  <reaction id="R_UAMAGDAS" name="UDP-N-acetylmuramoyl-L-alanyl-D-glutamyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine synthetase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3277 )</html:p>
@@ -11140,7 +11140,7 @@
       <speciesReference species="M_dglu_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_OHPBAKGT" name="O-Phospho-4-hydroxy-Lthreonine: 2-oxoglutarate aminotransferase" reversible="true">
+  <reaction id="R_OHPBAKGT" name="O-Phospho-4-hydroxy-L-threonine: 2-oxoglutarate aminotransferase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0791 )</html:p>
@@ -12712,7 +12712,7 @@
       <html:p>GENE_ASSOCIATION: </html:p>
       <html:p>PROTEIN_ASSOCIATION: </html:p>
       <html:p>SUBSYSTEM: Fatty acid biosynthesis</html:p>
-      <html:p>PROTEIN_CLASS: 2.3.1.41 2. 3.1.179 2. 3.1.86 2.3. 1.41</html:p>
+      <html:p>PROTEIN_CLASS: 2.3.1.41 2.3.1.179 2.3.1.86 2.3.1.41</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
       <html:p>HOLE: true</html:p>
@@ -12753,7 +12753,7 @@
       <html:p>GENE_ASSOCIATION: </html:p>
       <html:p>PROTEIN_ASSOCIATION: </html:p>
       <html:p>SUBSYSTEM: Fatty acid biosynthesis</html:p>
-      <html:p>PROTEIN_CLASS: 2.3.1.41 2. 3.1.179 2. 3.1.86 2.3. 1.41</html:p>
+      <html:p>PROTEIN_CLASS: 2.3.1.41 2.3.1.179 2.3.1.86 2.3.1.41</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
       <html:p>HOLE: true</html:p>
@@ -13103,7 +13103,7 @@
       <speciesReference species="M_met__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_SPOTN" name="spontaneous" reversible="false">
+  <reaction id="R_PDX5PSb" name="Pyrodoxine-5-phosphate synthase b" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -13443,7 +13443,7 @@
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B2447 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_B2447 )</html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: 4.1.1.-</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -15009,7 +15009,7 @@
       <speciesReference species="M_adp_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CDPMDEK" name="4-(cytidine 5'-diphospho)-2-Cmethyl-D-erythritol kinase" reversible="false">
+  <reaction id="R_CDPMDEK" name="4-(cytidine 5'-diphospho)-2-C-methyl-D-erythritol kinase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0374 )</html:p>
@@ -15329,7 +15329,7 @@
       <speciesReference species="M_h_c" stoichiometry="2"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UDPACG" name="UDP-Nacetylglucosamine 4-epimerase" reversible="true">
+  <reaction id="R_UDPACG" name="UDP-N-acetylglucosamine 4-epimerase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -16233,7 +16233,7 @@
       <speciesReference species="M_aso3_e" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_HTHRS" name="4-Hydroxy-Lthreonine synthase" reversible="false">
+  <reaction id="R_HTHRS" name="4-Hydroxy-L-threonine synthase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2265 )</html:p>
@@ -16910,7 +16910,7 @@
       <speciesReference species="M_mlzac_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UAGMPUT" name="UDP-N-acetylglucosamine-N-acetylmuramyl-(pentapeptide)pyrop hosphoryl-undecaprenol N-acetylglucosamine transferase" reversible="false">
+  <reaction id="R_UAGMPUT" name="UDP-N-acetylglucosamine-N-acetylmuramyl-(pentapeptide)pyrophosphoryl-undecaprenol N-acetylglucosamine transferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3273 )</html:p>
@@ -17043,7 +17043,7 @@
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
       <html:p>PROTEIN_ASSOCIATION: </html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: NA</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -17135,7 +17135,7 @@
       <speciesReference species="M_dgdmh7p_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_ACGApts" name="N-Acetyl-Dglucosamine transport via PEP:Pyr PTS" reversible="false">
+  <reaction id="R_ACGApts" name="N-Acetyl-D-glucosamine transport via PEP:Pyr PTS" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -21252,7 +21252,7 @@
       <speciesReference species="M_nadh_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_HTHRPD" name="4-hydroxythreonine-4-phosphate dehydrogenase" reversible="false">
+  <reaction id="R_PDX5PSa" name="Pyrodoxine-5-phosphate synthase a" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0513 ) or ( H16_B0319 ) or ( H16_B0216 )</html:p>
@@ -21438,7 +21438,7 @@
       <speciesReference species="M_h_c" stoichiometry="3"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_A6PRAUR" name="5-amino-6-(5-phosphoribosylamino )uracil reductase" reversible="false">
+  <reaction id="R_A6PRAUR" name="5-amino-6-(5-phosphoribosylamino)uracil reductase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2848 )</html:p>
@@ -22036,7 +22036,7 @@
       <speciesReference species="M_nh4_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_Maintenance" name="" reversible="false">
+  <reaction id="R_Maintenance" name="Maintenance" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -22098,12 +22098,12 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_OTO4BZ" name="multi-step reaction" reversible="false">
+  <reaction id="R_OTO4BZ" name="DDT degradation (multi-step reaction)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
       <html:p>PROTEIN_ASSOCIATION: </html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: NA</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -22580,7 +22580,7 @@
       <speciesReference species="M_h2o_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PTO4H" name="" reversible="true">
+  <reaction id="R_PHCHGS" name="L-1-Pyrroline-3-hydroxy-5-carboxylate hydration (spontaneous)" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -23105,7 +23105,7 @@
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0757 ) or ( H16_B1109 ) or ( H16_B1420 ) or ( H16_B0223 ) or ( H16_B1836 ) or ( H16_A0633 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_B0757 ) or ( H16_B1109 ) or ( H16_B1420 ) or ( H16_B0223 ) or ( H16_B1836 ) or ( H16_A0633 )</html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: 1.13.11.-</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -23145,7 +23145,7 @@
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0757 ) or ( H16_B1109 ) or ( H16_B1420 ) or ( H16_B0223 ) or ( H16_B1836 ) or ( H16_A0633 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_B0757 ) or ( H16_B1109 ) or ( H16_B1420 ) or ( H16_B0223 ) or ( H16_B1836 ) or ( H16_A0633 )</html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: 1.13.11.-</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -23180,9 +23180,9 @@
       <speciesReference species="M_co2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_ACMANAPP" name="predicted acid phosphatase (NAcetyl-Dmannosamine)" reversible="true">
+  <reaction id="R_ACMANAPP" name="Acid phosphatase (N-Acetyl-D-mannosamine)" reversible="false">
     <notes>
-      <html:p>REVERSIBILITY: true</html:p>
+      <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0520 ) or ( H16_B0594 ) or ( H16_B1063 ) or ( H16_A0168 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_A0520 ) or ( H16_B0594 ) or ( H16_B1063 ) or ( H16_A0168 )</html:p>
       <html:p>SUBSYSTEM: Aminosugars metabolism</html:p>
@@ -23192,12 +23192,12 @@
       <html:p>HOLE: false</html:p>
     </notes>
     <listOfReactants>
-      <speciesReference species="M_pi_c" stoichiometry="1"/>
-      <speciesReference species="M_nadma_c" stoichiometry="1"/>
-    </listOfReactants>
-    <listOfProducts>
       <speciesReference species="M_h2o_c" stoichiometry="1"/>
       <speciesReference species="M_nadma6p_c" stoichiometry="1"/>
+    </listOfReactants>
+    <listOfProducts>
+      <speciesReference species="M_pi_c" stoichiometry="1"/>
+      <speciesReference species="M_nadma_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
   <reaction id="R_IPPMS" name="2-isopropylmalate synthase" reversible="false">
@@ -23325,7 +23325,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_UAEPGR" name="UDP-Nacetylenolpyruvoylglucosamine reductase" reversible="false">
+  <reaction id="R_UAEPGR" name="UDP-N-acetylenolpyruvoylglucosamine reductase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3061 )</html:p>
@@ -24460,7 +24460,7 @@
       <speciesReference species="M_man6p_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_ACG6PD" name="Nacetylglucosamine-6-phosphate deacetylase" reversible="false">
+  <reaction id="R_ACG6PD" name="N-acetylglucosamine-6-phosphate deacetylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0314 )</html:p>
@@ -24870,7 +24870,7 @@
       <html:p>GENE_ASSOCIATION: </html:p>
       <html:p>PROTEIN_ASSOCIATION: </html:p>
       <html:p>SUBSYSTEM: Fatty acid biosynthesis</html:p>
-      <html:p>PROTEIN_CLASS: 2.3.1.179 2.3.1.180 2.3.1.86 2. 3.1.41</html:p>
+      <html:p>PROTEIN_CLASS: 2.3.1.179 2.3.1.180 2.3.1.86 2.3.1.41</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
       <html:p>HOLE: true</html:p>
@@ -26873,7 +26873,7 @@
       <speciesReference species="M_nad_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_SUCCt_3" name="Succintate transport via proton symport (3 H)" reversible="false">
+  <reaction id="R_SUCCt_3" name="Succinate transport via proton symport (3 H)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -27163,7 +27163,7 @@
       <speciesReference species="M_glu__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PRAIZS" name="phosphoribosylamino imidazole synthase" reversible="false">
+  <reaction id="R_PRAIZS" name="phosphoribosylaminoimidazole synthase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3077 )</html:p>
@@ -27313,7 +27313,7 @@
       <speciesReference species="M_mclact_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_2HCHCCOA" name="2-hydroxycyclohexanec arboxyl-CoA dehydrogenase" reversible="false">
+  <reaction id="R_2HCHCCOA" name="2-hydroxycyclohexanecarboxyl-CoA dehydrogenase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1696 )</html:p>
@@ -27421,7 +27421,7 @@
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0734 ) or ( H16_B0731 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_B0734 ) or ( H16_B0731 )</html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: 1.3.1.-</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -27478,7 +27478,7 @@
       <speciesReference species="M_2hmuc_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PRANTI" name="phosphoribosylanthr anilate isomerase" reversible="false">
+  <reaction id="R_PRANTI" name="phosphoribosylanthranilate isomerase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A2615 )</html:p>
@@ -27598,7 +27598,7 @@
       <speciesReference species="M_co2_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_CCPPAMD" name="Ncyclopropylammeline deaminase" reversible="false">
+  <reaction id="R_CCPPAMD" name="N-cyclopropylammeline deaminase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0862 )</html:p>
@@ -27862,7 +27862,7 @@
       <speciesReference species="M_sertrna_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_MMCS" name="unclear reaction" reversible="false">
+  <reaction id="R_MMCS" name="Methylmalonyl-CoA synthase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: </html:p>
@@ -28311,7 +28311,7 @@
       <speciesReference species="M_phe__L_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PRPPS" name="phosphoribosylpyrop hosphate synthetase" reversible="true">
+  <reaction id="R_PRPPS" name="phosphoribosylpyrophosphate synthetase" reversible="true">
     <notes>
       <html:p>REVERSIBILITY: true</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0372 )</html:p>
@@ -28474,7 +28474,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_GA1PACT" name="glucosamine-1-phosphate Nacetyltransferase" reversible="false">
+  <reaction id="R_GA1PACT" name="glucosamine-1-phosphate N-acetyltransferase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A0262 )</html:p>
@@ -28542,7 +28542,7 @@
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B0734 ) or ( H16_B0731 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_B0734 ) or ( H16_B0731 )</html:p>
-      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(4&amp;amp;amp;#039;-Chlorophenyl)Ethane (DDT) degradation</html:p>
+      <html:p>SUBSYSTEM: 1,1,1-Trichloro-2,2-Bis-(Chlorophenyl)Ethane (DDT) degradation</html:p>
       <html:p>PROTEIN_CLASS: 1.3.1.-</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
@@ -28711,7 +28711,7 @@
       <speciesReference species="M_gaba_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_HEXf" name="hexokinase (Dfructose: ATP)" reversible="false">
+  <reaction id="R_HEXf" name="hexokinase (D-fructose: ATP)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1503 )</html:p>
@@ -28770,7 +28770,7 @@
       <speciesReference species="M_nmn_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_3HPPPNH" name="3-(3-hydroxy-phenyl) propionate hydroxylase" reversible="false">
+  <reaction id="R_3HPPPNH" name="3-(3-hydroxy-phenyl)propionate hydroxylase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B1546 )</html:p>
@@ -29464,7 +29464,7 @@
       <speciesReference species="M_pi_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_DHLLM3" name="dihydrolipoyllysine-residue (2-methylpropanoyl)transferase" reversible="false">
+  <reaction id="R_DHLLM3" name="Dihydrolipoyllysine-residue (2-methylpropanoyl)transferase, 2-Methylbutanoyl-CoA forming" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B2235 )</html:p>
@@ -29484,7 +29484,7 @@
       <speciesReference species="M_2mbcoa_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_DHLLM2" name="dihydrolipoyllysine-residue (2-methylpropanoyl)transferase" reversible="false">
+  <reaction id="R_DHLLM2" name="dihydrolipoyllysine-residue (2-methylpropanoyl)transferase, Isobutyryl-CoA forming" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B2235 )</html:p>
@@ -29504,7 +29504,7 @@
       <speciesReference species="M_dlipo_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_DHLLM1" name="dihydrolipoyllysine-residue (2-methylpropanoyl)transferase" reversible="false">
+  <reaction id="R_DHLLM1" name="dihydrolipoyllysine-residue (2-methylpropanoyl)transferase, Isovaleryl-CoA forming" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B2235 )</html:p>
@@ -29635,7 +29635,7 @@
       <html:p>GENE_ASSOCIATION: ( H16_A1971 ) or ( H16_A2568 )</html:p>
       <html:p>PROTEIN_ASSOCIATION: ( H16_A1971 ) or ( H16_A2568 )</html:p>
       <html:p>SUBSYSTEM: Fatty acid biosynthesis</html:p>
-      <html:p>PROTEIN_CLASS: 2.3.1.39 2. 3.1.86</html:p>
+      <html:p>PROTEIN_CLASS: 2.3.1.39 2.3.1.86</html:p>
       <html:p>GENERIC: false</html:p>
       <html:p>TYPE: small</html:p>
       <html:p>HOLE: false</html:p>
@@ -29828,7 +29828,7 @@
       <speciesReference species="M_h_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_PSERP" name="phosphoserine phosphatase (Lserine)" reversible="false">
+  <reaction id="R_PSERP" name="phosphoserine phosphatase (L-serine)" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_A3080 ) or ( H16_A1452 ) or ( H16_B1164 )</html:p>
@@ -30502,7 +30502,7 @@
       <speciesReference species="M_taur_c" stoichiometry="1"/>
     </listOfProducts>
   </reaction>
-  <reaction id="R_NADFRBO" name="NADH:flavorubredoxi n oxidoreductase" reversible="false">
+  <reaction id="R_NADFRBO" name="NADH:flavorubredoxin oxidoreductase" reversible="false">
     <notes>
       <html:p>REVERSIBILITY: false</html:p>
       <html:p>GENE_ASSOCIATION: ( H16_B2323 )</html:p>
