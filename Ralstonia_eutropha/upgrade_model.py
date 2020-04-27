@@ -764,6 +764,13 @@ def get_gene_annotation(
 
 def update_gene_annotation(model):
     
+    # add names to  gene IDs where they are missing
+    for i in model.genes:
+        if (i.name == '') or (re.match('^G_', i.name)):
+            i.name = re.sub('^G_', '', i.id)
+            i.id = i.name
+            print(i.name)
+    
     df = get_gene_annotation(
         ref_path = 'data/gene_reference.json',
         item_list = model.genes.list_attr("id"),
@@ -793,12 +800,19 @@ def update_gene_annotation(model):
     # loop through all reactions, get EC number where available and
     # add genes corresponding to EC number to reaction.genes
     count_gene = 0
+    # exclude some reactions that were updated manually before
+    rea_excluded = ['PRUK', 'RBPC', 'HCO3E', 'TKT1', 'TKT2',
+        'SADT', 'SLFR', 'NADHDH', 'NADH16', 'NADH5', 'ATPS4m',
+        'ACCOAC', 'LDHm', 'DLDHD', 'CBPS', 'CAT', 'CS', 'DHFR', 
+        'RNDR1', 'RNDR2', 'RNDR3', 'RNDR4', 'RPE']
+    
     for rea in model.reactions:
-        if ('ec-code' in rea.annotation) and (rea.id not in ['PRUK', 'RBPC', 'HCO3E']):
+        
+        if ('ec-code' in rea.annotation) and (rea.id not in rea_excluded):
             ec_code = rea.annotation['ec-code']
             # only add gene association to reactions with unique EC number
-            # to avoid gene inflation
-            if len(ec_code) == 1:
+            # to avoid gene inflation. Only match complete EC codes
+            if (len(ec_code) == 1) and (re.match('[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)$', ec_code[0])):
                 ec_code = ec_code[0]
                 genes_db = genome_db[genome_db['EC_number'] == ec_code]['locus_tag'].to_list()
                 genes_db = list(set(genes_db))
@@ -811,7 +825,7 @@ def update_gene_annotation(model):
                     else:
                         sep = ''
                     rea.gene_reaction_rule = rea.gene_reaction_rule + sep + ' or '.join(genes_new)
-                    print('...added genes: ' + str(genes_new) + ' to reaction: ' + rea.id)
+                    print('...added genes: ' + str(genes_new) + ' to reaction: ' + rea.id + ' (' + ec_code + ')')
                     count_gene = count_gene + 1
     
     # manual changes not present in uniprot (source: kegg)
@@ -1018,10 +1032,10 @@ def update_stoichiometry(model):
     # reaction Ribulose 5-phosphate 3-epimerase (RPE) has 2 out of 3 
     # associated genes marked as essential by BarSeq (rpe, H16_A3317, rpe1 H16_B1391)
     # The megaplasmid borne gene PHG423 (rpe2) is an isoenzyme of rpe1
-    # and not essential, but all are very similar (65% identity, 95% for rpe1 and 2). 
-    # It is surprising that two less-related subunits are essential, pointing
-    # to diverging functions. It seems that H16_B1391 can functionally replace
-    # PHG423 but not the other way around. Nevertheless the model should 
+    # and not essential. Rpe1 and rpe2 are perfect isoenzymes (95.% idendity)
+    # while . 
+    # It is surprising that the two less-related subunits are clearly essential, pointing
+    # to diverging functions. Nevertheless the model should 
     # reflect the sequence identity of the genome and plasmid isoenzymes.
     model.reactions.RPE.gene_reaction_rule = (
         '( H16_B1391 and H16_A3317 ) or ( PHG423 and H16_A3317 )'
@@ -1032,8 +1046,8 @@ def update_stoichiometry(model):
     # is a perfect iso-enzyme of H16_B1388 located on the megaplasmid 
     # (96.6% identical). All three are isoenzymes but as with RPE, the two
     # less-similar enzymes are essential pointing to different roles. The
-    # plasmid isoenzyme is not-essential, maybe expression from plasmid is
-    # generally lower. We still treat PHG420 and H16_B1388 as perfect isoenzymes
+    # plasmid isoenzyme is not essential, maybe expression from plasmid is
+    # generally lower. We treat PHG420 and H16_B1388 as perfect isoenzymes
     TKTrule = '( H16_B1388 and H16_A3147 ) or ( PHG420 and H16_A3147 )'
     model.reactions.TKT1.gene_reaction_rule = TKTrule
     model.reactions.TKT2.gene_reaction_rule = TKTrule

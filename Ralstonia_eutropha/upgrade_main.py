@@ -40,14 +40,14 @@ def main():
     # update reaction annotation from Bigg db
     um.update_bigg_annotation(model, item_type = 'reaction')
     
+    # update stoichiometry of complexes
+    um.update_stoichiometry(model)
+    
     # update gene annotation from uniprot
     um.update_gene_annotation(model)
     
     # update SBO annotation for met, react, genes
     um.update_sbo_terms(model)
-    
-    # update stoichiometry of complexes
-    um.update_stoichiometry(model)
     
     # test run with FBA
     um.test_FBA(model)
