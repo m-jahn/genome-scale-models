@@ -693,204 +693,6 @@ def update_bigg_annotation(
     print('updated ' + item_type + ' annotation: ' + str(count_an))
 
 
-# ADDING GENE ANNOTATIONS FROM UNIPROT ---------------------------------
-# 
-# for this purpose we use the very comprehensive bioservices
-# package for python that has connectivity to all possible databases
-def get_gene_annotation(
-    ref_path = 'data/gene_reference.json',
-    item_list = [],
-    item_type = 'gene'):
-    
-    # open client connection
-    uni = UniProt(verbose = False)
-    kegg = KEGG(verbose = False)
-    
-    # construct generic reference names based on input params
-    ref_name = item_type + '_reference'
-    kegg_id = 'Gene names  (ordered locus )'
-    
-    # check if already an annotation file exists
-    # if yes load, if no, create new one
-    if path.exists(ref_path):
-        reference = pd.read_json(ref_path)
-        
-        # determine which items are missing in reference
-        ref_list = reference[kegg_id].to_list()
-        item_list = [i for i in item_list if i not in ref_list]
-    
-    # download annotation for unannotated genes
-    # and add to reference dataframe
-    if len(item_list):
-        
-        # fetch uniprot annotation table for all genes as pandas df
-        print('...downloading annotation for ' + str(len(item_list)) + ' genes from uniprot.org')
-        df = uni.get_df(item_list, limit = len(item_list))
-        print('...downloading annotation for ' + str(len(item_list)) + ' genes from kegg.jp')
-        dict_ncbi = {e: kegg.parse(kegg.get("reh:" + str(e)))['DBLINKS']['NCBI-ProteinID'] for e in item_list}
-        # remove entries that are not according to Reh standard
-        df = df[[len(i) == 6 for i in df['Entry']]]
-        
-        # some rows are merged entries for 2 KEGG IDs
-        # in this case we simply duplicate the rows and split entries
-        df_duplicated = list(filter(lambda x: len(str(x)) > 9, df[kegg_id]))
-        df_duplicated = list(set(df_duplicated))
-        print('...splitting duplicated entries: ' + str(df_duplicated))
-        # duplicate rows for entries if necessary and split IDs
-        # this currently works only if 2 IDs are merged, not more
-        for i in df_duplicated:
-            if sum(df[kegg_id] == i) == 1:
-                df = df.append(df[(df[kegg_id] == i)])
-            df.loc[df[kegg_id] == i, kegg_id] = re.split(" ", i)
-        
-        # replace NaN values with empty strings
-        df.fillna('', inplace = True)
-        
-        # merge processed uniprot and kegg data
-        df['ncbiprotein'] = [dict_ncbi[i] for i in df[kegg_id].to_list()]
-        
-        # merge newly downloaded refs with existing refs
-        if path.exists(ref_path):
-            reference = pd.concat([reference, df], ignore_index = True)
-        else:
-            reference = df
-            
-        # export reference with added items as json file
-        reference.to_json(ref_path)
-        print('...exported file "' + ref_path + '" with ' + str(len(item_list)) + ' new ' + item_type + 's')
-    
-    return(reference)
-
-
-def update_gene_annotation(model):
-    
-    # add names to  gene IDs where they are missing
-    for i in model.genes:
-        if (i.name == '') or (re.match('^G_', i.name)):
-            i.name = re.sub('^G_', '', i.id)
-            i.id = i.name
-            print(i.name)
-    
-    df = get_gene_annotation(
-        ref_path = 'data/gene_reference.json',
-        item_list = model.genes.list_attr("id"),
-        item_type = 'gene')
-    
-    # loop through all genes and add annotation
-    for index, row in df.iterrows():
-        
-        # construct new dict with SBML conformity
-        new_annot = {
-            'uniprot': row['Entry'],
-            'kegg.genes': 'reh:' + row['Gene names  (ordered locus )'],
-            'ncbiprotein': row['ncbiprotein'],
-            'protein_name': row['Protein names'],
-            'length': row['Length'],
-            'mol_mass': row['Mass']
-            }
-        # assign new annotation to each gene
-        gene = model.genes.get_by_id(row['Gene names  (ordered locus )'])
-        gene.annotation = new_annot
-    
-    
-    # get previously downloaded genome annotation for R. eutropha
-    # (source: uniprot.org)
-    genome_db = pd.read_csv('data/genome_annotation.csv')
-    
-    # loop through all reactions, get EC number where available and
-    # add genes corresponding to EC number to reaction.genes
-    count_gene = 0
-    # exclude some reactions that were updated manually before
-    rea_excluded = ['PRUK', 'RBPC', 'HCO3E', 'TKT1', 'TKT2',
-        'SADT', 'SLFR', 'NADHDH', 'NADH16', 'NADH5', 'ATPS4m',
-        'ACCOAC', 'LDHm', 'DLDHD', 'CBPS', 'CAT', 'CS', 'DHFR', 
-        'RNDR1', 'RNDR2', 'RNDR3', 'RNDR4', 'RPE']
-    
-    for rea in model.reactions:
-        
-        if ('ec-code' in rea.annotation) and (rea.id not in rea_excluded):
-            ec_code = rea.annotation['ec-code']
-            # only add gene association to reactions with unique EC number
-            # to avoid gene inflation. Only match complete EC codes
-            if (len(ec_code) == 1) and (re.match('[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)$', ec_code[0])):
-                ec_code = ec_code[0]
-                genes_db = genome_db[genome_db['EC_number'] == ec_code]['locus_tag'].to_list()
-                genes_db = list(set(genes_db))
-                genes_model = [re.sub('^G_', '', i.name) for i in rea.genes]
-                # determine which items are missing in model
-                genes_new = [i for i in genes_db if i not in genes_model]
-                if len(genes_new):
-                    if len(rea.gene_reaction_rule):
-                        sep = ' or '
-                    else:
-                        sep = ''
-                    rea.gene_reaction_rule = rea.gene_reaction_rule + sep + ' or '.join(genes_new)
-                    print('...added genes: ' + str(genes_new) + ' to reaction: ' + rea.id + ' (' + ec_code + ')')
-                    count_gene = count_gene + 1
-    
-    # manual changes not present in uniprot (source: kegg)
-    model.reactions.GAPD.gene_reaction_rule = (
-        model.reactions.GAPD.gene_reaction_rule + ' or PHG418')
-    count_gene = count_gene + 1
-    
-    # final reporting
-    print(' ----- SUMMARY OF GENE ANNOTATION ----- ')
-    print('updated annotation for genes/proteins: ' + str(len(df)))
-    print('added genes IDs to reactions: ' + str(count_gene))
-
-
-# ADDING SBO TERMS FOR METAB AND REACTIONS -----------------------------
-# 
-# SBO terms are a controlled vocabulary describing models or systems 
-# biology tools. They help to characterize all entities of a model
-# using well defined and fixed terms 
-def update_sbo_terms(model):
-    
-    # ---------- METABOLITES ----------
-    # add the same SBO term for 'simple chemical' for all metabolites
-    # as recommended by memote
-    for met in model.metabolites:
-        met.annotation['sbo'] = 'SBO:0000247'
-    print('...added SBO terms for ' + str(len(model.metabolites)) + ' metabolites')
-    
-    # ----------  REACTIONS  ----------
-    # add a more diverse set of SBO terms for all reactions,
-    # according to memote.io:
-    #   "SBO:0000176 represents the term 'biochemical reaction'. Every 
-    #   metabolic reaction that is not a transport or boundary reaction 
-    #   should be annotated with this."
-    #   "SBO:0000627 represents the term 'exchange reaction'. The Systems 
-    #   Biology Ontology defines an exchange reaction as follows: 'A 
-    #   modeling process to provide matter influx or efflux to a model'"
-    #   "'SBO:0000185' and 'SBO:0000655' represent the terms 
-    #   'translocation reaction' and 'transport reaction', respectively, 
-    #   in addition to their children"
-    for rea in model.reactions:
-        # SBO term for exchange/boundary reactions
-        if rea.boundary:
-            rea.annotation['sbo'] = ['SBO:0000627']
-        # SBO term for transport reactions
-        elif rea.compartments == {'e', 'c'}:
-            rea.annotation['sbo'] = ['SBO:0000655']
-        # SBO term for all other biochemical reactions
-        else: rea.annotation['sbo'] = ['SBO:0000176']
-    print('...added SBO terms for ' + str(len(model.reactions)) + ' reactions')
-    
-    # ----------    GENES    ----------
-    # add the SBO term "SBO:0000243" for 'gene' as recommended by memote
-    for gene in model.genes:
-        if 'sbo' in gene.annotation.keys():
-            if not 'SBO:0000243' in gene.annotation['sbo']:
-                gene.annotation['sbo'] = gene.annotation['sbo'] + ['SBO:0000243']
-        else: gene.annotation['sbo'] = ['SBO:0000243']
-    print('...added SBO terms for ' + str(len(model.genes)) + ' genes')
-    
-    # -------- BIOMASS REACTION -------
-    # add the SBO term "SBO:0000243" for the biomass reaction as recommended by memote
-    for biom in model.reactions.query('[Bb]iomass|BIOMASS'):
-        biom.annotation['sbo'].append('SBO:0000629')
-
-
 # UPDATE ENZYME STOICHIOMETRIES BASED ON BARSEQ ------------------------
 #
 # BarSeq data available for R. eutropha in our lab contains important
@@ -1052,6 +854,11 @@ def update_stoichiometry(model):
     model.reactions.TKT1.gene_reaction_rule = TKTrule
     model.reactions.TKT2.gene_reaction_rule = TKTrule
     
+    # not directly related to stoichiometry, but anyway: 
+    # correct name of dna_c to DNA_c
+    model.metabolites.dna_c.id = 'DNA_c'
+    model.metabolites.DNA_c.name = 'DNA'
+    
     # NOTES:
     # ------
     #
@@ -1079,6 +886,207 @@ def update_stoichiometry(model):
     # final reporting
     print(' ----- SUMMARY OF STOICHIOMETRY CHANGES ----- ')
     print('updated gene reaction rules for 20 reactions')
+
+
+# ADDING GENE ANNOTATIONS FROM UNIPROT ---------------------------------
+# 
+# for this purpose we use the very comprehensive bioservices
+# package for python that has connectivity to all possible databases
+def get_gene_annotation(
+    ref_path = 'data/gene_reference.json',
+    item_list = [],
+    item_type = 'gene'):
+    
+    # open client connection
+    uni = UniProt(verbose = False)
+    kegg = KEGG(verbose = False)
+    
+    # construct generic reference names based on input params
+    ref_name = item_type + '_reference'
+    kegg_id = 'Gene names  (ordered locus )'
+    
+    # check if already an annotation file exists
+    # if yes load, if no, create new one
+    if path.exists(ref_path):
+        reference = pd.read_json(ref_path)
+        
+        # determine which items are missing in reference
+        ref_list = reference[kegg_id].to_list()
+        item_list = [i for i in item_list if i not in ref_list]
+    
+    # download annotation for unannotated genes
+    # and add to reference dataframe
+    if len(item_list):
+        
+        # fetch uniprot annotation table for all genes as pandas df
+        print('...downloading annotation for ' + str(len(item_list)) + ' genes from uniprot.org')
+        df = uni.get_df(item_list, limit = len(item_list))
+        print('...downloading annotation for ' + str(len(item_list)) + ' genes from kegg.jp')
+        dict_ncbi = {e: kegg.parse(kegg.get("reh:" + str(e)))['DBLINKS']['NCBI-ProteinID'] for e in item_list}
+        # remove entries that are not according to Reh standard
+        df = df[[len(i) == 6 for i in df['Entry']]]
+        
+        # some rows are merged entries for 2 KEGG IDs
+        # in this case we simply duplicate the rows and split entries
+        df_duplicated = list(filter(lambda x: len(str(x)) > 9, df[kegg_id]))
+        df_duplicated = list(set(df_duplicated))
+        print('...splitting duplicated entries: ' + str(df_duplicated))
+        # duplicate rows for entries if necessary and split IDs
+        # this currently works only if 2 IDs are merged, not more
+        for i in df_duplicated:
+            if sum(df[kegg_id] == i) == 1:
+                df = df.append(df[(df[kegg_id] == i)])
+            df.loc[df[kegg_id] == i, kegg_id] = re.split(" ", i)
+        
+        # replace NaN values with empty strings
+        df.fillna('', inplace = True)
+        
+        # merge processed uniprot and kegg data
+        df['ncbiprotein'] = [dict_ncbi[i] for i in df[kegg_id].to_list()]
+        
+        # merge newly downloaded refs with existing refs
+        if path.exists(ref_path):
+            reference = pd.concat([reference, df], ignore_index = True)
+        else:
+            reference = df
+        
+        # refactor index (row numbers)
+        reference.index = range(0, len(reference))
+        
+        # export reference with added items as json file
+        reference.to_json(ref_path)
+        print('...exported file "' + ref_path + '" with ' + str(len(item_list)) + ' new ' + item_type + 's')
+    
+    return(reference)
+
+
+def update_gene_annotation(model):
+    
+    # add names to  gene IDs where they are missing
+    for i in model.genes:
+        if (i.name == '') or (re.match('^G_', i.name)):
+            i.name = re.sub('^G_', '', i.id)
+            i.id = i.name
+            print(i.name)
+    
+    df = get_gene_annotation(
+        ref_path = 'data/gene_reference.json',
+        item_list = model.genes.list_attr("id"),
+        item_type = 'gene')
+    
+    # loop through all genes and add annotation
+    for index, row in df.iterrows():
+        
+        # construct new dict with SBML conformity
+        new_annot = {
+            'uniprot': row['Entry'],
+            'kegg.genes': 'reh:' + row['Gene names  (ordered locus )'],
+            'ncbiprotein': row['ncbiprotein'],
+            'protein_name': row['Protein names'],
+            'length': row['Length'],
+            'mol_mass': row['Mass']
+            }
+        # assign new annotation to each gene
+        gene = model.genes.get_by_id(row['Gene names  (ordered locus )'])
+        gene.annotation = new_annot
+    
+    
+    # get previously downloaded genome annotation for R. eutropha
+    # (source: uniprot.org)
+    genome_db = pd.read_csv('data/genome_annotation.csv')
+    
+    # loop through all reactions, get EC number where available and
+    # add genes corresponding to EC number to reaction.genes
+    count_gene = 0
+    # exclude some reactions that were updated manually before
+    rea_excluded = ['PRUK', 'RBPC', 'HCO3E', 'TKT1', 'TKT2',
+        'SADT', 'SLFR', 'NADHDH', 'NADH16', 'NADH5', 'ATPS4m',
+        'ACCOAC', 'LDHm', 'DLDHD', 'CBPS', 'CAT', 'CS', 'DHFR', 
+        'RNDR1', 'RNDR2', 'RNDR3', 'RNDR4', 'RPE']
+    
+    for rea in model.reactions:
+        
+        if ('ec-code' in rea.annotation) and (rea.id not in rea_excluded):
+            ec_code = rea.annotation['ec-code']
+            # only add gene association to reactions with unique EC number
+            # to avoid gene inflation. Only match complete EC codes
+            if (len(ec_code) == 1) and (re.match('[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+)$', ec_code[0])):
+                ec_code = ec_code[0]
+                genes_db = genome_db[genome_db['EC_number'] == ec_code]['locus_tag'].to_list()
+                genes_db = list(set(genes_db))
+                genes_model = [re.sub('^G_', '', i.name) for i in rea.genes]
+                # determine which items are missing in model
+                genes_new = [i for i in genes_db if i not in genes_model]
+                if len(genes_new):
+                    if len(rea.gene_reaction_rule):
+                        sep = ' or '
+                    else:
+                        sep = ''
+                    rea.gene_reaction_rule = rea.gene_reaction_rule + sep + ' or '.join(genes_new)
+                    print('...added genes: ' + str(genes_new) + ' to reaction: ' + rea.id + ' (' + ec_code + ')')
+                    count_gene = count_gene + 1
+    
+    # manual changes not present in uniprot (source: kegg)
+    model.reactions.GAPD.gene_reaction_rule = (
+        model.reactions.GAPD.gene_reaction_rule + ' or PHG418')
+    count_gene = count_gene + 1
+    
+    # final reporting
+    print(' ----- SUMMARY OF GENE ANNOTATION ----- ')
+    print('updated annotation for genes/proteins: ' + str(len(df)))
+    print('added genes IDs to reactions: ' + str(count_gene))
+
+
+# ADDING SBO TERMS FOR METAB AND REACTIONS -----------------------------
+# 
+# SBO terms are a controlled vocabulary describing models or systems 
+# biology tools. They help to characterize all entities of a model
+# using well defined and fixed terms 
+def update_sbo_terms(model):
+    
+    # ---------- METABOLITES ----------
+    # add the same SBO term for 'simple chemical' for all metabolites
+    # as recommended by memote
+    for met in model.metabolites:
+        met.annotation['sbo'] = 'SBO:0000247'
+    print('...added SBO terms for ' + str(len(model.metabolites)) + ' metabolites')
+    
+    # ----------  REACTIONS  ----------
+    # add a more diverse set of SBO terms for all reactions,
+    # according to memote.io:
+    #   "SBO:0000176 represents the term 'biochemical reaction'. Every 
+    #   metabolic reaction that is not a transport or boundary reaction 
+    #   should be annotated with this."
+    #   "SBO:0000627 represents the term 'exchange reaction'. The Systems 
+    #   Biology Ontology defines an exchange reaction as follows: 'A 
+    #   modeling process to provide matter influx or efflux to a model'"
+    #   "'SBO:0000185' and 'SBO:0000655' represent the terms 
+    #   'translocation reaction' and 'transport reaction', respectively, 
+    #   in addition to their children"
+    for rea in model.reactions:
+        # SBO term for exchange/boundary reactions
+        if rea.boundary:
+            rea.annotation['sbo'] = ['SBO:0000627']
+        # SBO term for transport reactions
+        elif rea.compartments == {'e', 'c'}:
+            rea.annotation['sbo'] = ['SBO:0000655']
+        # SBO term for all other biochemical reactions
+        else: rea.annotation['sbo'] = ['SBO:0000176']
+    print('...added SBO terms for ' + str(len(model.reactions)) + ' reactions')
+    
+    # ----------    GENES    ----------
+    # add the SBO term "SBO:0000243" for 'gene' as recommended by memote
+    for gene in model.genes:
+        if 'sbo' in gene.annotation.keys():
+            if not 'SBO:0000243' in gene.annotation['sbo']:
+                gene.annotation['sbo'] = gene.annotation['sbo'] + ['SBO:0000243']
+        else: gene.annotation['sbo'] = ['SBO:0000243']
+    print('...added SBO terms for ' + str(len(model.genes)) + ' genes')
+    
+    # -------- BIOMASS REACTION -------
+    # add the SBO term "SBO:0000243" for the biomass reaction as recommended by memote
+    for biom in model.reactions.query('[Bb]iomass|BIOMASS'):
+        biom.annotation['sbo'].append('SBO:0000629')
 
 
 # TESTING GROWTH WITH FBA ----------------------------------------------
