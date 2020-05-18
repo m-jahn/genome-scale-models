@@ -776,7 +776,7 @@ def update_stoichiometry(model):
         'H16_A3637 and H16_A3638 and H16_A3640 and H16_A3641 )'
     )
     
-    # The cytochrome oxidase b0/c (reaction CYTCOBO3) has no genes annotated. However,
+    # The cytochrome oxidase b0/c (reactions CYTBD, CYTCOBO3) has no genes annotated. However,
     # there are several complexes known in Ralstonia that can act as terminal
     # cytochrome c oxidases (analogous to complex 3 and 4 of respiratory chain), 
     # with a high level of redundancy between complexes.
@@ -787,7 +787,7 @@ def update_stoichiometry(model):
     # with low efficiency). This complex provides reduced cytochrome c for a range of
     # other terminal cyt c oxidases, of which the cta (aa3 type), cox (bb3 type) and cco (cbb3 type) operons 
     # seem to play the biggest role.
-    model.reactions.CYTCOBO3.gene_reaction_rule = (
+    model.reactions.CYTBD.gene_reaction_rule = (
         '( H16_A3396 and H16_A3397 and H16_A3398 and ' +        # qrcA, B, C
         'H16_A2319 and H16_A2318 and H16_A2316 and ' +          # ccoN, O, P
         'H16_B2062 and H16_B2059 and ' +                        # coxM, P
@@ -798,7 +798,11 @@ def update_stoichiometry(model):
     # redundant complexes annotated in R. eutropha, with very low expression,
     # cyoA1, B1, C1, D1, cyoA2, B2, C2, D2, and cyoA3, B3, C3, D3. They don't
     # seem to play a major roll in any of the tested conditions
-    
+    model.reactions.CYTCOBO3.gene_reaction_rule = (
+        '( H16_A1071 and H16_A1072 and H16_A1073 and H16_A1074 ) or ' +  # cyoA1,B1,C1,D1
+        '( H16_A1640 and H16_A1641 and H16_A1642 and H16_A1643 ) or ' +  # cyoA2,B2,C2,D3
+        '( H16_B1025 and H16_B1026 and H16_B1027 and H16_B1028 )'        # cyoA3,B3,C3,D3
+    )
     
     # Succinate dehydrogenase, two reactions (SUCD1 and SUCDi) with 5 genes
     # of which 4 are essential according to BarSeq (H16_A2632, H16_A2631, 
