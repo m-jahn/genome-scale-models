@@ -265,8 +265,15 @@ def modify_reactions(model):
     model.reactions.LCARR.name = 'Lacaldehyde reductase (R-propane-1,2-diol forming)'
     model.reactions.CABPS.id = 'CBPS'
     model.reactions.CBPS.name = 'Carbamoyl-phosphate synthase (glutamine-hydrolysing)'
+    model.reactions.BAPYRT.id = 'APATr'
+    model.reactions.APATr.name = 'B alanine pyruvate aminotransferase'
     model.metabolites.uq_c.name = 'Ubiquinone-8'
     model.metabolites.uqh2_c.name = 'Ubiquinol-8'
+    model.metabolites.bala_c.id = 'ala_B_c'
+    model.metabolites.ala_B_c.name = 'Beta-Alanine'
+    model.metabolites.get_by_id('3opp_c').id = 'msa'
+    model.metabolites.msa.name = 'Malonate semialdehyde'
+    
     
     # 3rd STEP: correct known errors in reactions
     # -------------------------------------------
@@ -292,6 +299,25 @@ def modify_reactions(model):
     # regarding canonical flow of TCA
     model.reactions.SUCOAS.bounds = (-1000.0, 1000.0)
     print('...set reversibility for reaction SUCOAS')
+    
+    # reaction P5CD2 seems to have wrong reactants. There is no info on a
+    # direct conversion from L-glu to L-glu-5-semialdehyde. All Bigg pathways
+    # to L-glu-5-semialdehyde go via GLU5K and G5SD, the canonical pathway.
+    # reaction LEUD3 seems to be wrong as well. It is annotated as L-leucine 
+    # dehydrogenase, but converts (S)-3-Methyl-2-oxopentanoate to L-isoleucin,
+    # although this is not the canonical pathway. The reaction does not seem to exist.
+    # reaction 4AMBUAT is annotated as 4-aminobutyrate aminotransferase, but
+    # catalyzes transfer of an aminogroup from malonyl semialdehyde to beta-alanine
+    # it forms an artificial cycle with APAtr and does not seem to exist in nature
+    model.remove_reactions(['P5CD2', 'LEUD3', '4AMBUAT'])
+    
+    # some reaction show infinitely high flux when doing FVA. This is often
+    # related to artificial cycles that can form when reaction directionalities
+    # are not correct. Here we correct some known errors.
+    model.reactions.PPCSYN2.bounds = (-1000, 0)
+    model.reactions.GLUR.bounds = (-1000, 0)
+    model.reactions.ALAR.bounds = (0, 1000)
+    model.reactions.LAAO3.bounds = (0, 1000)
     
     # One reason that Succ-dehydrogenase is not essential in the model is
     # a shortcut called the methylglyoxal pathway, where DHAP (or here, via 
@@ -749,6 +775,30 @@ def update_stoichiometry(model):
         '( H16_A3643 and H16_A3642 and H16_A3639 and H16_A3636 and ' + 
         'H16_A3637 and H16_A3638 and H16_A3640 and H16_A3641 )'
     )
+    
+    # The cytochrome oxidase b0/c (reaction CYTCOBO3) has no genes annotated. However,
+    # there are several complexes known in Ralstonia that can act as terminal
+    # cytochrome c oxidases (analogous to complex 3 and 4 of respiratory chain), 
+    # with a high level of redundancy between complexes.
+    # For details, see excellent review by R. Cramm, J Mol Microbio & Biotech, 2008.
+    # The complex 3 analog (bc1 type) is the cytochrome c reductase and annotated with 3 genes,
+    # qrcA, B, C. These are by far the most expressed ones judging from proteomics data.
+    # (although results must be taken with care because membrane proteins are isolated/quantified
+    # with low efficiency). This complex provides reduced cytochrome c for a range of
+    # other terminal cyt c oxidases, of which the cta (aa3 type), cox (bb3 type) and cco (cbb3 type) operons 
+    # seem to play the biggest role.
+    model.reactions.CYTCOBO3.gene_reaction_rule = (
+        '( H16_A3396 and H16_A3397 and H16_A3398 and ' +        # qrcA, B, C
+        'H16_A2319 and H16_A2318 and H16_A2316 and ' +          # ccoN, O, P
+        'H16_B2062 and H16_B2059 and ' +                        # coxM, P
+        'H16_A0342 and H16_A0343 and H16_A0347 and H16_A0345 )' # ctaC, D, E, G
+    )
+
+    # The complex 4 analog (b03 type) is another cytochrome c terminal oxidase and has three 
+    # redundant complexes annotated in R. eutropha, with very low expression,
+    # cyoA1, B1, C1, D1, cyoA2, B2, C2, D2, and cyoA3, B3, C3, D3. They don't
+    # seem to play a major roll in any of the tested conditions
+    
     
     # Succinate dehydrogenase, two reactions (SUCD1 and SUCDi) with 5 genes
     # of which 4 are essential according to BarSeq (H16_A2632, H16_A2631, 
