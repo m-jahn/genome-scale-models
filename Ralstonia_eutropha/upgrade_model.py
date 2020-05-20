@@ -277,6 +277,23 @@ def modify_reactions(model):
     
     # 3rd STEP: correct known errors in reactions
     # -------------------------------------------
+    
+    # Add one reaction that is missing for full heme biosynthesis, the
+    # Uroporphyrinogen-III synthase. The reaction was taken from iJO1366.
+    # The associated gene was annotated in uniprot and is already present in the model
+    # as Uroporphyrinogen-III methyltransferase
+    UPP3S = cobra.Reaction('UPP3S')
+    UPP3S.name = 'Uroporphyrinogen-III synthase'
+    model.add_reactions([UPP3S])
+    model.reactions.UPP3S.build_reaction_from_string('hmb_c --> h2o_c + uppg3_c')
+    model.reactions.UPP3S.gene_reaction_rule = 'H16_A2919'
+    print('...added reaction Uroporphyrinogen-III synthase for heme biosynthesis')
+    
+    # add heme to the biomass sub-reaction cofactors and vitamins
+    # the final concentration in mmol was adopted from E. coli reference model iJO1366
+    model.reactions.Cofactors_and_vitamins.add_metabolites({'hemeA_c': -0.0074})
+    print('...added heme to the Cofactor branch of biomass reaction')
+    
     # There's an artificial NADH generating cycle around the metabolite
     # 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions,
     # P5CD4 --> PROD4/P5CD5 --> PTO4H --> P5CD4
@@ -1157,6 +1174,7 @@ def test_FBA(model):
         'EX_cobalt2_e': 10.0,
         'EX_cl_e': 10.0,
         'EX_k_e': 10.0,
+        'EX_fe2_e': 10.0,
         'EX_fe3_e': 10.0,
         'EX_so4_e': 10.0,
         'EX_na_e': 10.0,
