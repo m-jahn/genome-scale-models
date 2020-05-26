@@ -322,13 +322,17 @@ def modify_reactions(model):
     # reaction P5CD2 seems to have wrong reactants. There is no info on a
     # direct conversion from L-glu to L-glu-5-semialdehyde. All Bigg pathways
     # to L-glu-5-semialdehyde go via GLU5K and G5SD, the canonical pathway.
-    # reaction LEUD3 seems to be wrong as well. It is annotated as L-leucine 
-    # dehydrogenase, but converts (S)-3-Methyl-2-oxopentanoate to L-isoleucin,
-    # although this is not the canonical pathway. The reaction does not seem to exist.
-    # reaction 4AMBUAT is annotated as 4-aminobutyrate aminotransferase, but
+    # Reaction LEUD3/4 seem to be wrong as well. They are annotated as L-leucine 
+    # dehydrogenase, but convert 3-Methyl-2-oxobutanoate or 3-Methyl-2-
+    # oxopentanoate to L-isoleucin or L-Valin. There are however canonical AA
+    # synthesis reactions for this purpose, while these reactions participate
+    # in artificial cycles.
+    # Reaction 4AMBUAT is annotated as 4-aminobutyrate aminotransferase, but
     # catalyzes transfer of an aminogroup from malonyl semialdehyde to beta-alanine
-    # it forms an artificial cycle with APAtr and does not seem to exist in nature
-    model.remove_reactions(['P5CD2', 'LEUD3', '4AMBUAT'])
+    # it forms an artificial cycle with APAtr and does not seem to exist in nature.
+    # Reaction ACOADH2 oxidizes praopanoyl-CoA to propenoyl-CoA and is the reverse
+    # reaction of PCNO (forms an artificial cycle).
+    model.remove_reactions(['P5CD2', 'LEUD3', 'LEUD4', '4AMBUAT', 'ACOADH2'])
     
     # some reaction show infinitely high flux when doing FVA. This is often
     # related to artificial cycles that can form when reaction directionalities
