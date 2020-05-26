@@ -267,6 +267,8 @@ def modify_reactions(model):
     model.reactions.CBPS.name = 'Carbamoyl-phosphate synthase (glutamine-hydrolysing)'
     model.reactions.BAPYRT.id = 'APATr'
     model.reactions.APATr.name = 'B alanine pyruvate aminotransferase'
+    model.reactions.DATA4.id = 'ALATA_D'
+    model.reactions.DALATA.id = 'ALATA_D2'
     model.metabolites.uq_c.name = 'Ubiquinone-8'
     model.metabolites.uqh2_c.name = 'Ubiquinol-8'
     model.metabolites.bala_c.id = 'ala_B_c'
@@ -330,11 +332,16 @@ def modify_reactions(model):
     
     # some reaction show infinitely high flux when doing FVA. This is often
     # related to artificial cycles that can form when reaction directionalities
-    # are not correct. Here we correct some known errors.
+    # are not correct. Here we correct some known errors, either based on
+    # thermodynamic constraints (see modelSEED dG and estimated directionality),
+    # or participation in cycles (compare Bigg reactions).
     model.reactions.PPCSYN2.bounds = (-1000, 0)
     model.reactions.GLUR.bounds = (-1000, 0)
     model.reactions.ALAR.bounds = (0, 1000)
     model.reactions.LAAO3.bounds = (0, 1000)
+    model.reactions.ASPO1.bounds = (0, 1000)
+    model.reactions.ALATA_D.bounds = (0, 1000)
+    model.reactions.ALATA_D2.bounds = (0, 1000)
     
     # One reason that Succ-dehydrogenase is not essential in the model is
     # a shortcut called the methylglyoxal pathway, where DHAP (or here, via 
