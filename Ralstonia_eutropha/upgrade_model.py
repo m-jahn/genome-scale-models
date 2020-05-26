@@ -447,6 +447,25 @@ def modify_reactions(model):
     model.metabolites.aspsa_c.name = 'L-Aspartate 4-semialdehyde'
     print('...corrected name for aspsa_c to L-Aspartate 4-semialdehyde')
     
+    # Add a (dummy) tRNA loading reaction for asparagin that was missing;
+    # in the original model, tRNA-Asn is made from tRNA-Asp directly.
+    # However this does not work properly with RBA models
+    model.add_metabolites(
+    cobra.Metabolite(
+        id = 'trnaasn_c',
+        name = 'tRNA(Asn)',
+        compartment = 'c',
+        charge = 0,
+        formula = 'C10H17O10PR2'))
+    
+    ASNTRS = cobra.Reaction('ASNTRS')
+    ASNTRS.name = 'Asparaginyl-tRNA synthetase'
+    ASNTRS_string = 'asn__L_c + atp_c + trnaasn_c --> amp_c + asntrna_c + h_c + ppi_c'
+    model.add_reactions([ASNTRS])
+    model.reactions.ASNTRS.build_reaction_from_string(ASNTRS_string)
+    model.reactions.ASNTRS.gene_reaction_rule = 'H16_A0453'
+    print('...added missing Asn-tRNA loading reaction (Asparaginyl-tRNA synthetase)')
+    
     # Some reactions (e.g. CABPS, carbamoylphosphate synthase) require hco3
     # instead of co2 as substrate for phophorylation. However, a co2 <=> hco3
     # equilibration reaction is missing (see BiGG reaction HCO3E).
@@ -548,7 +567,7 @@ def modify_reactions(model):
     print(' ----- SUMMARY OF MODIFIED REACTIONS ----- ')
     print('removed duplicated reactions: ' + str(len(duplicated_reactions)))
     print('added names to reactions: ' + str(count))
-    print('corrected erroneous reactions: 21')
+    print('corrected erroneous reactions: 31')
 
 
 # ADDING ANNOTATIONS FROM BIGG -----------------------------------------
