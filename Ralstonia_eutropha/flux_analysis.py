@@ -117,3 +117,45 @@ def run_FBA(
     return result
 
 
+# FLUX SAMPLING ANALYSIS -----------------------------------------------
+
+# function to run an flux sampling analysis and report result in a 
+# pandas data frame. Flux sampling is performed using the OptGP
+# sampler and includes only flux distributions that are within a certain
+# range of feasible growth rates (such as at least 95% of mu max)
+
+def run_flux_sampling(
+    model, medium,
+    n_samples = 10,
+    objective = "Biomass", 
+    obj_maximize = True,
+    print_summary = True,
+    FVA_optimality = 0.9,
+    ):
+    
+    # assign medium to model
+    model.medium = medium
+    
+    # assign objective function
+    if obj_maximize: obj_maximize = 1
+    else: obj_maximize = -1
+    model.objective = {
+    model.reactions.get_by_id(objective): obj_maximize
+    }
+    
+    # run FBA analysis to predetermine optimal solution
+    solution = model.optimize()
+    bm_lb = solution.objective_value*FVA_optimality
+    model.reactions.Biomass.bounds = (bm_lb, 1000)
+    
+    # run flux sampling
+    result = cobra.sampling.sample(model, n = n_samples)
+    
+    # print summary of FBA results to terminal
+    if print_summary:
+        print("SOLUTION: OBJECTIVE = " + str(round(solution.objective_value, 4)))
+        print("TOP 5 CONSUMING /  PRODUCING FLUXES:\n")
+        print(result.mean().sort_values())
+    
+    # return data frame with flux results
+    return result
