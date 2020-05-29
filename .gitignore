@@ -2,3 +2,4 @@ Ralstonia_eutropha/simulations/*
 Ralstonia_eutropha/test*
 Ralstonia_eutropha/__pycache__/*
 plot_essentiality.R
+Ralstonia_eutropha/sbml/RehMBEL1391_sbml_Park_orig.xml
