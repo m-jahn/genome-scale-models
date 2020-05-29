@@ -381,22 +381,29 @@ summary {
 <li>Related to the problem with this reaction is that it is duplicated as <code>PROD4</code> (also same gene). The reaction was removed.</li>
 <li>A reaction that seems to contain an error is <code>NADHDH</code>, an NADH dehydrogenase that converts UQ spontaneously to UQH2, a reaction that requires NADH canonically (see BiGG reaction: NADHDH). Cofactors were added.</li>
 <li>The TCA cycle reaction succinyl-CoA-synthetase <code>SUCOAS</code> is importantly not set to ‘reversible’ as it’s supposed to be, and therefore constrained to wrong direction regarding canonical flow of TCA. Constraints were changed to allow reversible flux.</li>
+<li>Cryptic reactions <code>P5CD2</code>, <code>LEUD3</code>, <code>LEUD4</code>, <code>4AMBUAT</code>, <code>ACOADH2</code> were removed for teh following reasons. Reaction <code>P5CD2</code> seems to have wrong reactants. There is no info on a direct conversion from L-glu to L-glu-5-semialdehyde. All Bigg pathways to L-glu-5-semialdehyde go via <code>GLU5K</code> and <code>G5SD</code>, the canonical pathway. Reactions <code>LEUD3/4</code> seem to be wrong as well. They are annotated as L-leucine dehydrogenase, but convert 3-Methyl-2-oxobutanoate or 3-Methyl-2-oxopentanoate to L-isoleucin or L-Valin. There are however canonical AA synthesis reactions for this purpose, while these reactions participate in artificial cycles. Reaction <code>4AMBUAT</code> is annotated as 4-aminobutyrate aminotransferase, but catalyzes transfer of an aminogroup from malonyl semialdehyde to beta-alanine. It forms an artificial cycle with <code>APAtr</code> and does not seem to exist in nature. Reaction <code>ACOADH2</code> oxidizes praopanoyl-CoA to propenoyl-CoA and is the reverse reaction of <code>PCNO</code> (forms artificial cycle).</li>
 <li>The reaction <code>MICITL</code> is the last step of the methyl-citrate cycle, an alternative route through TCA from <code>oaa + propcoa --&gt; succ + pyr</code>. It carries artificially high flux, so flux of the final reaction was constrained.</li>
 <li><code>PYK</code> is allowed in the model to go in reverse direction (<code>pyr + atp --&gt; pep + adp</code>) but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). Standard <em>E. coli</em> models also exclude the reverse reaction.</li>
 <li>Several alternative reactions to <code>PYK</code> (<code>PYK1</code>, <code>PYK2</code>, <code>PYK3</code>) that carry most likely very little or no flux in <em>R. eutropha</em>, were silenced.</li>
 <li>Pyruvate carboxylase <code>PYC</code> should only run in direction from <code>pyr --&gt; oaa</code>, but not reverse (see E. coli reference models in BiGG).</li>
 <li>PEP carboxylase <code>PPC</code> has correct bounds but one H+ reactant too much. The reaction was corrected.</li>
-<li>The biomass equation incorrectly contains pyridoxine as the required cofactor, but the canonical metaboliyte is pyridoxal-5-phosphate (pydx5p). Correcting this error prevents an infeasible cycle of reactions where the same enzyme (<code>H16_A2802</code>) shows different reaction directionalities for the same metabolites (only difference being phosphorylated or not).</li>
+<li>The biomass equation incorrectly contains pyridoxine as the required cofactor, but the canonical metaboliyte is pyridoxal-5-phosphate (<code>pydx5p</code>). Correcting this error prevents an infeasible cycle of reactions where the same enzyme (<code>H16_A2802</code>) shows different reaction directionalities for the same metabolites (only difference being phosphorylated or not).</li>
 <li>Together with this error two reactions in pyridoxal phosphate metabolism (<code>PYR5OXX</code>, <code>PYR5OXM</code>) were set to irreversible, as they were taking part in an artificial O2 generating cycle, and are thermodynamically unlikely to go reverse.</li>
 <li>Two different metabolites, <code>asp_c</code> and <code>aspsa_c</code>, are labelled with the name of aspartate in the model and take part in different reactions. However <code>aspsa_c</code> is in reality L-Aspartate 4-semialdehyde (source: BiGG). This was renamed in the model. The reactions are correct.</li>
+<li>A (dummy) tRNA loading reaction was added for asparagin that was missing; In the original model, tRNA-Asn is made from tRNA-Asp directly. However this does not work properly with RBA models.</li>
 <li>Some reactions (e.g. <code>CABPS</code>, carbamoylphosphate synthase) require <code>hco3</code> instead of <code>co2</code> as substrate for phosphorylation. However, a <code>co2 &lt;=&gt; hco3</code> equilibration reaction is missing (see BiGG reaction <code>HCO3E</code>). The reaction was added.</li>
 <li>The primary means of fructose uptake seems to be the ABC transporter (ATP dependent import). A second ATP-dependent reaction, fructokinase, then phosphorylates <code>fru --&gt; f6p</code>. It is not clear if the alternative PEP-PTS dependent fructose uptake and phosphorylation exists in <em>R. eutropha</em>. Therefore the PEP-PTS reaction was silenced (more details, see Kaddor &amp; Steinbuechel, 2011).</li>
 <li>The original model only contains a lumped reaction for the CBB cycle. In order to include a working CBB cycle, two reactions need to be added, 1) Phosphoribulokinase <code>PRUK</code> (cbbP2, H16_B1389; cbbPp, PHG421) catalyzing phosphorylation of Ribulose-5-phosphate: <code>atp_c + rl5p_c --&gt; adp_c + h_c + rb15bp_c</code>. And 2) Ribulose-1,5-bisphosphate carboxylase <code>RBPC</code> (cbbS2, H16_B1394; cbbL2, H16_B1395; cbbSp, PHG426, cbbLp, PHG427) catalyzing the addition of CO2: <code>co2_c + h2o_c + rb15bp_c --&gt; 2.0 h_c + 2.0 3pg_c</code>. The metabolite Ribulose-1,5-bisphosphate was added and the original reaction <code>CBBCYC</code> silenced.</li>
+<li>The original model contains a reaction to synthesize a precursor of the essential cofactor thiamin monophosphate (thmmp) using a non-existing pseudo reaction called <code>MISRXN</code>, named in the model as ‘unclear reaction’. This reaction was removed and replaced by a correct thiazole phosphate synthesis reaction (see Bigg reference reaction <code>THZPSN</code>)</li>
+<li>Autotrophic growth (H2 utilization) was implemented by the following changes. Annotation for the existing membrane-bound hydrogenase (MBH, <code>HYD1</code> in model) was improved by adding the <code>hoxKGZ</code> subunits, see Cramm, 2008. The second and missing reaction, soluble hydrogenase (SH) was added as <code>HYDS</code> including gene annotation with <code>hoxFUYH</code>. An H2 transporter <code>H2td</code> (diffusion) and exchange reaction <code>EX_h2_e</code> was added (required new metabolite external H2, <code>h2_e</code>).</li>
+</ul>
+<p>Other changes regarding to annotation:</p>
+<ul>
 <li>IDs for 394 metabolites were updated using <code>cobrapy-bigg-client</code></li>
 <li>IDs for 484 reactions were updated using <code>cobrapy-bigg-client</code></li>
 <li>Annotation for 900 metabolites was added using <code>cobrapy-bigg-client</code></li>
 <li>Annotation for 824 reactions was added using <code>cobrapy-bigg-client</code></li>
-<li>Annotation for 127 5 genes was added using <code>bioservices.uniprot</code> and <code>bioservices.kegg</code></li>
+<li>Annotation for 1275 genes was added using <code>bioservices.uniprot</code> and <code>bioservices.kegg</code></li>
 <li>Names were added for 51 reactions</li>
 <li>31 duplicated reactions were removed</li>
 <li>Gene reaction rules were changed for 20 reactions</li>
@@ -413,14 +420,16 @@ summary {
 <li><code>data/</code> – folder containing the reference ‘model’ files with Bigg annotation (<code>*.json</code>)</li>
 <li><code>escher/</code> – folder with map layout and model for <a href="https://escher.github.io/">escher</a> visualization (<code>*.json</code>)</li>
 <li><code>memote</code> – folder containing the latest memote reports as <code>*.html</code> documents</li>
-<li><code>sbml/</code> – folder containing the SBML model files (<code>*.xml</code>)</li>
+<li><code>sbml/</code> – folder containing the original and improved SBML model (<code>*.xml</code>)</li>
 <li><code>simulations/</code> – folder with simulation results tables (<code>*.csv</code>)</li>
 </ul>
 <p>The <code>Ralstonia_eutropha</code> folder contains the following <strong>scripts</strong>:</p>
 <ul>
 <li><code>upgrade_model.py</code> – functions to import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Add <a href="http://bigg.ucsd.edu/">Bigg</a> and <a href="https://www.uniprot.org/">uniprot</a> annotation. Test FBA with COBRApy</li>
 <li><code>upgrade_main.py</code> – main script for execution of model upgrade</li>
-<li><code>flux_analysis.py</code> – wrapper functions for FBA and FVA with COBRApy</li>
+<li><code>get_model_reactions.py</code> – function to retrieve and export reaction data</li>
+<li><code>flux_analysis.py</code> – wrapper functions for FBA, FVA and flux sampling with COBRApy</li>
+<li><code>essentiality analysis.py</code> – find essential gene set predicted by the model</li>
 <li><code>test_simulations.py</code> – script to run many simulations at once using COBRApy</li>
 <li><code>plot_simulations.R</code> – R script to plot results from FBA, FVA, or other simulations</li>
 </ul>
