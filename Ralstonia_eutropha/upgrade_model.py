@@ -574,6 +574,43 @@ def modify_reactions(model):
     model.reactions.THZPSN.gene_reaction_rule = '( H16_A0238 and H16_A0237 and H16_A0330 )'
     print('...added correct thiamin precursor synthesis reaction')
     
+    # autotrophic growth (H2 utilization):
+    # improve annotation for the existing membrane-bound hydrogenase (MBH)
+    # by adding the hoxKGZ subunits, see Cramm, 2008
+    model.reactions.HYDGq.gene_reaction_rule = '( PHG001 and PHG002 and PHG003 )'
+    
+    # adding the second and missing reaction, soluble hydrogenase (SH)
+    HYDS = cobra.Reaction('HYDS')
+    HYDS.name = 'Hydrogenase (NADH)'
+    model.add_reactions([HYDS])
+    model.reactions.HYDS.build_reaction_from_string('h2_c + nad_c --> h_c + nadh_c')
+    model.reactions.HYDS.gene_reaction_rule = '( PHG088 and PHG089 and PHG090 and PHG091 )'
+    print('...added soluble hydrogenase HYDS (NADH dependent)')
+    
+    # adding an H2 transporter (diffusion) and exchange reaction
+    EX_h2_e = cobra.Reaction('EX_h2_e')
+    EX_h2_e.name = 'EX_h2_e'
+    H2td = cobra.Reaction('H2td')
+    H2td.name = 'Hydrogen transport'
+    
+    # add new required metabolite external H2
+    model.add_metabolites(
+        cobra.Metabolite(
+            id = 'h2_e',
+            name = 'H2',
+            compartment = 'e',
+            charge = 0,
+            formula = 'H2'))
+    
+    # merging reactions with model and adding reaction strings
+    model.metabolites.h2_e.annotation = model.metabolites.h2_c.annotation
+    model.add_reactions([EX_h2_e, H2td])
+    model.reactions.EX_h2_e.build_reaction_from_string('h2_e <=>')
+    model.reactions.H2td.build_reaction_from_string('h2_c <=> h2_e')
+    model.reactions.EX_h2_e.annotation = {'bigg.reaction': 'EX_h2_e', 'metanetx.reaction': 'MNXR100495', 'seed.reaction': ': rxn08691'}
+    model.reactions.H2td.annotation = {'bigg.reaction': 'H2td', 'metanetx.reaction': 'MNXR100495', 'seed.reaction': ': rxn08691'}
+    print('...added hydrogen diffusion and exchange reactions')
+    
     # final reporting
     print(' ----- SUMMARY OF MODIFIED REACTIONS ----- ')
     print('removed duplicated reactions: ' + str(len(duplicated_reactions)))
