@@ -393,11 +393,9 @@ def modify_reactions(model):
     # but this is highly unlikely under physiological conditions (see e.g. wikipedia, or BiGG database). 
     # Standard E. coli models also exclude the reverse reaction.
     model.reactions.PYK.bounds = (0.0, 1000.0)
-    # Several alternative reactions to PYK (PYK1, PYK2, PYK3) that caryy most likely very 
-    # little or no flux in R. eutropha, were silenced.
-    model.reactions.PYK1.bounds = (0.0, 0.0)
-    model.reactions.PYK2.bounds = (0.0, 0.0)
-    model.reactions.PYK3.bounds = (0.0, 0.0)
+    # Several duplicated reactions of PYK (PYK1, PYK2, PYK3) with alternative cofactors 
+    # carry most likely very little or no flux in R. eutropha. These were removed.
+    model.remove_reactions(['PYK1', 'PYK2', 'PYK3'])
     print('...set irreversibility for reaction PYK')
     
     # Pyruvate carboxylase (PYC) should only run in direction 
@@ -483,8 +481,6 @@ def modify_reactions(model):
     # The reaction was added.
     HCO3E = cobra.Reaction('HCO3E')
     HCO3E.name = 'HCO3 equilibration reaction'
-    HCO3E.lower_bound = -1000.0
-    HCO3E.upper_bound = 1000.0
     model.add_reactions([HCO3E])
     model.reactions.HCO3E.build_reaction_from_string('co2_c + h2o_c <=> h_c + hco3_c')
     model.reactions.HCO3E.gene_reaction_rule = 'H16_A0169 or H16_B2270 or H16_B2403'
@@ -530,9 +526,9 @@ def modify_reactions(model):
     model.reactions.PRUK.build_reaction_from_string('atp_c + rl5p_c --> adp_c + h_c + rb15bp_c')
     model.reactions.RBPC.build_reaction_from_string('co2_c + h2o_c + rb15bp_c --> 2.0 3pg_c + 2.0 h_c')
     
-    # silence original lumped reaction for CBB cycle
-    model.reactions.CBBCYC.bounds = (0.0, 0.0)
-    print('...added PRUK and RBPC (Rubisco) reactions instead of lumped reaction')
+    # remove original lumped reaction for CBB cycle
+    model.remove_reactions(['CBBCYC'])
+    print('...added PRUK and RBPC (Rubisco) reactions instead of lumped CBB reaction')
     
     # The model contains a reaction to synthesize a precursor of the essential
     # cofactor thiamin monophosphate (thmmp) using a non-exisitng pseudo reaction
@@ -556,8 +552,6 @@ def modify_reactions(model):
     # the benzyl alcohol to benzyl aldehyde
     R_4HBADH = cobra.Reaction('4HBADH')
     R_4HBADH.name = '4 hydroxy benzyl alcohol dehydrogenase'
-    R_4HBADH.lower_bound = -1000.0
-    R_4HBADH.upper_bound = 1000.0
     model.add_reactions([R_4HBADH])
     model.reactions.get_by_id('4HBADH').build_reaction_from_string('nad_c + 4hba_c <=> h_c + nadh_c + 4hbzald_c')
     
@@ -567,8 +561,6 @@ def modify_reactions(model):
     # ThiH or ThiS.
     THZPSN = cobra.Reaction('THZPSN')
     THZPSN.name = 'Thiazole phosphate synthesis'
-    THZPSN.lower_bound = 0.0
-    THZPSN.upper_bound = 1000.0
     model.add_reactions([THZPSN])
     model.reactions.THZPSN.build_reaction_from_string('atp_c + cys__L_c + dx5p_c + tyr__L_c --> thzp_c + ala__L_c + amp_c + co2_c + h_c + h2o_c + ppi_c + 4hba_c')
     model.reactions.THZPSN.gene_reaction_rule = '( H16_A0238 and H16_A0237 and H16_A0330 )'
