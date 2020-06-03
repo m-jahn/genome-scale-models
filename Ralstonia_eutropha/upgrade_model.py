@@ -218,7 +218,7 @@ def modify_reactions(model):
         'UDPG4E2', 'ADNK2', 'URIDK2', 'SERDHT1', 'CYSST3', 'ASPAM6',
         'GLUDH2', 'GLUDH4', 'CYSST2', 'ACFM4', 'ACCSYN1', 'ACCSYN2',
         'LAAO1', 'PHEALDD', 'BITCB', 'GLNAS', 'SUCSD2', 'GABAT1',
-        'SUCCet'])
+        'SUCCet', 'DHFR2', 'DHFR3', 'DHFR2p', 'DHFR3p'])
     
     model.remove_reactions(duplicated_reactions)
     for dupl in duplicated_reactions:
