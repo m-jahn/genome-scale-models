@@ -32,7 +32,7 @@ def main():
     um.modify_reactions(model)
     
     # test energy generating cycles again
-    um.test_EGC(model.copy())
+    um.test_EGC(model.copy(), warn_only = False)
     
     # update metabolite annotation from Bigg db
     um.update_bigg_annotation(model, item_type = 'metabolite')

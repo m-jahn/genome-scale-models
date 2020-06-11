@@ -84,7 +84,7 @@ def import_model(path):
 # (far from equilibrium,) and therefore not reversible. FBA does not take
 # thermodynamics into account but we can constrain reversibility as a fix.
 
-def test_EGC(model):
+def test_EGC(model, warn_only = True):
     
     # According to the workflow of Fritzemeier et al., we add dissipation reactions
     # e.g. for ATP, NADH and so on.
@@ -114,7 +114,11 @@ def test_EGC(model):
         
         # run FBA analysis, all solutions should evaluate to zero
         solution = model.optimize()
-        print(str(solution) + ', dissipation reaction: ' + str(r) + ', status: ' + str(solution.status))
+        print('solution: ' + str(solution.objective_value) +
+            ', dissipation reaction: ' + str(r) +
+            ', test successfull: ' + str(solution.objective_value == 0.0))
+        if solution.objective_value > 0 and not warn_only:
+            raise ValueError('Artificial energy generation when testing: ' + str(r))
     
     # clean up by removing all dissipation reactions
     model.remove_reactions(diss_reactions)
@@ -601,6 +605,8 @@ def modify_reactions(model):
     model.reactions.H2td.build_reaction_from_string('h2_c <=> h2_e')
     model.reactions.EX_h2_e.annotation = {'bigg.reaction': 'EX_h2_e', 'metanetx.reaction': 'MNXR100495', 'seed.reaction': ': rxn08691'}
     model.reactions.H2td.annotation = {'bigg.reaction': 'H2td', 'metanetx.reaction': 'MNXR100495', 'seed.reaction': ': rxn08691'}
+    # remove H2 from medium that was automatically added by addition of metabolite
+    model.medium = {}
     print('...added hydrogen diffusion and exchange reactions')
     
     # final reporting
