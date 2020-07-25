@@ -9,7 +9,7 @@ import csv
 import cobra
 
 
-# function retrieve annotation objects and return empty
+# function to retrieve annotation objects and return empty
 # string if not available
 def get_annot(reaction, key):
     if key in reaction.annotation:
@@ -17,10 +17,25 @@ def get_annot(reaction, key):
     else: return('')
 
 
+# function to retrieve group membership for reaction and return empty
+# string if not available
+def get_groups(reaction, groups):
+    # collect group memberships
+    reaction_groups = []
+    for g in groups:
+        members = [m.id for m in list(g.members) if m.id == reaction.id]
+        if members:
+            reaction_groups.append(g.id)
+    # return groups collapsed to one string
+    if len(reaction_groups):
+        return("; ".join(reaction_groups))
+    else: return('')
+
+
 # MAIN FUNCTION --------------------------------------------------------
 def main():
     
-    # adjust file paths of necessary
+    # adjust file paths if necessary
     input = "sbml/RehMBEL1391_sbml_L3V1.xml"
     output = 'simulations/essentiality/model_reactions.csv'
     
@@ -45,7 +60,8 @@ def main():
             'EC_number': get_annot(r, 'ec-code'),
             'kegg_reaction': get_annot(r, 'kegg.reaction'),
             'metanetx_reaction': get_annot(r, 'metanetx.reaction'),
-            'seed_reaction': get_annot(r, 'seed.reaction')},
+            'seed_reaction': get_annot(r, 'seed.reaction'),
+            'groups': get_groups(r, model.groups)},
             ignore_index = True
             )
     
