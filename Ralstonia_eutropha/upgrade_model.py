@@ -293,6 +293,9 @@ def modify_reactions(model):
     model.add_reactions([UPP3S])
     model.reactions.UPP3S.build_reaction_from_string('hmb_c --> h2o_c + uppg3_c')
     model.reactions.UPP3S.gene_reaction_rule = 'H16_A2919'
+    model.groups.get_by_id("Porphyrin and Chlorophyll metabolism").members.add(
+        model.reactions.UPP3S
+    )
     print('...added reaction Uroporphyrinogen-III synthase for heme biosynthesis')
     
     # add heme to the biomass sub-reaction cofactors and vitamins
@@ -477,6 +480,13 @@ def modify_reactions(model):
     model.add_reactions([ASNTRS])
     model.reactions.ASNTRS.build_reaction_from_string(ASNTRS_string)
     model.reactions.ASNTRS.gene_reaction_rule = 'H16_A0453'
+    model.groups.get_by_id("Aminoacyl-tRNA Biosynthesis").members.add(
+        model.reactions.ASNTRS
+    )
+    # also correct typo in group name
+    for r in model.groups.get_by_id("Aminoacyl-tRNA Biosynthesi").members:
+        model.groups.get_by_id("Aminoacyl-tRNA Biosynthesis").members.add(r)
+    model.groups.remove("Aminoacyl-tRNA Biosynthesi")
     print('...added missing Asn-tRNA loading reaction (Asparaginyl-tRNA synthetase)')
     
     # Some reactions (e.g. CABPS, carbamoylphosphate synthase) require hco3
@@ -488,6 +498,9 @@ def modify_reactions(model):
     model.add_reactions([HCO3E])
     model.reactions.HCO3E.build_reaction_from_string('co2_c + h2o_c <=> h_c + hco3_c')
     model.reactions.HCO3E.gene_reaction_rule = 'H16_A0169 or H16_B2270 or H16_B2403'
+    model.groups.get_by_id("Transport, Extracellular").members.add(
+        model.reactions.HCO3E
+    )
     print('...added a HCO3 equilibration reaction')
     
     # The primary means of fructose uptake seems to be the ABC transporter
@@ -530,6 +543,11 @@ def modify_reactions(model):
     model.reactions.PRUK.build_reaction_from_string('atp_c + rl5p_c --> adp_c + h_c + rb15bp_c')
     model.reactions.RBPC.build_reaction_from_string('co2_c + h2o_c + rb15bp_c --> 2.0 3pg_c + 2.0 h_c')
     
+    # add group for Calvin cycle reactions
+    model.groups.add(cobra.core.Group(id = "Calvin cycle"))
+    for r in model.reactions.query("PRUK|RBPC"):
+        model.groups.get_by_id("Calvin cycle").members.add(r)
+    
     # remove original lumped reaction for CBB cycle
     model.remove_reactions(['CBBCYC'])
     print('...added PRUK and RBPC (Rubisco) reactions instead of lumped CBB reaction')
@@ -558,6 +576,9 @@ def modify_reactions(model):
     R_4HBADH.name = '4 hydroxy benzyl alcohol dehydrogenase'
     model.add_reactions([R_4HBADH])
     model.reactions.get_by_id('4HBADH').build_reaction_from_string('nad_c + 4hba_c <=> h_c + nadh_c + 4hbzald_c')
+    model.groups.get_by_id("Thiamine Metabolism").members.add(
+        model.reactions.get_by_id("4HBADH")
+    )
     
     # Add reaction for Thiazole phosphate synthesis.
     # The involved genes are thiG (H16_A0238), thiF (H16_A0330), thiS (H16_A0237),
@@ -568,6 +589,9 @@ def modify_reactions(model):
     model.add_reactions([THZPSN])
     model.reactions.THZPSN.build_reaction_from_string('atp_c + cys__L_c + dx5p_c + tyr__L_c --> thzp_c + ala__L_c + amp_c + co2_c + h_c + h2o_c + ppi_c + 4hba_c')
     model.reactions.THZPSN.gene_reaction_rule = '( H16_A0238 and H16_A0237 and H16_A0330 )'
+    model.groups.get_by_id("Thiamine Metabolism").members.add(
+        model.reactions.get_by_id("THZPSN")
+    )
     print('...added correct thiamin precursor synthesis reaction')
     
     # autotrophic growth (H2 utilization):
@@ -581,6 +605,9 @@ def modify_reactions(model):
     model.add_reactions([HYDS])
     model.reactions.HYDS.build_reaction_from_string('h2_c + nad_c --> h_c + nadh_c')
     model.reactions.HYDS.gene_reaction_rule = '( PHG088 and PHG089 and PHG090 and PHG091 )'
+    model.groups.get_by_id("Glyoxylate and Dicarboxylate metabolism").members.add(
+        model.reactions.get_by_id("HYDS")
+    )
     print('...added soluble hydrogenase HYDS (NADH dependent)')
     
     # adding an H2 transporter (diffusion) and exchange reaction
@@ -605,6 +632,9 @@ def modify_reactions(model):
     model.reactions.H2td.build_reaction_from_string('h2_c <=> h2_e')
     model.reactions.EX_h2_e.annotation = {'bigg.reaction': 'EX_h2_e', 'metanetx.reaction': 'MNXR100495', 'seed.reaction': ': rxn08691'}
     model.reactions.H2td.annotation = {'bigg.reaction': 'H2td', 'metanetx.reaction': 'MNXR100495', 'seed.reaction': ': rxn08691'}
+    model.groups.get_by_id("Transport, Extracellular").members.add(
+        model.reactions.get_by_id("H2td")
+    )
     # remove H2 from medium that was automatically added by addition of metabolite
     model.medium = {}
     print('...added hydrogen diffusion and exchange reactions')
