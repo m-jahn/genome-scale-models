@@ -594,6 +594,25 @@ def modify_reactions(model):
     )
     print('...added correct thiamin precursor synthesis reaction')
     
+    # R. eutropha contains two different enzymes for methionine synthesis/recovery.
+    # The canonical cobalamine-dependent methionine synthase metS (reaction METS), 
+    # that obtains the methyl-group from 5-methyl-tetrahydrofolate (5mthf).
+    # And a cobalamin-independent methyl-transferase metE (MTTGH) that requires 
+    # a different but very similar cofactor, 5-methyltetrahydropteroyltri-l-glutamate.
+    # The methyl group for this cofactor is transferred from L-serine to 
+    # tetrahydropteroyltri-l-glutamate, which is then used as substrate 
+    # by metE. The following reaction is based on SEED reaction ID: rxn12215.
+    # The tetrahydropteroyltri-l-glutamate synthesis reaction from thf 
+    # (rxn12216) was omitted for now but could be added later.
+    MTTGS = cobra.Reaction('MTTGS')
+    MTTGS.name = '5-methyltetrahydropteroyltri-l-glutamate synthase'
+    model.add_reactions([MTTGS])
+    model.reactions.MTTGS.build_reaction_from_string('nadh_c + ser__L_c + h_c + tglu_c --> h2o_c + nad_c + gly__L_c + 5mtglu_c')
+    model.groups.get_by_id("Methionine Metabolism").members.add(
+        model.reactions.MTTGS
+    )
+    print('...added a 5-methyltetrahydropteroyltri-l-glutamate synthesis reaction (met biosynthesis)')
+    
     # autotrophic growth (H2 utilization):
     # improve annotation for the existing membrane-bound hydrogenase (MBH)
     # by adding the hoxKGZ subunits, see Cramm, 2008
