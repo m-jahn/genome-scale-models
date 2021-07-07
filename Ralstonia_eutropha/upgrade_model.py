@@ -326,6 +326,21 @@ def modify_reactions(model):
     model.reactions.SUCOAS.bounds = (-1000.0, 1000.0)
     print('...set reversibility for reaction SUCOAS')
     
+    # Also in TCA cycle, two alternative isocitrate dehydrogenase reactions
+    # form an artificial loop to exchange NAD/NADP, which is thermodynamically infeasible
+    # The reactions are constrained to the canonical direction of the TCA
+    model.reactions.ICITDp.bounds = (0.0, 1000.0)
+    model.reactions.ICITD.bounds = (0.0, 1000.0)
+    print('...set irreversibility for reactions ICITDp, ICITD')
+    
+    # Similar to the above problem, two alternative glutamate dehydrogenase
+    # reactions form an artificial loop to exchange NAD/NADP, which is 
+    # thermodynamically infeasible. The reactions are constrained towards
+    # the direction of AKG (dG0 = 8.3)
+    model.reactions.GLUDy.bounds = (0.0, 1000.0)
+    model.reactions.GLUDxi.bounds = (0.0, 1000.0)
+    print('...set irreversibility for reactions GLUDy, GLUDxi')
+    
     # reaction P5CD2 seems to have wrong reactants. There is no info on a
     # direct conversion from L-glu to L-glu-5-semialdehyde. All Bigg pathways
     # to L-glu-5-semialdehyde go via GLU5K and G5SD, the canonical pathway.
@@ -1041,6 +1056,11 @@ def update_stoichiometry(model):
     TKTrule = '( H16_B1388 and H16_A3147 ) or ( PHG420 and H16_A3147 )'
     model.reactions.TKT1.gene_reaction_rule = TKTrule
     model.reactions.TKT2.gene_reaction_rule = TKTrule
+    
+    # glycine cleavage system (reaction GLYAMT) is not correctly annotated;
+    # has to be three enzyme subunits, gcvTHP, see Claassens et al.,
+    # PNAS, 2020.
+    model.reactions.GLYAMT.gene_reaction_rule = '( H16_A3619 and H16_A3620 and H16_A3621 )'
     
     # not directly related to stoichiometry, but anyway: 
     # correct name of dna_c to DNA_c
