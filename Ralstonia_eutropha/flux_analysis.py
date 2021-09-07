@@ -25,31 +25,31 @@ import csv
 # In-house measurements show the following substrate uptake rates 
 # depending on dilution rate/growth rate
 # 
-# FRC:   qS [g / (gDCW x h)] = -0.014 + 2.228 * mu; M_fru = 0.18016 g/mmol
-# SUC:   qS [g / (gDCW x h)] =  0.009 + 2.186 * mu; M_suc = 0.11809 g/mmol
-# FOR:   qS [g / (gDCW x h)] =  0.106 + 11.181 * mu; M_for = 0.04603 g/mmol
-# NH4CL: qS [g / (gDCW x h)] =  -0.021 + 0.624 * mu; M_nh4 = 0.05349 g/mmol
+# FRC:   qS [g / (gDCW x h)] =  0.003 + 2.898 * mu; M_fru = 0.18016 g/mmol
+# SUC:   qS [g / (gDCW x h)] =  0.000 + 3.937 * mu; M_suc = 0.11809 g/mmol
+# FOR:   qS [g / (gDCW x h)] =  0.004 + 11.236 * mu; M_for = 0.04603 g/mmol
+# NH4CL: qS [g / (gDCW x h)] =  0.025 + 0.616 * mu; M_nh4cl = 0.05349 g/mmol
 # 
-# These functions return uptake rate qS of the limiting substrate in 
+# These functions return uptake rate qS of the limiting substrate in
 # [mmol / (gDCW x h)] or [g / (gDCW x h)] for a given growth rate mu
 
 def qS_FRC(mu, mmol = True):
-    qS = (-0.014 + 2.228 * mu)
+    qS = (0.003 + 2.898 * mu)
     if mmol: qS = qS / 0.18016
     return qS
 
 def qS_SUC(mu, mmol = True):
-    qS = ( 0.009 + 2.186 * mu)
+    qS = ( 0.0 + 3.937 * mu)
     if mmol: qS = qS / 0.11809
     return qS
 
 def qS_FOR(mu, mmol = True):
-    qS = (0.106 + 11.181 * mu)
+    qS = (0.004 + 11.236 * mu)
     if mmol: qS = qS / 0.04603
     return qS
 
 def qS_NH4(mu, mmol = True):
-    qS = (-0.021 + 0.624 * mu)
+    qS = (0.025 + 0.616 * mu)
     if mmol: qS = qS / 0.05349
     return qS
 

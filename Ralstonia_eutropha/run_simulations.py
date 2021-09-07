@@ -21,7 +21,6 @@ import flux_analysis as mfa
 def main():
     
     # IMPORT SBML MODEL ------------------------------------------------
-    
     model = cobra.io.read_sbml_model("sbml/RehMBEL1391_sbml_L3V1.xml")
     
     # ADDITIONAL CONSTRAINTS -------------------------------------------
@@ -38,10 +37,21 @@ def main():
     # that this is physiologically relevant
     model.reactions.THRA.bounds = (0.0, 0.0)
     model.reactions.THRD.bounds = (0.0, 0.0)
+    # silence methyl glyoxate cycle
+    model.reactions.MGSA.bounds = (0.0, 0.0)
+    model.reactions.MDH2.bounds = (0.0, 0.0)
+    model.reactions.POX.bounds = (0.0, 0.0)
     # optionally silence acetate secretion during N limitation
     # (on excess fructose, FBA suggests excess frc uptake and fermentation
     # but it has been shown that cells rather make PHB)
     model.reactions.EX_ac_e.bounds = (0.0, 0.0)
+    model.reactions.EX_acal_e.bounds = (0.0, 0.0)
+    model.reactions.EX_acac_e.bounds = (0.0, 0.0)
+    model.reactions.EX_pyr_e.bounds = (0.0, 0.0)
+    model.reactions.EX_cit_e.bounds = (0.0, 0.0)
+    model.reactions.EX_icit_e.bounds = (0.0, 0.0)
+    model.reactions.EX_fum_e.bounds = (0.0, 0.0)
+    model.reactions.EX_mlt_e.bounds = (0.0, 0.0)
     
     
     # DEFINE ENVIRONMENT -----------------------------------------------
@@ -67,10 +77,10 @@ def main():
         'EX_fru_e': 0.0,
         'EX_nh4_e': 0.0,
         'EX_na_e': 10.0,
-        'EX_o2_e': 18.5,
+        'EX_o2_e': 100.0,
         'EX_mobd_e': 10.0,
         'EX_h2o_e': 1000.0,
-        'EX_h_e': 100.0
+        'EX_h_e': 1000.0
     }
     
     
@@ -86,10 +96,32 @@ def main():
         'EX_nh4_e': [10.0] * 15 + [mfa.qS_NH4(mu = i) for i in mu]
         })
     
+    # set growth-associated and non growth maintenance to match 
+    # experimental yields
+    model.reactions.Biomass.add_metabolites({'atp_c':  15.3 - 150.0})
+    model.reactions.Biomass.add_metabolites({'adp_c': -15.3 + 150.0})
+    model.reactions.Biomass.add_metabolites({'pi_c':  -15.3 + 150.0})
+    model.reactions.Maintenance.bounds = (3.0, 3.0)
+    
+    # set flux to PHB, around 3-10% of DCW in C-limiting conditions and up to 80% in N-limiting
+    # f_PHB = 1 g gDCW^-1 h^-1 / 0.0861 g^-1 mmol = 11.614 mmol gDCW^-1 h^-1
+    PHB = [0.03899374, 0.07798748, 0.11698122, 0.15597497, 0.19496871,
+           0.06385239, 0.12770478, 0.19155717, 0.25540956, 0.31926196,
+           0.01517893, 0.03035785, 0.04553678, 0.06071570, 0.07589463,
+           2.30737116, 2.22582765, 1.44114892, 1.11302899, 0.38236918]
+    
+    # optionally export model with altered biomass equation
+    #cobra.io.write_sbml_model(model, "RehMBEL1391_sbml_L3V1.xml")
     
     # RUN SIMULATIONS IN LOOP
     # --------------------------------------------------------------
     for index, row in qS_substrate.iterrows():
+        
+        # deep copy of the model
+        model_copy = model.copy()
+        
+        # add PHB production flux
+        model_copy.reactions.PHAS.bounds = (PHB[index], PHB[index])
         
         # add limiting substrate uptake rate to minimal medium
         mm = minimal_medium.copy()
@@ -100,16 +132,16 @@ def main():
         # run FBA analysis
         # --------------------------------------------------------------
         result_fba = mfa.run_FBA(
-            model = model.copy(),
+            model = model_copy,
             medium = mm
             )
         
         
-        # runs FSA analysis ('flux sampling')
+        # run FSA analysis ('flux sampling')
         # --------------------------------------------------------------
         if index in [4, 9, 14, 19]:
             result_fsa = mfa.run_flux_sampling(
-                model.copy(), mm,
+                model_copy, mm,
                 n_samples = 100, 
                 objective = "Biomass", 
                 print_summary = True,
