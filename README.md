@@ -2,18 +2,53 @@
 
 Genome scale metabolic models in SBML format
 
-<img src="map.png" width="1000px" style="display: block; margin: auto;" />
+<img src="map.png" width="100%" style="display: block; margin: auto;" />
 
-### Repository contents
+*Example of the metabolic map from the Ralstonia eutropha genome scale model.*
 
-#### Models
+## Contents
 
-**_Ralstonia eutropha_** a.k.a. **_Cupriavidus necator_** H16, genome scale metabolic model. The model was previously published in: Park, J. M., Kim, T. Y., & Lee, S. Y. (2011). _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_. BMC Systems Biology, 5(1), 101. ([link](https://doi.org/10.1186/1752-0509-5-101))
+- [Models](#models)
+- [Getting started](#getting-started)
+- [Structure of SBML models](#structure-of-sbml-models)
+- [Parameters and constraints](#parameters-and-constraints)
+- [Objective function](#objective-function)
+- [Solving a model](#solving-a-model)
+- [Visualization of results using Escher](#visualization-of-results-using-escher)
 
+## Models
 
-**Changes from original model**
+### _Ralstonia eutropha_ (_Cupriavidus necator_)
 
-The following changes correct errors, remove unnecessary reactions, or add new reactions. The original model, for example, showed flux through artificial energy generating cycles (see Fritzemeier _et al._, PLOS Comp Bio, 2017). After identification and removal of the following issues, no activity of such cycles was found anymore using FBA.
+#### Original publications
+
+1. The model was previously published in: [Park, J. M., Kim, T. Y., & Lee, S. Y. BMC Systems Biology, 5(1), 101. 2011](https://doi.org/10.1186/1752-0509-5-101), _Genome-scale reconstruction and in silico analysis of the Ralstonia eutropha H16 for polyhydroxyalkanoate synthesis, lithoautotrophic growth, and 2-methyl citric acid production_.
+
+2. The original model (PDF) was parsed and converted to SBML standard by [Peyraud R., Cottret L., Marmiesse L., Gouzy J., Genin S. PLoS Pathogens, 12(10), 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5061431/). _A Resource Allocation Trade-Off between Virulence and Proliferation Drives Metabolic Versatility in the Plant Pathogen Ralstonia solanacearum_.
+
+#### Model contents
+
+The `Ralstonia_eutropha` folder contains the following **folders**:
+
+- `data/` -- folder containing the reference 'model' files with Bigg annotation (`*.json`)
+- `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
+- `memote` -- folder containing the latest memote reports as `*.html` documents
+- `sbml/` -- folder containing the original and improved SBML model (`*.xml`)
+- `simulations/` -- folder with simulation results tables (`*.csv`)
+
+The `Ralstonia_eutropha` folder contains the following **scripts**:
+
+- `upgrade_model.py` -- functions to import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Add [Bigg](http://bigg.ucsd.edu/) and [uniprot](https://www.uniprot.org/) annotation. Test FBA with COBRApy
+- `upgrade_main.py` -- main script for execution of model upgrade
+- `get_model_reactions.py` -- function to retrieve and export reaction data
+- `flux_analysis.py` -- wrapper functions for FBA, FVA and flux sampling with COBRApy
+- `essentiality analysis.py` -- find essential gene set predicted by the model
+- `test_simulations.py` -- script to run many simulations at once using COBRApy
+- `plot_simulations.R` -- R script to plot results from FBA, FVA, or other simulations
+
+#### Changes from original model
+
+The following changes correct errors, remove unnecessary reactions, or add new reactions. The original model, for example, showed flux through artificial energy generating cycles ([Fritzemeier _et al._, PLOS Comp Bio, 2017](https://pubmed.ncbi.nlm.nih.gov/28419089/)). After identification and removal of the following issues, no activity of such cycles was found anymore using FBA.
 
 - There's an artificial NADH generating cycle around the metabolite 1-pyrroline-5-carboxylate dehydrogenase involving 3 reactions, `P5CD4 --> PROD4`/`P5CD5 --> PTO4H --> P5CD4`. The cycle generates 2 NADH per turn. The NADH/NAD cofactor stoichiometry for reaction `P5CD5`/`PROD4` was reversed and was corrected.
 - Related to the problem with this reaction is that it is duplicated as `PROD4` (also same gene). The reaction was removed.
@@ -48,34 +83,14 @@ Other changes regarding to annotation:
 - Gene reaction rules were changed for 20 reactions
 - 7 incomplete gene annotations were removed or corrected (`ugpQ`, `H16_A2326gdpD`, `unknown`, `H16_A024`, `H16_A2911plsC1`, `plsC2`, `spontaneous`) 
 
-**Memote score**
+#### Memote score
 
 The [Memote web service](https://memote.io/) was used to test the capabilities of the model and identify problems. A comparison was made between the original published model (`Memote_RehMBEL1391_sbml_L2V1`), and the upgraded version of the model with the changes listed above (`Memote_RehMBEL1391_sbml_L3V1`). The memote score **improved from 28% to 76%** owing to the addition of metadata, and correcting many errors. The reports for the original and improved model can be found [here](Memote_RehMBEL1391_sbml_L2V1.html) and [here](Memote_RehMBEL1391_sbml_L3V1.html).
 
 <img src="Ralstonia_eutropha/memote/memote_score_comparison.png" width="1000px" style="display: block; margin: auto;" />
 
-#### Repository structure
 
-The `Ralstonia_eutropha` folder contains the following **folders**:
-
-- `data/` -- folder containing the reference 'model' files with Bigg annotation (`*.json`)
-- `escher/` -- folder with map layout and model for [escher](https://escher.github.io/) visualization (`*.json`)
-- `memote` -- folder containing the latest memote reports as `*.html` documents
-- `sbml/` -- folder containing the original and improved SBML model (`*.xml`)
-- `simulations/` -- folder with simulation results tables (`*.csv`)
-
-The `Ralstonia_eutropha` folder contains the following **scripts**:
-
-- `upgrade_model.py` -- functions to import original model and convert to most recent SBML standard. Add reactions and modify erroneous reactions. Add [Bigg](http://bigg.ucsd.edu/) and [uniprot](https://www.uniprot.org/) annotation. Test FBA with COBRApy
-- `upgrade_main.py` -- main script for execution of model upgrade
-- `get_model_reactions.py` -- function to retrieve and export reaction data
-- `flux_analysis.py` -- wrapper functions for FBA, FVA and flux sampling with COBRApy
-- `essentiality analysis.py` -- find essential gene set predicted by the model
-- `test_simulations.py` -- script to run many simulations at once using COBRApy
-- `plot_simulations.R` -- R script to plot results from FBA, FVA, or other simulations
-
-
-### Getting started
+## Getting started
 
 The genome scale metabolic models in this repository are encoded according to [SBML standard](sbml.org) and saved as human-readable `*.xml` or `*.json` files.
 
@@ -110,7 +125,7 @@ print('%i genes' % len(model.genes))
 ```
 
 
-### Structure of SBML models
+## Structure of SBML models
 
 The `*.xml` files containing the model definition have three (four) major slots:
 
@@ -121,7 +136,7 @@ The `*.xml` files containing the model definition have three (four) major slots:
 - meta data such as gene-name-reaction associations
 
 
-### Parameters and constraints
+## Parameters and constraints
 
 Genome scale models are constrained primarily by two things:
 - network topology defined by the set of reactions. Models usually include only the reaction network for low molecular weight metabolites.
@@ -142,7 +157,7 @@ for reaction in model.exchanges:
 In contrast to other types of models such as simple [resource allocation models](https://github.com/m-jahn/cell-economy-models), genome scale models usually don't include cellular processes for production of macromolecules. In other words, transcription, translation, and DNA replication are not explicitly included in the model but only appear as abstract, lumped reactions.
 
 
-### Objective function
+## Objective function
 
 The objective function of the model is a variable similar to other variables that are optimized by the solver. However, when solving the model the prime target of the algorithm is to maximize this variable, often the `Biomass` reaction. Units of all reactions are by default in mmol per gDCW per h, but since the biomass reaction is _per definition_ formulated such that 1 mmol biomass equals 1 g biomass, it also represents the specific growth rate μ (g biomass per gDCW per hour, biomass term can be eliminated).
 
@@ -154,7 +169,7 @@ model.objective = {model.reactions.Biomass: 1}
 ```
 
 
-### Solving the model
+## Solving a model
 
 Before we can pass the model to the solver and find the optimal flux distribution towards our goal, we have to define a growth medium (a set of exchange fluxes that represent the nutrients available in the outer environment of the cell).
 
@@ -201,12 +216,11 @@ print(model.metabolites.atp_c.summary())
 print(model.metabolites.nadh_c.summary())
 ```
 
-
-### Visualization of results using Escher
+## Visualization of results using Escher
 
 To visualize simulation results such as those from FBA, it is extremely informative to overlay reaction (flux) data on top of a familiar metabolic map. The open source tool [Escher](https://escher.github.io) can be used for this purpose. It can be used in a python session but just as well as an online tool. Three files are required that can be obtained from a standard SBML model. 
 
-#### Escher workflow
+### Escher workflow
 
 - The model must be exported as a `.json` file. Simply use the COBRAPy command
 `cobra.io.save_json_model(my_model, 'my_path/my_model.json')`
@@ -215,7 +229,7 @@ To visualize simulation results such as those from FBA, it is extremely informat
 - The final step is to load reaction data. The preferred format is a 2- or 3-column `.csv` table with the first column being reaction IDs corresponding to the map, and the second (optionally third) column being flux values.
 - Escher also has the possibility to overlay gene/protein expression data or metabolite data.
 
-#### Example
+### Example
 
 <img src="example.png" width="1000px" style="display: block; margin: auto;" />
 
